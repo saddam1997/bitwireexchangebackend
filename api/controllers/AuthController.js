@@ -69,38 +69,27 @@ module.exports = {
             });
           } else {
             console.log("User is valid return user details !!!");
-            LoginHistory.create({
-                ip: ip,
-                status: loginHostoryStatus,
-                statusName: loginHostoryStatusName,
-                loginowner: user.id
-              })
-              .exec(function(err, createLoginHistory) {
-                if (err) {
-                  console.log("Error to update user");
-                  return res.serverError(err);
-                }
-                if (user.tfastatus) {
-                  console.log("Enter into this user.tfastatus");
-                  res.json({
-                    user: user,
-                    statusCode: 201,
-                    message: "Google Authenticattion Enabled For this user!!!",
-                    token: jwToken.issue({
-                      id: user.id
-                    })
-                  });
-                } else {
-                  console.log("Returnin user detailsss");
-                  res.json({
-                    user: user,
-                    statusCode: 200,
-                    token: jwToken.issue({
-                      id: user.id
-                    })
-                  });
-                }
+
+            if (user.tfastatus) {
+              console.log("Enter into this user.tfastatus");
+              res.json({
+                user: user,
+                statusCode: 201,
+                message: "Google Authenticattion Enabled For this user!!!",
+                token: jwToken.issue({
+                  id: user.id
+                })
               });
+            } else {
+              console.log("Returnin user detailsss");
+              res.json({
+                user: user,
+                statusCode: 200,
+                token: jwToken.issue({
+                  id: user.id
+                })
+              });
+            }
           }
         });
       });

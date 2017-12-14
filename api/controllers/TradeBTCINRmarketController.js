@@ -67,7 +67,7 @@ module.exports = {
 
     userINRBalanceInDb = parseFloat(userINRBalanceInDb);
     userFreezedINRBalanceInDb = parseFloat(userFreezedINRBalanceInDb);
-
+    console.log("asdf");
     var userIdInDb = userAsker.id;
     if (userAskAmountINR.greaterThanOrEqualTo(userINRBalanceInDb)) {
       return res.json({
@@ -75,6 +75,7 @@ module.exports = {
         statusCode: 401
       });
     }
+    console.log("qweqwe");
     console.log("userAskAmountINR :: " + userAskAmountINR);
     console.log("userINRBalanceInDb :: " + userINRBalanceInDb);
     // if (userAskAmountINR >= userINRBalanceInDb) {
@@ -1961,7 +1962,6 @@ module.exports = {
           }
         }
       }
-      console.log("Total Bid ::: " + total_ask);
       return res.json({
         "message": "Your bid placed successfully!!",
         statusCode: 200

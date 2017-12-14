@@ -29,10 +29,6 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
-    userBTCAddress: {
-      type: 'string'
-    },
-
     BCHMainbalance: {
       type: 'float',
       defaultsTo: 0
@@ -45,9 +41,7 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
-    userBCHAddress: {
-      type: 'string'
-    },
+
     INRMainbalance: {
       type: 'float',
       defaultsTo: 0
@@ -59,6 +53,26 @@ module.exports = {
     FreezedINRbalance: {
       type: 'float',
       defaultsTo: 0
+    },
+
+    isBTCAddress: {
+      type: 'integer',
+      defaultsTo: 0
+    },
+    isBCHAddress: {
+      type: 'integer',
+      defaultsTo: 0
+    },
+    isINRAddress: {
+      type: 'integer',
+      defaultsTo: 0
+    },
+
+    userBTCAddress: {
+      type: 'string'
+    },
+    userBCHAddress: {
+      type: 'string'
     },
     userINRAddress: {
       type: 'string'
@@ -116,12 +130,6 @@ module.exports = {
     asksINR: {
       collection: 'askINR',
       via: 'askownerINR'
-    },
-
-
-    loginHistory: {
-      collection: 'LoginHistory',
-      via: 'loginowner'
     },
     toJSON: function() {
       var obj = this.toObject();

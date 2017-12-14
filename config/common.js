@@ -11,19 +11,21 @@ module.exports.common = {
 
   projectURL: 'http://192.168.1.16:1338',
 
-  txFeeBCHWithdrawSuccess: 0.0001,
+
   txFeeBTCWithdrawSuccess: 0.0001,
-  txFeePYYWithdrawSuccess: 0.0001,
-  txFeeGDSWithdrawSuccess: 0.0001,
+  txFeeBCHWithdrawSuccess: 0.0001,
+  txFeeLTCWithdrawSuccess: 0.0001,
 
-  companyBTCAccount: "pennybtc@gmail.com",
-  companyBCHAccount: "pennybch@gmail.com",
-  companyPYYAccount: "pennypyy@gmail.com",
-  companyGDSAccount: "pennygds@gmail.com",
 
-  supportEmailId: 'no-reply@zenithnex.com', //Support Email Id to send mail signup and login and forgot password
-  supportEmailIdpass: 'zenithnex@123', //Support Email Id passoword
-  supportEmailIdService: 'zoho',
+  companyBTCAccount: "bitwireBTC@gmail.com",
+  companyBCHAccount: "bitwireBCH@gmail.com",
+  companyLTCAccount: "bitwireLTC@gmail.com",
+
+  supportEmailId: 'bitwire.io@gmail.com', //Support Email Id to send mail signup and login and forgot password
+  supportEmailIdpass: 'bitwire@io', //Support Email Id passoword
+  supportEmailIdService: 'gmail',
   exchangeLabelPrefix: 'EX',
   BTCMARKETID: 1,
+  BCHMARKETID: 1,
+  LTCMARKETID: 1,
 }

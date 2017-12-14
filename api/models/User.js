@@ -67,24 +67,22 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
-
     isBTCAddress: {
-      type: 'integer',
-      defaultsTo: 0
+      type: "boolean",
+      defaultsTo: false
     },
     isBCHAddress: {
-      type: 'integer',
-      defaultsTo: 0
+      type: "boolean",
+      defaultsTo: false
     },
     isLTCAddress: {
-      type: 'integer',
-      defaultsTo: 0
+      type: "boolean",
+      defaultsTo: false
     },
     isINRAddress: {
-      type: 'integer',
-      defaultsTo: 0
+      type: "boolean",
+      defaultsTo: false
     },
-
     userBTCAddress: {
       type: 'string'
     },

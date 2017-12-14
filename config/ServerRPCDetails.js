@@ -12,16 +12,16 @@ module.exports.company = {
   clientBCHuser: 'test',
   clientBCHpass: 'test123',
 
-  //GDS Server details
-  clientGDShost: '162.213.252.66',
-  clientGDSport: 18336,
-  clientGDSuser: 'test',
-  clientGDSpass: 'test123',
+  //LTC Server details
+  clientLTChost: '162.213.252.66',
+  clientLTCport: 18336,
+  clientLTCuser: 'test',
+  clientLTCpass: 'test123',
 
-  //PYY Server details
-  clientPYYhost: '162.213.252.66',
-  clientPYYport: 18336,
-  clientPYYuser: 'test',
-  clientPYYpass: 'test123',
+  //INR Server details
+  clientINRhost: '162.213.252.66',
+  clientINRport: 18336,
+  clientINRuser: 'test',
+  clientINRpass: 'test123',
 
 }

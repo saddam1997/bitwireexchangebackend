@@ -2164,7 +2164,7 @@ module.exports = {
     console.log("Enter into ask api getAllBidINR :: ");
     BidINR.find({
         status: {
-          '!': [statusOne]
+          '!': [statusOne, statusThree]
         },
         marketId: {
           'like': BTCMARKETID
@@ -2188,7 +2188,7 @@ module.exports = {
           if (allAskDetailsToExecute.length >= 1) {
             BidINR.find({
                 status: {
-                  '!': [statusOne]
+                  '!': [statusOne, statusThree]
                 },
                 marketId: {
                   'like': BTCMARKETID
@@ -2204,7 +2204,7 @@ module.exports = {
                 }
                 BidINR.find({
                     status: {
-                      '!': [statusOne]
+                      '!': [statusOne, statusThree]
                     },
                     marketId: {
                       'like': BTCMARKETID
@@ -2239,7 +2239,7 @@ module.exports = {
     console.log("Enter into ask api getAllAskINR :: ");
     AskINR.find({
         status: {
-          '!': [statusOne]
+          '!': [statusOne, statusThree]
         },
         marketId: {
           'like': BTCMARKETID
@@ -2263,7 +2263,7 @@ module.exports = {
           if (allAskDetailsToExecute.length >= 1) {
             AskINR.find({
                 status: {
-                  '!': [statusOne]
+                  '!': [statusOne, statusThree]
                 },
                 marketId: {
                   'like': BTCMARKETID
@@ -2279,7 +2279,7 @@ module.exports = {
                 }
                 AskINR.find({
                     status: {
-                      '!': [statusOne]
+                      '!': [statusOne, statusThree]
                     },
                     marketId: {
                       'like': BTCMARKETID

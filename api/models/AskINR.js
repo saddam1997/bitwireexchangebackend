@@ -1,14 +1,14 @@
 /**
- * AskPYY.js
+ * AskINR.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 var moment = require('moment');
+
 module.exports = {
 
   schema: true,
-
   attributes: {
     createTimeUTC: {
       type: 'string',
@@ -18,7 +18,7 @@ module.exports = {
       defaultsTo: 0.00,
       required: true
     },
-    askAmountPYY: {
+    askAmountINR: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
@@ -28,7 +28,7 @@ module.exports = {
       defaultsTo: 0.00,
       required: true
     },
-    totalaskAmountPYY: {
+    totalaskAmountINR: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
@@ -44,14 +44,17 @@ module.exports = {
     statusName: {
       type: 'string'
     },
-    askownerPYY: {
+    marketId: {
+      type: 'integer'
+    },
+    askownerINR: {
       model: 'user'
     }
   },
   afterCreate: function(values, next) {
     //values.createTimeUTC = moment.utc().format();
     values.createTimeUTC = Date.parse(moment.utc().format()) / 1000;
-    AskPYY.update({
+    AskINR.update({
       id: values.id
     }, values, next);
   }

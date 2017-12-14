@@ -1,39 +1,40 @@
 /**
- * TradePYYMarketController
+ * TrademarketController
  *
- * @description :: Server-side logic for managing tradepyymarkets
+ * @description :: Server-side logic for managing trademarkets
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-var BigNumber = require('bignumber.js');
+var statusZero = sails.config.common.statusZero;
+var statusOne = sails.config.common.statusOne;
+var statusTwo = sails.config.common.statusTwo;
+var statusThree = sails.config.common.statusThree;
 
-var statusZero = sails.config.company.statusZero;
-var statusOne = sails.config.company.statusOne;
-var statusTwo = sails.config.company.statusTwo;
-
-var statusZeroCreated = sails.config.company.statusZeroCreated;
-var statusOneSuccessfull = sails.config.company.statusOneSuccessfull;
-var statusTwoPending = sails.config.company.statusTwoPending;
+var statusZeroCreated = sails.config.common.statusZeroCreated;
+var statusOneSuccessfull = sails.config.common.statusOneSuccessfull;
+var statusTwoPending = sails.config.common.statusTwoPending;
+var statusThreeCancelled = sails.config.common.statusThreeCancelled;
 var constants = require('./../../config/constants');
 
-const txFeePYYWithdrawSuccess = sails.config.common.txFeePYYWithdrawSuccess;
+const txFeeBCHWithdrawSuccess = sails.config.common.txFeeBCHWithdrawSuccess;
 const txFeeBTCWithdrawSuccess = sails.config.common.txFeeBTCWithdrawSuccess;
 
 module.exports = {
-  addAskPYYMarket: async function(req, res) {
-    console.log("Enter into ask api addAskPYYMarket : : " + JSON.stringify(req.body));
+
+  addAskMarket: async function(req, res) {
+    console.log("Enter into ask api addAskMarket : : " + JSON.stringify(req.body));
     var userAskAmountBTC = new BigNumber(req.body.askAmountBTC);
-    var userAskAmountPYY = new BigNumber(req.body.askAmountPYY);
+    var userAskAmount = new BigNumber(req.body.askAmount);
     var userAskRate = new BigNumber(req.body.askRate);
     var userAskownerId = req.body.askownerId;
 
-    if (!userAskAmountPYY || !userAskAmountBTC || !userAskRate || !userAskownerId) {
+    if (!userAskAmount || !userAskAmountBTC || !userAskRate || !userAskownerId) {
       console.log("Can't be empty!!!!!!");
       return res.json({
         "message": "Invalid Paramter!!!!",
         statusCode: 400
       });
     }
-    if (userAskAmountPYY < 0 || userAskAmountBTC < 0 || userAskRate < 0) {
+    if (userAskAmount < 0 || userAskAmountBTC < 0 || userAskRate < 0) {
       console.log("Negative Paramter");
       return res.json({
         "message": "Negative Paramter!!!!",
@@ -58,43 +59,43 @@ module.exports = {
       });
     }
     console.log("User details find successfully :::: " + JSON.stringify(userAsker));
-    var userPYYBalanceInDb = new BigNumber(userAsker.PYYbalance);
-    var userFreezedPYYBalanceInDb = new BigNumber(userAsker.FreezedPYYbalance);
+    var userBalanceInDb = new BigNumber(userAsker.BCHbalance);
+    var userFreezedBalanceInDb = new BigNumber(userAsker.FreezedBCHbalance);
 
-    userPYYBalanceInDb =  parseFloat(userPYYBalanceInDb);
-    userFreezedPYYBalanceInDb =  parseFloat(userFreezedPYYBalanceInDb);
+    userBalanceInDb = parseFloat(userBalanceInDb);
+    userFreezedBalanceInDb = parseFloat(userFreezedBalanceInDb);
 
     var userIdInDb = userAsker.id;
-    if (userAskAmountPYY.greaterThanOrEqualTo(userPYYBalanceInDb)) {
+    if (userAskAmount.greaterThanOrEqualTo(userBalanceInDb)) {
       return res.json({
-        "message": "You have insufficient PYY Balance",
+        "message": "You have insufficient  Balance",
         statusCode: 401
       });
     }
-    console.log("userAskAmountPYY :: " + userAskAmountPYY);
-    console.log("userPYYBalanceInDb :: " + userPYYBalanceInDb);
-    // if (userAskAmountPYY >= userPYYBalanceInDb) {
+    console.log("userAskAmount :: " + userAskAmount);
+    console.log("userBalanceInDb :: " + userBalanceInDb);
+    // if (userAskAmount >= userBalanceInDb) {
     //   return res.json({
-    //     "message": "You have insufficient PYY Balance",
+    //     "message": "You have insufficient  Balance",
     //     statusCode: 401
     //   });
     // }
 
 
 
-    userAskAmountBTC =  parseFloat(userAskAmountBTC);
-    userAskAmountPYY =  parseFloat(userAskAmountPYY);
-    userAskRate =  parseFloat(userAskRate);
+    userAskAmountBTC = parseFloat(userAskAmountBTC);
+    userAskAmount = parseFloat(userAskAmount);
+    userAskRate = parseFloat(userAskRate);
     try {
-      var askDetails = await AskPYY.create({
+      var askDetails = await Ask.create({
         askAmountBTC: userAskAmountBTC,
-        askAmountPYY: userAskAmountPYY,
+        askAmount: userAskAmount,
         totalaskAmountBTC: userAskAmountBTC,
-        totalaskAmountPYY: userAskAmountPYY,
+        totalaskAmount: userAskAmount,
         askRate: userAskRate,
         status: statusTwo,
         statusName: statusTwoPending,
-        askownerPYY: userIdInDb
+        askowner: userIdInDb
       });
     } catch (e) {
       return res.json({
@@ -104,24 +105,24 @@ module.exports = {
       });
     }
     //blasting the bid creation event
-    sails.sockets.blast(constants.PYY_ASK_ADDED, askDetails);
-    // var updateUserPYYBalance = (parseFloat(userPYYBalanceInDb) - parseFloat(userAskAmountPYY));
-    // var updateFreezedPYYBalance = (parseFloat(userFreezedPYYBalanceInDb) + parseFloat(userAskAmountPYY));
+    sails.sockets.blast(constants.BCH_ASK_ADDED, askDetails);
+    // var updateUserBalance = (parseFloat(userBalanceInDb) - parseFloat(userAskAmount));
+    // var updateFreezedBalance = (parseFloat(userFreezedBalanceInDb) + parseFloat(userAskAmount));
 
     // x = new BigNumber(0.3)   x.plus(y)
     // x.minus(0.1)
-    userPYYBalanceInDb = new BigNumber(userPYYBalanceInDb);
-    var updateUserPYYBalance = userPYYBalanceInDb.minus(userAskAmountPYY);
-    updateUserPYYBalance =  parseFloat(updateUserPYYBalance);
-    userFreezedPYYBalanceInDb = new BigNumber(userFreezedPYYBalanceInDb);
-    var updateFreezedPYYBalance = userFreezedPYYBalanceInDb.plus(userAskAmountPYY);
-    updateFreezedPYYBalance =  parseFloat(updateFreezedPYYBalance);
+    userBalanceInDb = new BigNumber(userBalanceInDb);
+    var updateUserBalance = userBalanceInDb.minus(userAskAmount);
+    updateUserBalance = parseFloat(updateUserBalance);
+    userFreezedBalanceInDb = new BigNumber(userFreezedBalanceInDb);
+    var updateFreezedBalance = userFreezedBalanceInDb.plus(userAskAmount);
+    updateFreezedBalance = parseFloat(updateFreezedBalance);
     try {
       var userUpdateAsk = await User.update({
         id: userIdInDb
       }, {
-        FreezedPYYbalance: updateFreezedPYYBalance,
-        PYYbalance: updateUserPYYBalance
+        FreezedBCHbalance: updateFreezedBCHBalance,
+        BCHbalance: updateUserBCHBalance
       });
     } catch (e) {
       return res.json({
@@ -131,12 +132,15 @@ module.exports = {
       });
     }
     try {
-      var allBidsFromdb = await BidPYY.find({
+      var allBidsFromdb = await BidBCH.find({
         bidRate: {
           'like': parseFloat(userAskRate)
         },
         status: {
           '!': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       });
     } catch (e) {
@@ -150,37 +154,37 @@ module.exports = {
     var total_bid = 0;
     if (allBidsFromdb.length >= 1) {
       //Find exact bid if available in db
-      var totoalAskRemainingPYY = new BigNumber(userAskAmountPYY);
+      var totoalAskRemainingBCH = new BigNumber(userAskAmountBCH);
       var totoalAskRemainingBTC = new BigNumber(userAskAmountBTC);
-      //this loop for sum of all Bids amount of PYY
+      //this loop for sum of all Bids amount of BCH
       for (var i = 0; i < allBidsFromdb.length; i++) {
-        total_bid = total_bid + allBidsFromdb[i].bidAmountPYY;
+        total_bid = total_bid + allBidsFromdb[i].bidAmountBCH;
       }
-      if (total_bid <= totoalAskRemainingPYY) {
-        console.log("Inside of total_bid <= totoalAskRemainingPYY");
+      if (total_bid <= totoalAskRemainingBCH) {
+        console.log("Inside of total_bid <= totoalAskRemainingBCH");
         for (var i = 0; i < allBidsFromdb.length; i++) {
-          console.log("Inside of For Loop total_bid <= totoalAskRemainingPYY");
+          console.log("Inside of For Loop total_bid <= totoalAskRemainingBCH");
           currentBidDetails = allBidsFromdb[i];
-          console.log(currentBidDetails.id + " Before totoalAskRemainingPYY :: " + totoalAskRemainingPYY);
+          console.log(currentBidDetails.id + " Before totoalAskRemainingBCH :: " + totoalAskRemainingBCH);
           console.log(currentBidDetails.id + " Before totoalAskRemainingBTC :: " + totoalAskRemainingBTC);
-          // totoalAskRemainingPYY = (parseFloat(totoalAskRemainingPYY) - parseFloat(currentBidDetails.bidAmountPYY));
+          // totoalAskRemainingBCH = (parseFloat(totoalAskRemainingBCH) - parseFloat(currentBidDetails.bidAmountBCH));
           // totoalAskRemainingBTC = (parseFloat(totoalAskRemainingBTC) - parseFloat(currentBidDetails.bidAmountBTC));
-          totoalAskRemainingPYY = totoalAskRemainingPYY.minus(currentBidDetails.bidAmountPYY);
+          totoalAskRemainingBCH = totoalAskRemainingBCH.minus(currentBidDetails.bidAmountBCH);
           totoalAskRemainingBTC = totoalAskRemainingBTC.minus(currentBidDetails.bidAmountBTC);
 
 
-          console.log(currentBidDetails.id + " After totoalAskRemainingPYY :: " + totoalAskRemainingPYY);
+          console.log(currentBidDetails.id + " After totoalAskRemainingBCH :: " + totoalAskRemainingBCH);
           console.log(currentBidDetails.id + " After totoalAskRemainingBTC :: " + totoalAskRemainingBTC);
 
-          if (totoalAskRemainingPYY == 0) {
+          if (totoalAskRemainingBCH == 0) {
             //destroy bid and ask and update bidder and asker balances and break
-            console.log("Enter into totoalAskRemainingPYY == 0");
+            console.log("Enter into totoalAskRemainingBCH == 0");
             try {
               var userAllDetailsInDBBidder = await User.findOne({
-                id: currentBidDetails.bidownerPYY
+                id: currentBidDetails.bidownerBCH
               });
               var userAllDetailsInDBAsker = await User.findOne({
-                id: askDetails.askownerPYY
+                id: askDetails.askownerBCH
               });
             } catch (e) {
               return res.json({
@@ -190,45 +194,45 @@ module.exports = {
               });
             }
             // var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
-            // var updatedPYYbalanceBidder = (parseFloat(userAllDetailsInDBBidder.PYYbalance) + parseFloat(currentBidDetails.bidAmountPYY));
+            // var updatedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.BCHbalance) + parseFloat(currentBidDetails.bidAmountBCH));
 
             var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
             updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
             //updatedFreezedBTCbalanceBidder =  parseFloat(updatedFreezedBTCbalanceBidder);
-            var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBidder.PYYbalance);
-            updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(currentBidDetails.bidAmountPYY);
+            var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.BCHbalance);
+            updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(currentBidDetails.bidAmountBCH);
 
             //Deduct Transation Fee Bidder
-            console.log("Before deduct TX Fees12312 of PYY Update user " + updatedPYYbalanceBidder);
-            //var txFeesBidderPYY = (parseFloat(currentBidDetails.bidAmountPYY) * parseFloat(txFeePYYWithdrawSuccess));
-            // var txFeesBidderPYY = new BigNumber(currentBidDetails.bidAmountPYY);
+            console.log("Before deduct TX Fees12312 of BCH Update user " + updatedBCHbalanceBidder);
+            //var txFeesBidderBCH = (parseFloat(currentBidDetails.bidAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+            // var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
             //
-            // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess)
-            // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-            // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-            // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+            // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess)
+            // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+            // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+            // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
             var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var  txFeesBidderPYY = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
-            console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-            updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+            var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+            updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
 
-            //updatedPYYbalanceBidder =  parseFloat(updatedPYYbalanceBidder);
+            //updatedBCHbalanceBidder =  parseFloat(updatedBCHbalanceBidder);
 
-            console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+            console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
             console.log("Before Update :: asdf111 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
             console.log("Before Update :: asdf111 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-            console.log("Before Update :: asdf111 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-            console.log("Before Update :: asdf111 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Before Update :: asdf111 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+            console.log("Before Update :: asdf111 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("Before Update :: asdf111 totoalAskRemainingBTC " + totoalAskRemainingBTC);
             try {
               var userUpdateBidder = await User.update({
-                id: currentBidDetails.bidownerPYY
+                id: currentBidDetails.bidownerBCH
               }, {
                 FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
-                PYYbalance: updatedPYYbalanceBidder
+                BCHbalance: updatedBCHbalanceBidder
               });
             } catch (e) {
               return res.json({
@@ -243,13 +247,13 @@ module.exports = {
             var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(totoalAskRemainingBTC);
-            //var updatedFreezedPYYbalanceAsker = parseFloat(totoalAskRemainingPYY);
-            //var updatedFreezedPYYbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(userAskAmountPYY)) + parseFloat(totoalAskRemainingPYY));
-            var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-            updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(userAskAmountPYY);
-            updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.plus(totoalAskRemainingPYY);
+            //var updatedFreezedBCHbalanceAsker = parseFloat(totoalAskRemainingBCH);
+            //var updatedFreezedBCHbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(userAskAmountBCH)) + parseFloat(totoalAskRemainingBCH));
+            var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+            updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(userAskAmountBCH);
+            updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.plus(totoalAskRemainingBCH);
 
-            //updatedFreezedPYYbalanceAsker =  parseFloat(updatedFreezedPYYbalanceAsker);
+            //updatedFreezedBCHbalanceAsker =  parseFloat(updatedFreezedBCHbalanceAsker);
             //Deduct Transation Fee Asker
             //var btcAmountSucess = (parseFloat(userAskAmountBTC) - parseFloat(totoalAskRemainingBTC));
             var btcAmountSucess = new BigNumber(userAskAmountBTC);
@@ -262,33 +266,33 @@ module.exports = {
             console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
             //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-            updatedBTCbalanceAsker =  parseFloat(updatedBTCbalanceAsker);
-            console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+            updatedBTCbalanceAsker = parseFloat(updatedBTCbalanceAsker);
+            console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
             console.log("Before Update :: asdf112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-            console.log("Before Update :: asdf112 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+            console.log("Before Update :: asdf112 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
             console.log("Before Update :: asdf112 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-            console.log("Before Update :: asdf112 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Before Update :: asdf112 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("Before Update :: asdf112 totoalAskRemainingBTC " + totoalAskRemainingBTC);
 
 
             try {
               var updatedUser = await User.update({
-                id: askDetails.askownerPYY
+                id: askDetails.askownerBCH
               }, {
                 BTCbalance: updatedBTCbalanceAsker,
-                FreezedPYYbalance: updatedFreezedPYYbalanceAsker
+                FreezedBCHbalance: updatedFreezedBCHbalanceAsker
               });
             } catch (e) {
               return res.json({
                 error: e,
-                message: 'Failed to update users BTCBalance and Freezed PYYBalance',
+                message: 'Failed to update users BTCBalance and Freezed BCHBalance',
                 statusCode: 401
               });
             }
-            console.log(currentBidDetails.id + " Updating success Of bidPYY:: ");
+            console.log(currentBidDetails.id + " Updating success Of bidBCH:: ");
             try {
-              var bidDestroy = await BidPYY.update({
+              var bidDestroy = await BidBCH.update({
                 id: currentBidDetails.id
               }, {
                 status: statusOne,
@@ -301,11 +305,11 @@ module.exports = {
                 statusCode: 200
               });
             }
-            sails.sockets.blast(constants.PYY_BID_DESTROYED, bidDestroy);
-            console.log(currentBidDetails.id + " AskPYY.destroy askDetails.id::: " + askDetails.id);
+            sails.sockets.blast(constants.BCH_BID_DESTROYED, bidDestroy);
+            console.log(currentBidDetails.id + " AskBCH.destroy askDetails.id::: " + askDetails.id);
 
             try {
-              var askDestroy = await AskPYY.update({
+              var askDestroy = await AskBCH.update({
                 id: askDetails.id
               }, {
                 status: statusOne,
@@ -314,12 +318,12 @@ module.exports = {
             } catch (e) {
               return res.json({
                 error: e,
-                message: 'Failed to update AskPYY',
+                message: 'Failed to update AskBCH',
                 statusCode: 401
               });
             }
             //emitting event of destruction of bch_ask
-            sails.sockets.blast(constants.PYY_ASK_DESTROYED, askDestroy);
+            sails.sockets.blast(constants.BCH_ASK_DESTROYED, askDestroy);
             console.log("Ask Executed successfully and Return!!!");
             return res.json({
               "message": "Ask Executed successfully",
@@ -327,53 +331,53 @@ module.exports = {
             });
           } else {
             //destroy bid
-            console.log(currentBidDetails.id + " enter into else of totoalAskRemainingPYY == 0");
-            console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerPYY " + currentBidDetails.bidownerPYY);
+            console.log(currentBidDetails.id + " enter into else of totoalAskRemainingBCH == 0");
+            console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerBCH " + currentBidDetails.bidownerBCH);
             var userAllDetailsInDBBidder = await User.findOne({
-              id: currentBidDetails.bidownerPYY
+              id: currentBidDetails.bidownerBCH
             });
             console.log(currentBidDetails.id + " Find all details of  userAllDetailsInDBBidder:: " + userAllDetailsInDBBidder.email);
             // var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
-            // var updatedPYYbalanceBidder = (parseFloat(userAllDetailsInDBBidder.PYYbalance) + parseFloat(currentBidDetails.bidAmountPYY));
+            // var updatedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.BCHbalance) + parseFloat(currentBidDetails.bidAmountBCH));
 
             var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
             updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
-            var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBidder.PYYbalance);
-            updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(currentBidDetails.bidAmountPYY);
+            var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.BCHbalance);
+            updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(currentBidDetails.bidAmountBCH);
 
             //Deduct Transation Fee Bidder
-            console.log("Before deduct TX Fees of PYY 089089Update user " + updatedPYYbalanceBidder);
-            // var txFeesBidderPYY = (parseFloat(currentBidDetails.bidAmountPYY) * parseFloat(txFeePYYWithdrawSuccess));
-            // var txFeesBidderPYY = new BigNumber(currentBidDetails.bidAmountPYY);
-            // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
-            // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-            // // updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-            // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+            console.log("Before deduct TX Fees of BCH 089089Update user " + updatedBCHbalanceBidder);
+            // var txFeesBidderBCH = (parseFloat(currentBidDetails.bidAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+            // var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
+            // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+            // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+            // // updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+            // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
             var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var  txFeesBidderPYY = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
-            console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-            updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+            var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+            updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
 
-            console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+            console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
             //updatedFreezedBTCbalanceBidder =  parseFloat(updatedFreezedBTCbalanceBidder);
             console.log(currentBidDetails.id + " updatedFreezedBTCbalanceBidder:: " + updatedFreezedBTCbalanceBidder);
-            console.log(currentBidDetails.id + " updatedPYYbalanceBidder:: " + updatedPYYbalanceBidder);
+            console.log(currentBidDetails.id + " updatedBCHbalanceBidder:: " + updatedBCHbalanceBidder);
 
 
             console.log("Before Update :: asdf113 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBBidder));
             console.log("Before Update :: asdf113 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-            console.log("Before Update :: asdf113 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-            console.log("Before Update :: asdf113 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Before Update :: asdf113 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+            console.log("Before Update :: asdf113 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("Before Update :: asdf113 totoalAskRemainingBTC " + totoalAskRemainingBTC);
             try {
               var userAllDetailsInDBBidderUpdate = await User.update({
-                id: currentBidDetails.bidownerPYY
+                id: currentBidDetails.bidownerBCH
               }, {
                 FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
-                PYYbalance: updatedPYYbalanceBidder
+                BCHbalance: updatedBCHbalanceBidder
               });
             } catch (e) {
               return res.json({
@@ -385,7 +389,7 @@ module.exports = {
             console.log(currentBidDetails.id + " userAllDetailsInDBBidderUpdate ::" + userAllDetailsInDBBidderUpdate);
 
             try {
-              var desctroyCurrentBid = await BidPYY.update({
+              var desctroyCurrentBid = await BidBCH.update({
                 id: currentBidDetails.id
               }, {
                 status: statusOne,
@@ -398,7 +402,7 @@ module.exports = {
                 statusCode: 200
               });
             }
-            sails.sockets.blast(constants.PYY_BID_DESTROYED, desctroyCurrentBid);
+            sails.sockets.blast(constants.BCH_BID_DESTROYED, desctroyCurrentBid);
             console.log(currentBidDetails.id + "Bid destroy successfully desctroyCurrentBid ::");
           }
           console.log(currentBidDetails.id + "index index == allBidsFromdb.length - 1 ");
@@ -407,7 +411,7 @@ module.exports = {
             console.log(currentBidDetails.id + " enter into i == allBidsFromdb.length - 1");
             try {
               var userAllDetailsInDBAsker = await User.findOne({
-                id: askDetails.askownerPYY
+                id: askDetails.askownerBCH
               });
             } catch (e) {
               return res.json({
@@ -416,23 +420,23 @@ module.exports = {
                 statusCode: 401
               });
             }
-            console.log(currentBidDetails.id + " enter 234 into userAskAmountBTC i == allBidsFromdb.length - 1 askDetails.askownerPYY");
+            console.log(currentBidDetails.id + " enter 234 into userAskAmountBTC i == allBidsFromdb.length - 1 askDetails.askownerBCH");
             //var updatedBTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(userAskAmountBTC)) - parseFloat(totoalAskRemainingBTC));
             var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(totoalAskRemainingBTC);
 
-            //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(totoalAskRemainingPYY));
-            //var updatedFreezedPYYbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(userAskAmountPYY)) + parseFloat(totoalAskRemainingPYY));
-            var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-            updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(userAskAmountPYY);
-            updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.plus(totoalAskRemainingPYY);
+            //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(totoalAskRemainingBCH));
+            //var updatedFreezedBCHbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(userAskAmountBCH)) + parseFloat(totoalAskRemainingBCH));
+            var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+            updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(userAskAmountBCH);
+            updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.plus(totoalAskRemainingBCH);
             //Deduct Transation Fee Asker
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            console.log("Total Ask RemainPYY totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Total Ask RemainBCH totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("userAllDetailsInDBAsker.BTCbalance :: " + userAllDetailsInDBAsker.BTCbalance);
-            console.log("Total Ask RemainPYY userAllDetailsInDBAsker.FreezedPYYbalance " + userAllDetailsInDBAsker.FreezedPYYbalance);
-            console.log("Total Ask RemainPYY updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+            console.log("Total Ask RemainBCH userAllDetailsInDBAsker.FreezedBCHbalance " + userAllDetailsInDBAsker.FreezedBCHbalance);
+            console.log("Total Ask RemainBCH updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
             //var btcAmountSucess = (parseFloat(userAskAmountBTC) - parseFloat(totoalAskRemainingBTC));
@@ -446,23 +450,23 @@ module.exports = {
             //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
             //Workding.................asdfasdf2323
-            console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+            console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
             //updatedBTCbalanceAsker =  parseFloat(updatedBTCbalanceAsker);
             console.log(currentBidDetails.id + " updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-            console.log(currentBidDetails.id + " updatedFreezedPYYbalanceAsker ::: " + updatedFreezedPYYbalanceAsker);
+            console.log(currentBidDetails.id + " updatedFreezedBCHbalanceAsker ::: " + updatedFreezedBCHbalanceAsker);
 
 
             console.log("Before Update :: asdf114 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
             console.log("Before Update :: asdf114 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-            console.log("Before Update :: asdf114 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
-            console.log("Before Update :: asdf114 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Before Update :: asdf114 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
+            console.log("Before Update :: asdf114 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("Before Update :: asdf114 totoalAskRemainingBTC " + totoalAskRemainingBTC);
             try {
               var updatedUser = await User.update({
-                id: askDetails.askownerPYY
+                id: askDetails.askownerBCH
               }, {
                 BTCbalance: updatedBTCbalanceAsker,
-                FreezedPYYbalance: updatedFreezedPYYbalanceAsker
+                FreezedBCHbalance: updatedFreezedBCHbalanceAsker
               });
             } catch (e) {
               return res.json({
@@ -472,14 +476,14 @@ module.exports = {
               });
             }
             console.log(currentBidDetails.id + " Update In last Ask askAmountBTC totoalAskRemainingBTC " + totoalAskRemainingBTC);
-            console.log(currentBidDetails.id + " Update In last Ask askAmountPYY totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log(currentBidDetails.id + " Update In last Ask askAmountBCH totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log(currentBidDetails.id + " askDetails.id ::: " + askDetails.id);
             try {
-              var updatedaskDetails = await AskPYY.update({
+              var updatedaskDetails = await AskBCH.update({
                 id: askDetails.id
               }, {
                 askAmountBTC: parseFloat(totoalAskRemainingBTC),
-                askAmountPYY: parseFloat(totoalAskRemainingPYY),
+                askAmountBCH: parseFloat(totoalAskRemainingBCH),
                 status: statusTwo,
                 statusName: statusTwoPending,
               });
@@ -490,30 +494,30 @@ module.exports = {
                 statusCode: 401
               });
             }
-            sails.sockets.blast(constants.PYY_ASK_DESTROYED, updatedaskDetails);
+            sails.sockets.blast(constants.BCH_ASK_DESTROYED, updatedaskDetails);
           }
         }
       } else {
         for (var i = 0; i < allBidsFromdb.length; i++) {
           currentBidDetails = allBidsFromdb[i];
-          console.log(currentBidDetails.id + " totoalAskRemainingPYY :: " + totoalAskRemainingPYY);
+          console.log(currentBidDetails.id + " totoalAskRemainingBCH :: " + totoalAskRemainingBCH);
           console.log(currentBidDetails.id + " totoalAskRemainingBTC :: " + totoalAskRemainingBTC);
           console.log("currentBidDetails ::: " + JSON.stringify(currentBidDetails)); //.6 <=.5
           console.log("currentBidDetails ::: " + JSON.stringify(currentBidDetails));
-          //totoalAskRemainingPYY = totoalAskRemainingPYY - allBidsFromdb[i].bidAmountPYY;
-          if (totoalAskRemainingPYY >= currentBidDetails.bidAmountPYY) {
-            //totoalAskRemainingPYY = (parseFloat(totoalAskRemainingPYY) - parseFloat(currentBidDetails.bidAmountPYY));
-            totoalAskRemainingPYY = totoalAskRemainingPYY.minus(currentBidDetails.bidAmountPYY);
+          //totoalAskRemainingBCH = totoalAskRemainingBCH - allBidsFromdb[i].bidAmountBCH;
+          if (totoalAskRemainingBCH >= currentBidDetails.bidAmountBCH) {
+            //totoalAskRemainingBCH = (parseFloat(totoalAskRemainingBCH) - parseFloat(currentBidDetails.bidAmountBCH));
+            totoalAskRemainingBCH = totoalAskRemainingBCH.minus(currentBidDetails.bidAmountBCH);
             //totoalAskRemainingBTC = (parseFloat(totoalAskRemainingBTC) - parseFloat(currentBidDetails.bidAmountBTC));
             totoalAskRemainingBTC = totoalAskRemainingBTC.minus(currentBidDetails.bidAmountBTC);
-            console.log("start from here totoalAskRemainingPYY == 0::: " + totoalAskRemainingPYY);
+            console.log("start from here totoalAskRemainingBCH == 0::: " + totoalAskRemainingBCH);
 
-            if (totoalAskRemainingPYY == 0) {
+            if (totoalAskRemainingBCH == 0) {
               //destroy bid and ask and update bidder and asker balances and break
-              console.log("Enter into totoalAskRemainingPYY == 0");
+              console.log("Enter into totoalAskRemainingBCH == 0");
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
-                  id: currentBidDetails.bidownerPYY
+                  id: currentBidDetails.bidownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -524,7 +528,7 @@ module.exports = {
               }
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: askDetails.askownerPYY
+                  id: askDetails.askownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -533,45 +537,45 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log("userAll askDetails.askownerPYY :: ");
+              console.log("userAll askDetails.askownerBCH :: ");
               console.log("Update value of Bidder and asker");
               //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
               var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
               updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
-              //var updatedPYYbalanceBidder = (parseFloat(userAllDetailsInDBBidder.PYYbalance) + parseFloat(currentBidDetails.bidAmountPYY));
-              var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBidder.PYYbalance);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(currentBidDetails.bidAmountPYY);
+              //var updatedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.BCHbalance) + parseFloat(currentBidDetails.bidAmountBCH));
+              var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.BCHbalance);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(currentBidDetails.bidAmountBCH);
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of42342312 PYY Update user " + updatedPYYbalanceBidder);
-              //var txFeesBidderPYY = (parseFloat(currentBidDetails.bidAmountPYY) * parseFloat(txFeePYYWithdrawSuccess));
+              console.log("Before deduct TX Fees of42342312 BCH Update user " + updatedBCHbalanceBidder);
+              //var txFeesBidderBCH = (parseFloat(currentBidDetails.bidAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
 
-              // var txFeesBidderPYY = new BigNumber(currentBidDetails.bidAmountPYY);
-              // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
-              // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
-              // console.log("After deduct TX Fees of PYY Update user rtert updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              // var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
+              // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
+              // console.log("After deduct TX Fees of BCH Update user rtert updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
 
               var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-              txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var  txFeesBidderPYY = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
-              console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+              console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
 
               console.log("Before Update :: asdf115 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBBidder));
               console.log("Before Update :: asdf115 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-              console.log("Before Update :: asdf115 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-              console.log("Before Update :: asdf115 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+              console.log("Before Update :: asdf115 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+              console.log("Before Update :: asdf115 totoalAskRemainingBCH " + totoalAskRemainingBCH);
               console.log("Before Update :: asdf115 totoalAskRemainingBTC " + totoalAskRemainingBTC);
 
 
               try {
                 var userUpdateBidder = await User.update({
-                  id: currentBidDetails.bidownerPYY
+                  id: currentBidDetails.bidownerBCH
                 }, {
                   FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
-                  PYYbalance: updatedPYYbalanceBidder
+                  BCHbalance: updatedBCHbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -584,18 +588,18 @@ module.exports = {
               var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(totoalAskRemainingBTC);
-              //var updatedFreezedPYYbalanceAsker = parseFloat(totoalAskRemainingPYY);
-              //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(totoalAskRemainingPYY));
-              //var updatedFreezedPYYbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(userAskAmountPYY)) + parseFloat(totoalAskRemainingPYY));
-              var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-              updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(userAskAmountPYY);
-              updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.plus(totoalAskRemainingPYY);
+              //var updatedFreezedBCHbalanceAsker = parseFloat(totoalAskRemainingBCH);
+              //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(totoalAskRemainingBCH));
+              //var updatedFreezedBCHbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(userAskAmountBCH)) + parseFloat(totoalAskRemainingBCH));
+              var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+              updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(userAskAmountBCH);
+              updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.plus(totoalAskRemainingBCH);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainPYY totoalAskRemainingPYY " + totoalAskRemainingPYY);
+              console.log("Total Ask RemainBCH totoalAskRemainingBCH " + totoalAskRemainingBCH);
               console.log("userAllDetailsInDBAsker.BTCbalance " + userAllDetailsInDBAsker.BTCbalance);
-              console.log("Total Ask RemainPYY userAllDetailsInDBAsker.FreezedPYYbalance " + userAllDetailsInDBAsker.FreezedPYYbalance);
-              console.log("Total Ask RemainPYY updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+              console.log("Total Ask RemainBCH userAllDetailsInDBAsker.FreezedBCHbalance " + userAllDetailsInDBAsker.FreezedBCHbalance);
+              console.log("Total Ask RemainBCH updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
@@ -610,26 +614,26 @@ module.exports = {
               //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
 
-              console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+              console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
               console.log(currentBidDetails.id + " asdfasdfupdatedBTCbalanceAsker updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-              console.log(currentBidDetails.id + " updatedFreezedPYYbalanceAsker ::: " + updatedFreezedPYYbalanceAsker);
+              console.log(currentBidDetails.id + " updatedFreezedBCHbalanceAsker ::: " + updatedFreezedBCHbalanceAsker);
 
 
 
               console.log("Before Update :: asdf116 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: asdf116 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+              console.log("Before Update :: asdf116 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
               console.log("Before Update :: asdf116 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              console.log("Before Update :: asdf116 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+              console.log("Before Update :: asdf116 totoalAskRemainingBCH " + totoalAskRemainingBCH);
               console.log("Before Update :: asdf116 totoalAskRemainingBTC " + totoalAskRemainingBTC);
 
 
               try {
                 var updatedUser = await User.update({
-                  id: askDetails.askownerPYY
+                  id: askDetails.askownerBCH
                 }, {
                   BTCbalance: updatedBTCbalanceAsker,
-                  FreezedPYYbalance: updatedFreezedPYYbalanceAsker
+                  FreezedBCHbalance: updatedFreezedBCHbalanceAsker
                 });
               } catch (e) {
                 return res.json({
@@ -638,12 +642,12 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentBidDetails.id + " BidPYY.destroy currentBidDetails.id::: " + currentBidDetails.id);
-              // var bidDestroy = await BidPYY.destroy({
+              console.log(currentBidDetails.id + " BidBCH.destroy currentBidDetails.id::: " + currentBidDetails.id);
+              // var bidDestroy = await BidBCH.destroy({
               //   id: currentBidDetails.id
               // });
               try {
-                var bidDestroy = await BidPYY.update({
+                var bidDestroy = await BidBCH.update({
                   id: currentBidDetails.id
                 }, {
                   status: statusOne,
@@ -656,13 +660,13 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.PYY_BID_DESTROYED, bidDestroy);
-              console.log(currentBidDetails.id + " AskPYY.destroy askDetails.id::: " + askDetails.id);
-              // var askDestroy = await AskPYY.destroy({
+              sails.sockets.blast(constants.BCH_BID_DESTROYED, bidDestroy);
+              console.log(currentBidDetails.id + " AskBCH.destroy askDetails.id::: " + askDetails.id);
+              // var askDestroy = await AskBCH.destroy({
               //   id: askDetails.id
               // });
               try {
-                var askDestroy = await AskPYY.update({
+                var askDestroy = await AskBCH.update({
                   id: askDetails.id
                 }, {
                   status: statusOne,
@@ -675,18 +679,18 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.PYY_ASK_DESTROYED, askDestroy);
+              sails.sockets.blast(constants.BCH_ASK_DESTROYED, askDestroy);
               return res.json({
                 "message": "Ask Executed successfully",
                 statusCode: 200
               });
             } else {
               //destroy bid
-              console.log(currentBidDetails.id + " enter into else of totoalAskRemainingPYY == 0");
-              console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerPYY " + currentBidDetails.bidownerPYY);
+              console.log(currentBidDetails.id + " enter into else of totoalAskRemainingBCH == 0");
+              console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerBCH " + currentBidDetails.bidownerBCH);
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
-                  id: currentBidDetails.bidownerPYY
+                  id: currentBidDetails.bidownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -700,41 +704,41 @@ module.exports = {
               var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
               updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
 
-              //var updatedPYYbalanceBidder = (parseFloat(userAllDetailsInDBBidder.PYYbalance) + parseFloat(currentBidDetails.bidAmountPYY));
-              var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBidder.PYYbalance);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(currentBidDetails.bidAmountPYY);
+              //var updatedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.BCHbalance) + parseFloat(currentBidDetails.bidAmountBCH));
+              var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.BCHbalance);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(currentBidDetails.bidAmountBCH);
               //Deduct Transation Fee Bidder
-              console.log("Before deducta7567 TX Fees of PYY Update user " + updatedPYYbalanceBidder);
-              //var txFeesBidderPYY = (parseFloat(currentBidDetails.bidAmountPYY) * parseFloat(txFeePYYWithdrawSuccess));
-              // var txFeesBidderPYY = new BigNumber(currentBidDetails.bidAmountPYY);
-              // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
-              // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
-              // console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+              console.log("Before deducta7567 TX Fees of BCH Update user " + updatedBCHbalanceBidder);
+              //var txFeesBidderBCH = (parseFloat(currentBidDetails.bidAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+              // var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
+              // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
+              // console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
               var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-              txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var  txFeesBidderPYY = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
-              console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+              console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
               console.log(currentBidDetails.id + " updatedFreezedBTCbalanceBidder:: " + updatedFreezedBTCbalanceBidder);
-              console.log(currentBidDetails.id + " updatedPYYbalanceBidder:: sadfsdf updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log(currentBidDetails.id + " updatedBCHbalanceBidder:: sadfsdf updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
 
 
               console.log("Before Update :: asdf117 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
               console.log("Before Update :: asdf117 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-              console.log("Before Update :: asdf117 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-              console.log("Before Update :: asdf117 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+              console.log("Before Update :: asdf117 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+              console.log("Before Update :: asdf117 totoalAskRemainingBCH " + totoalAskRemainingBCH);
               console.log("Before Update :: asdf117 totoalAskRemainingBTC " + totoalAskRemainingBTC);
 
               try {
                 var userAllDetailsInDBBidderUpdate = await User.update({
-                  id: currentBidDetails.bidownerPYY
+                  id: currentBidDetails.bidownerBCH
                 }, {
                   FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
-                  PYYbalance: updatedPYYbalanceBidder
+                  BCHbalance: updatedBCHbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -744,16 +748,16 @@ module.exports = {
                 })
               }
               console.log(currentBidDetails.id + " userAllDetailsInDBBidderUpdate ::" + userAllDetailsInDBBidderUpdate);
-              // var desctroyCurrentBid = await BidPYY.destroy({
+              // var desctroyCurrentBid = await BidBCH.destroy({
               //   id: currentBidDetails.id
               // });
-              var desctroyCurrentBid = await BidPYY.update({
+              var desctroyCurrentBid = await BidBCH.update({
                 id: currentBidDetails.id
               }, {
                 status: statusOne,
                 statusName: statusOneSuccessfull
               });
-              sails.sockets.blast(constants.PYY_BID_DESTROYED, desctroyCurrentBid);
+              sails.sockets.blast(constants.BCH_BID_DESTROYED, desctroyCurrentBid);
               console.log(currentBidDetails.id + "Bid destroy successfully desctroyCurrentBid ::" + JSON.stringify(desctroyCurrentBid));
             }
           } else {
@@ -764,7 +768,7 @@ module.exports = {
 
             try {
               var userAllDetailsInDBAsker = await User.findOne({
-                id: askDetails.askownerPYY
+                id: askDetails.askownerBCH
               });
             } catch (e) {
               return res.json({
@@ -777,16 +781,16 @@ module.exports = {
             //var updatedBidAmountBTC = (parseFloat(currentBidDetails.bidAmountBTC) - parseFloat(totoalAskRemainingBTC));
             var updatedBidAmountBTC = new BigNumber(currentBidDetails.bidAmountBTC);
             updatedBidAmountBTC = updatedBidAmountBTC.minus(totoalAskRemainingBTC);
-            //var updatedBidAmountPYY = (parseFloat(currentBidDetails.bidAmountPYY) - parseFloat(totoalAskRemainingPYY));
-            var updatedBidAmountPYY = new BigNumber(currentBidDetails.bidAmountPYY);
-            updatedBidAmountPYY = updatedBidAmountPYY.minus(totoalAskRemainingPYY);
+            //var updatedBidAmountBCH = (parseFloat(currentBidDetails.bidAmountBCH) - parseFloat(totoalAskRemainingBCH));
+            var updatedBidAmountBCH = new BigNumber(currentBidDetails.bidAmountBCH);
+            updatedBidAmountBCH = updatedBidAmountBCH.minus(totoalAskRemainingBCH);
 
             try {
-              var updatedaskDetails = await BidPYY.update({
+              var updatedaskDetails = await BidBCH.update({
                 id: currentBidDetails.id
               }, {
                 bidAmountBTC: updatedBidAmountBTC,
-                bidAmountPYY: updatedBidAmountPYY,
+                bidAmountBCH: updatedBidAmountBCH,
                 status: statusTwo,
                 statusName: statusTwoPending,
               });
@@ -798,11 +802,11 @@ module.exports = {
               });
             }
             //Update socket.io
-            sails.sockets.blast(constants.PYY_BID_DESTROYED, bidDestroy);
+            sails.sockets.blast(constants.BCH_BID_DESTROYED, bidDestroy);
             //Update Bidder===========================================
             try {
               var userAllDetailsInDBBiddder = await User.findOne({
-                id: currentBidDetails.bidownerPYY
+                id: currentBidDetails.bidownerBCH
               });
             } catch (e) {
               return res.json({
@@ -816,51 +820,51 @@ module.exports = {
             updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(totoalAskRemainingBTC);
 
 
-            //var updatedPYYbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.PYYbalance) + parseFloat(totoalAskRemainingPYY));
+            //var updatedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.BCHbalance) + parseFloat(totoalAskRemainingBCH));
 
-            var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBiddder.PYYbalance);
-            updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(totoalAskRemainingPYY);
+            var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBiddder.BCHbalance);
+            updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(totoalAskRemainingBCH);
 
             //Deduct Transation Fee Bidder
-            console.log("Before deduct8768678 TX Fees of PYY Update user " + updatedPYYbalanceBidder);
-            //var bchAmountSucess = parseFloat(totoalAskRemainingPYY);
-            //var bchAmountSucess = new BigNumber(totoalAskRemainingPYY);
-            //var txFeesBidderPYY = (parseFloat(bchAmountSucess) * parseFloat(txFeePYYWithdrawSuccess));
-            //var txFeesBidderPYY = (parseFloat(totoalAskRemainingPYY) * parseFloat(txFeePYYWithdrawSuccess));
+            console.log("Before deduct8768678 TX Fees of BCH Update user " + updatedBCHbalanceBidder);
+            //var bchAmountSucess = parseFloat(totoalAskRemainingBCH);
+            //var bchAmountSucess = new BigNumber(totoalAskRemainingBCH);
+            //var txFeesBidderBCH = (parseFloat(bchAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+            //var txFeesBidderBCH = (parseFloat(totoalAskRemainingBCH) * parseFloat(txFeeBCHWithdrawSuccess));
 
 
 
-            // var txFeesBidderPYY = new BigNumber(totoalAskRemainingPYY);
-            // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
+            // var txFeesBidderBCH = new BigNumber(totoalAskRemainingBCH);
+            // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
             //
-            // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-            // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+            // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+            // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
             //Need to change here ...111...............askDetails
             var txFeesBidderBTC = new BigNumber(totoalAskRemainingBTC);
-            txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var txFeesBidderPYY = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
-            updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+            var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
-            console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-            console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+            console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+            console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
             console.log(currentBidDetails.id + " updatedFreezedBTCbalanceBidder:: " + updatedFreezedBTCbalanceBidder);
-            console.log(currentBidDetails.id + " updatedPYYbalanceBidder:asdfasdf:updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+            console.log(currentBidDetails.id + " updatedBCHbalanceBidder:asdfasdf:updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
 
 
             console.log("Before Update :: asdf118 userAllDetailsInDBBiddder " + JSON.stringify(userAllDetailsInDBBiddder));
             console.log("Before Update :: asdf118 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-            console.log("Before Update :: asdf118 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-            console.log("Before Update :: asdf118 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Before Update :: asdf118 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+            console.log("Before Update :: asdf118 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("Before Update :: asdf118 totoalAskRemainingBTC " + totoalAskRemainingBTC);
 
             try {
               var userAllDetailsInDBBidderUpdate = await User.update({
-                id: currentBidDetails.bidownerPYY
+                id: currentBidDetails.bidownerBCH
               }, {
                 FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
-                PYYbalance: updatedPYYbalanceBidder
+                BCHbalance: updatedBCHbalanceBidder
               });
             } catch (e) {
               return res.json({
@@ -871,14 +875,14 @@ module.exports = {
             }
             //Update asker ===========================================
 
-            console.log(currentBidDetails.id + " enter into asdf userAskAmountBTC i == allBidsFromdb.length - 1 askDetails.askownerPYY");
+            console.log(currentBidDetails.id + " enter into asdf userAskAmountBTC i == allBidsFromdb.length - 1 askDetails.askownerBCH");
             //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(userAskAmountBTC));
             var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
 
-            //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(userAskAmountPYY));
-            var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-            updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(userAskAmountPYY);
+            //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(userAskAmountBCH));
+            var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+            updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(userAskAmountBCH);
 
             //Deduct Transation Fee Asker
             console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
@@ -891,24 +895,24 @@ module.exports = {
             //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
 
-            console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+            console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
             console.log(currentBidDetails.id + " updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-            console.log(currentBidDetails.id + " updatedFreezedPYYbalanceAsker safsdfsdfupdatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
+            console.log(currentBidDetails.id + " updatedFreezedBCHbalanceAsker safsdfsdfupdatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
 
 
             console.log("Before Update :: asdf119 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-            console.log("Before Update :: asdf119 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+            console.log("Before Update :: asdf119 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
             console.log("Before Update :: asdf119 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-            console.log("Before Update :: asdf119 totoalAskRemainingPYY " + totoalAskRemainingPYY);
+            console.log("Before Update :: asdf119 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             console.log("Before Update :: asdf119 totoalAskRemainingBTC " + totoalAskRemainingBTC);
 
             try {
               var updatedUser = await User.update({
-                id: askDetails.askownerPYY
+                id: askDetails.askownerBCH
               }, {
                 BTCbalance: updatedBTCbalanceAsker,
-                FreezedPYYbalance: updatedFreezedPYYbalanceAsker
+                FreezedBCHbalance: updatedFreezedBCHbalanceAsker
               });
             } catch (e) {
               return res.json({
@@ -918,12 +922,12 @@ module.exports = {
               });
             }
             //Destroy Ask===========================================
-            console.log(currentBidDetails.id + " AskPYY.destroy askDetails.id::: " + askDetails.id);
-            // var askDestroy = await AskPYY.destroy({
+            console.log(currentBidDetails.id + " AskBCH.destroy askDetails.id::: " + askDetails.id);
+            // var askDestroy = await AskBCH.destroy({
             //   id: askDetails.id
             // });
             try {
-              var askDestroy = await AskPYY.update({
+              var askDestroy = await AskBCH.update({
                 id: askDetails.id
               }, {
                 status: statusOne,
@@ -937,7 +941,7 @@ module.exports = {
               });
             }
             //emitting event for bch_ask destruction
-            sails.sockets.blast(constants.PYY_ASK_DESTROYED, askDestroy);
+            sails.sockets.blast(constants.BCH_ASK_DESTROYED, askDestroy);
             console.log(currentBidDetails.id + "Bid destroy successfully desctroyCurrentBid ::");
             return res.json({
               "message": "Ask Executed successfully",
@@ -953,19 +957,19 @@ module.exports = {
       statusCode: 200
     });
   },
-  addBidPYYMarket: async function(req, res) {
-    console.log("Enter into ask api addBidPYYMarket :: " + JSON.stringify(req.body));
+  addBidBCHMarket: async function(req, res) {
+    console.log("Enter into ask api addBidBCHMarket :: " + JSON.stringify(req.body));
     var userBidAmountBTC = new BigNumber(req.body.bidAmountBTC);
-    var userBidAmountPYY = new BigNumber(req.body.bidAmountPYY);
+    var userBidAmountBCH = new BigNumber(req.body.bidAmountBCH);
     var userBidRate = new BigNumber(req.body.bidRate);
     var userBid1ownerId = req.body.bidownerId;
 
-    userBidAmountBTC =  parseFloat(userBidAmountBTC);
-    userBidAmountPYY =  parseFloat(userBidAmountPYY);
-    userBidRate =  parseFloat(userBidRate);
+    userBidAmountBTC = parseFloat(userBidAmountBTC);
+    userBidAmountBCH = parseFloat(userBidAmountBCH);
+    userBidRate = parseFloat(userBidRate);
 
 
-    if (!userBidAmountPYY || !userBidAmountBTC ||
+    if (!userBidAmountBCH || !userBidAmountBTC ||
       !userBidRate || !userBid1ownerId) {
       console.log("User Entered invalid parameter !!!");
       return res.json({
@@ -1002,17 +1006,17 @@ module.exports = {
         statusCode: 401
       });
     }
-    userBidAmountBTC =  parseFloat(userBidAmountBTC);
+    userBidAmountBTC = parseFloat(userBidAmountBTC);
     try {
-      var bidDetails = await BidPYY.create({
+      var bidDetails = await BidBCH.create({
         bidAmountBTC: userBidAmountBTC,
-        bidAmountPYY: userBidAmountPYY,
+        bidAmountBCH: userBidAmountBCH,
         totalbidAmountBTC: userBidAmountBTC,
-        totalbidAmountPYY: userBidAmountPYY,
+        totalbidAmountBCH: userBidAmountBCH,
         bidRate: userBidRate,
         status: statusTwo,
         statusName: statusTwoPending,
-        bidownerPYY: userIdInDb
+        bidownerBCH: userIdInDb
       });
     } catch (e) {
       return res.json({
@@ -1023,7 +1027,7 @@ module.exports = {
     }
 
     //emitting event for bid creation
-    sails.sockets.blast(constants.PYY_BID_ADDED, bidDetails);
+    sails.sockets.blast(constants.BCH_BID_ADDED, bidDetails);
 
     console.log("Bid created .........");
     //var updateUserBTCBalance = (parseFloat(userBTCBalanceInDb) - parseFloat(userBidAmountBTC));
@@ -1040,8 +1044,8 @@ module.exports = {
       var userUpdateBidDetails = await User.update({
         id: userIdInDb
       }, {
-        FreezedBTCbalance:  parseFloat(updateFreezedBTCBalance),
-        BTCbalance:  parseFloat(updateUserBTCBalance),
+        FreezedBTCbalance: parseFloat(updateFreezedBTCBalance),
+        BTCbalance: parseFloat(updateUserBTCBalance),
       });
     } catch (e) {
       return res.json({
@@ -1051,12 +1055,15 @@ module.exports = {
       });
     }
     try {
-      var allAsksFromdb = await AskPYY.find({
+      var allAsksFromdb = await AskBCH.find({
         askRate: {
           'like': parseFloat(userBidRate)
         },
         status: {
           '!': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       });
     } catch (e) {
@@ -1071,32 +1078,32 @@ module.exports = {
       if (allAsksFromdb.length >= 1) {
         //Find exact bid if available in db
         var total_ask = 0;
-        var totoalBidRemainingPYY = new BigNumber(userBidAmountPYY);
+        var totoalBidRemainingBCH = new BigNumber(userBidAmountBCH);
         var totoalBidRemainingBTC = new BigNumber(userBidAmountBTC);
-        //this loop for sum of all Bids amount of PYY
+        //this loop for sum of all Bids amount of BCH
         for (var i = 0; i < allAsksFromdb.length; i++) {
-          total_ask = total_ask + allAsksFromdb[i].askAmountPYY;
+          total_ask = total_ask + allAsksFromdb[i].askAmountBCH;
         }
-        if (total_ask <= totoalBidRemainingPYY) {
+        if (total_ask <= totoalBidRemainingBCH) {
           for (var i = 0; i < allAsksFromdb.length; i++) {
             currentAskDetails = allAsksFromdb[i];
-            console.log(currentAskDetails.id + " totoalBidRemainingPYY :: " + totoalBidRemainingPYY);
+            console.log(currentAskDetails.id + " totoalBidRemainingBCH :: " + totoalBidRemainingBCH);
             console.log(currentAskDetails.id + " totoalBidRemainingBTC :: " + totoalBidRemainingBTC);
             console.log("currentAskDetails ::: " + JSON.stringify(currentAskDetails)); //.6 <=.5
 
-            //totoalBidRemainingPYY = totoalBidRemainingPYY - allAsksFromdb[i].bidAmountPYY;
-            //totoalBidRemainingPYY = (parseFloat(totoalBidRemainingPYY) - parseFloat(currentAskDetails.askAmountPYY));
-            totoalBidRemainingPYY = totoalBidRemainingPYY.minus(currentAskDetails.askAmountPYY);
+            //totoalBidRemainingBCH = totoalBidRemainingBCH - allAsksFromdb[i].bidAmountBCH;
+            //totoalBidRemainingBCH = (parseFloat(totoalBidRemainingBCH) - parseFloat(currentAskDetails.askAmountBCH));
+            totoalBidRemainingBCH = totoalBidRemainingBCH.minus(currentAskDetails.askAmountBCH);
 
             //totoalBidRemainingBTC = (parseFloat(totoalBidRemainingBTC) - parseFloat(currentAskDetails.askAmountBTC));
             totoalBidRemainingBTC = totoalBidRemainingBTC.minus(currentAskDetails.askAmountBTC);
-            console.log("start from here totoalBidRemainingPYY == 0::: " + totoalBidRemainingPYY);
-            if (totoalBidRemainingPYY == 0) {
+            console.log("start from here totoalBidRemainingBCH == 0::: " + totoalBidRemainingBCH);
+            if (totoalBidRemainingBCH == 0) {
               //destroy bid and ask and update bidder and asker balances and break
-              console.log("Enter into totoalBidRemainingPYY == 0");
+              console.log("Enter into totoalBidRemainingBCH == 0");
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: currentAskDetails.askownerPYY
+                  id: currentAskDetails.askownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -1106,11 +1113,11 @@ module.exports = {
                 });
               }
 
-              console.log("userAll bidDetails.askownerPYY totoalBidRemainingPYY == 0:: ");
+              console.log("userAll bidDetails.askownerBCH totoalBidRemainingBCH == 0:: ");
               console.log("Update value of Bidder and asker");
-              //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(currentAskDetails.askAmountPYY));
-              var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-              updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(currentAskDetails.askAmountPYY);
+              //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(currentAskDetails.askAmountBCH));
+              var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+              updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(currentAskDetails.askAmountBCH);
               //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
               var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(currentAskDetails.askAmountBTC);
@@ -1123,21 +1130,21 @@ module.exports = {
               console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
               //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-              console.log("After deduct TX Fees of PYY Update user d gsdfgdf  " + updatedBTCbalanceAsker);
+              console.log("After deduct TX Fees of BCH Update user d gsdfgdf  " + updatedBTCbalanceAsker);
 
               //current ask details of Asker  updated
-              //Ask FreezedPYYbalance balance of asker deducted and BTC to give asker
+              //Ask FreezedBCHbalance balance of asker deducted and BTC to give asker
 
               console.log("Before Update :: qweqwer11110 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: qweqwer11110 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+              console.log("Before Update :: qweqwer11110 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
               console.log("Before Update :: qweqwer11110 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              console.log("Before Update :: qweqwer11110 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log("Before Update :: qweqwer11110 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log("Before Update :: qweqwer11110 totoalBidRemainingBTC " + totoalBidRemainingBTC);
               try {
                 var userUpdateAsker = await User.update({
-                  id: currentAskDetails.askownerPYY
+                  id: currentAskDetails.askownerBCH
                 }, {
-                  FreezedPYYbalance: updatedFreezedPYYbalanceAsker,
+                  FreezedBCHbalance: updatedFreezedBCHbalanceAsker,
                   BTCbalance: updatedBTCbalanceAsker
                 });
               } catch (e) {
@@ -1150,7 +1157,7 @@ module.exports = {
 
               try {
                 var BidderuserAllDetailsInDBBidder = await User.findOne({
-                  id: bidDetails.bidownerPYY
+                  id: bidDetails.bidownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -1160,12 +1167,12 @@ module.exports = {
                 });
               }
               //current bid details Bidder updated
-              //Bid FreezedBTCbalance of bidder deduct and PYY  give to bidder
-              //var updatedPYYbalanceBidder = (parseFloat(BidderuserAllDetailsInDBBidder.PYYbalance) + parseFloat(totoalBidRemainingPYY)) - parseFloat(totoalBidRemainingBTC);
-              //var updatedPYYbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.PYYbalance) + parseFloat(userBidAmountPYY)) - parseFloat(totoalBidRemainingPYY));
-              var updatedPYYbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.PYYbalance);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(userBidAmountPYY);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(totoalBidRemainingPYY);
+              //Bid FreezedBTCbalance of bidder deduct and BCH  give to bidder
+              //var updatedBCHbalanceBidder = (parseFloat(BidderuserAllDetailsInDBBidder.BCHbalance) + parseFloat(totoalBidRemainingBCH)) - parseFloat(totoalBidRemainingBTC);
+              //var updatedBCHbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.BCHbalance) + parseFloat(userBidAmountBCH)) - parseFloat(totoalBidRemainingBCH));
+              var updatedBCHbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.BCHbalance);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(userBidAmountBCH);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(totoalBidRemainingBCH);
               //var updatedFreezedBTCbalanceBidder = parseFloat(totoalBidRemainingBTC);
               //var updatedFreezedBTCbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(userBidAmountBTC)) + parseFloat(totoalBidRemainingBTC));
               var updatedFreezedBTCbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.FreezedBTCbalance);
@@ -1173,54 +1180,54 @@ module.exports = {
               updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.plus(totoalBidRemainingBTC);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainPYY totoalBidRemainingBTC " + totoalBidRemainingBTC);
-              console.log("Total Ask RemainPYY BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + BidderuserAllDetailsInDBBidder.FreezedBTCbalance);
-              console.log("Total Ask RemainPYY updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Total Ask RemainBCH totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Total Ask RemainBCH BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + BidderuserAllDetailsInDBBidder.FreezedBTCbalance);
+              console.log("Total Ask RemainBCH updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
-              //var bchAmountSucess = (parseFloat(userBidAmountPYY) - parseFloat(totoalBidRemainingPYY));
-              // var bchAmountSucess = new BigNumber(userBidAmountPYY);
-              // bchAmountSucess = bchAmountSucess.minus(totoalBidRemainingPYY);
+              console.log("Before deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
+              //var bchAmountSucess = (parseFloat(userBidAmountBCH) - parseFloat(totoalBidRemainingBCH));
+              // var bchAmountSucess = new BigNumber(userBidAmountBCH);
+              // bchAmountSucess = bchAmountSucess.minus(totoalBidRemainingBCH);
               //
-              // //var txFeesBidderPYY = (parseFloat(bchAmountSucess) * parseFloat(txFeePYYWithdrawSuccess));
-              // var txFeesBidderPYY = new BigNumber(bchAmountSucess);
-              // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
+              // //var txFeesBidderBCH = (parseFloat(bchAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+              // var txFeesBidderBCH = new BigNumber(bchAmountSucess);
+              // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
               //
-              // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
               var BTCAmountSucess = new BigNumber(userBidAmountBTC);
               BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderPYY=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
-              console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
-              console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+              console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
-              console.log(currentAskDetails.id + " asdftotoalBidRemainingPYY == 0updatedPYYbalanceBidder ::: " + updatedPYYbalanceBidder);
-              console.log(currentAskDetails.id + " asdftotoalBidRemainingPYY asdf== updatedFreezedBTCbalanceBidder updatedFreezedBTCbalanceBidder::: " + updatedFreezedBTCbalanceBidder);
+              console.log(currentAskDetails.id + " asdftotoalBidRemainingBCH == 0updatedBCHbalanceBidder ::: " + updatedBCHbalanceBidder);
+              console.log(currentAskDetails.id + " asdftotoalBidRemainingBCH asdf== updatedFreezedBTCbalanceBidder updatedFreezedBTCbalanceBidder::: " + updatedFreezedBTCbalanceBidder);
 
 
               console.log("Before Update :: qweqwer11111 BidderuserAllDetailsInDBBidder " + JSON.stringify(BidderuserAllDetailsInDBBidder));
               console.log("Before Update :: qweqwer11111 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-              console.log("Before Update :: qweqwer11111 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-              console.log("Before Update :: qweqwer11111 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log("Before Update :: qweqwer11111 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+              console.log("Before Update :: qweqwer11111 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log("Before Update :: qweqwer11111 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
 
               try {
                 var updatedUser = await User.update({
-                  id: bidDetails.bidownerPYY
+                  id: bidDetails.bidownerBCH
                 }, {
-                  PYYbalance: updatedPYYbalanceBidder,
+                  BCHbalance: updatedBCHbalanceBidder,
                   FreezedBTCbalance: updatedFreezedBTCbalanceBidder
                 });
               } catch (e) {
@@ -1230,12 +1237,12 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + "asdf totoalBidRemainingPYY == 0BidPYY.destroy currentAskDetails.id::: " + currentAskDetails.id);
-              // var bidDestroy = await BidPYY.destroy({
-              //   id: bidDetails.bidownerPYY
+              console.log(currentAskDetails.id + "asdf totoalBidRemainingBCH == 0BidBCH.destroy currentAskDetails.id::: " + currentAskDetails.id);
+              // var bidDestroy = await BidBCH.destroy({
+              //   id: bidDetails.bidownerBCH
               // });
               try {
-                var bidDestroy = await BidPYY.update({
+                var bidDestroy = await BidBCH.update({
                   id: bidDetails.id
                 }, {
                   status: statusOne,
@@ -1248,13 +1255,13 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.PYY_BID_DESTROYED, bidDestroy);
-              console.log(currentAskDetails.id + " totoalBidRemainingPYY == 0AskPYY.destroy bidDetails.id::: " + bidDetails.id);
-              // var askDestroy = await AskPYY.destroy({
-              //   id: currentAskDetails.askownerPYY
+              sails.sockets.blast(constants.BCH_BID_DESTROYED, bidDestroy);
+              console.log(currentAskDetails.id + " totoalBidRemainingBCH == 0AskBCH.destroy bidDetails.id::: " + bidDetails.id);
+              // var askDestroy = await AskBCH.destroy({
+              //   id: currentAskDetails.askownerBCH
               // });
               try {
-                var askDestroy = await AskPYY.update({
+                var askDestroy = await AskBCH.update({
                   id: currentAskDetails.id
                 }, {
                   status: statusOne,
@@ -1267,18 +1274,18 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              sails.sockets.blast(constants.PYY_ASK_DESTROYED, askDestroy);
+              sails.sockets.blast(constants.BCH_ASK_DESTROYED, askDestroy);
               return res.json({
                 "message": "Bid Executed successfully",
                 statusCode: 200
               });
             } else {
               //destroy bid
-              console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0  enter into else of totoalBidRemainingPYY == 0");
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingPYY == 0start User.findOne currentAskDetails.bidownerPYY ");
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0  enter into else of totoalBidRemainingBCH == 0");
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingBCH == 0start User.findOne currentAskDetails.bidownerBCH ");
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: currentAskDetails.askownerPYY
+                  id: currentAskDetails.askownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -1287,10 +1294,10 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingPYY == 0 Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
-              //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(currentAskDetails.askAmountPYY));
-              var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-              updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(currentAskDetails.askAmountPYY);
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingBCH == 0 Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
+              //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(currentAskDetails.askAmountBCH));
+              var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+              updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(currentAskDetails.askAmountBCH);
               //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
               var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(currentAskDetails.askAmountBTC);
@@ -1304,24 +1311,24 @@ module.exports = {
               //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
 
-              console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+              console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingPYY == :: ");
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingPYY == 0updaasdfsdftedBTCbalanceBidder updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingBCH == :: ");
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingBCH == 0updaasdfsdftedBTCbalanceBidder updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
 
 
               console.log("Before Update :: qweqwer11112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: qweqwer11112 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+              console.log("Before Update :: qweqwer11112 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
               console.log("Before Update :: qweqwer11112 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              console.log("Before Update :: qweqwer11112 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log("Before Update :: qweqwer11112 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log("Before Update :: qweqwer11112 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
-                  id: currentAskDetails.askownerPYY
+                  id: currentAskDetails.askownerBCH
                 }, {
-                  FreezedPYYbalance: updatedFreezedPYYbalanceAsker,
+                  FreezedBCHbalance: updatedFreezedBCHbalanceAsker,
                   BTCbalance: updatedBTCbalanceAsker
                 });
               } catch (e) {
@@ -1331,12 +1338,12 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingPYY == 0userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
-              // var destroyCurrentAsk = await AskPYY.destroy({
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingBCH == 0userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
+              // var destroyCurrentAsk = await AskBCH.destroy({
               //   id: currentAskDetails.id
               // });
               try {
-                var destroyCurrentAsk = await AskPYY.update({
+                var destroyCurrentAsk = await AskBCH.update({
                   id: currentAskDetails.id
                 }, {
                   status: statusOne,
@@ -1350,12 +1357,12 @@ module.exports = {
                 });
               }
 
-              sails.sockets.blast(constants.PYY_ASK_DESTROYED, destroyCurrentAsk);
+              sails.sockets.blast(constants.BCH_ASK_DESTROYED, destroyCurrentAsk);
 
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingPYY == 0Bid destroy successfully destroyCurrentAsk ::" + JSON.stringify(destroyCurrentAsk));
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingBCH == 0Bid destroy successfully destroyCurrentAsk ::" + JSON.stringify(destroyCurrentAsk));
 
             }
-            console.log(currentAskDetails.id + "   else of totoalBidRemainingPYY == 0 index index == allAsksFromdb.length - 1 ");
+            console.log(currentAskDetails.id + "   else of totoalBidRemainingBCH == 0 index index == allAsksFromdb.length - 1 ");
             if (i == allAsksFromdb.length - 1) {
 
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1userAll Details :: ");
@@ -1363,7 +1370,7 @@ module.exports = {
 
               try {
                 var userAllDetailsInDBBid = await User.findOne({
-                  id: bidDetails.bidownerPYY
+                  id: bidDetails.bidownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -1372,11 +1379,11 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1 asdf enter into userAskAmountBTC i == allBidsFromdb.length - 1 bidDetails.askownerPYY");
-              //var updatedPYYbalanceBidder = ((parseFloat(userAllDetailsInDBBid.PYYbalance) + parseFloat(userBidAmountPYY)) - parseFloat(totoalBidRemainingPYY));
-              var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBid.PYYbalance);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(userBidAmountPYY);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(totoalBidRemainingPYY);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1 asdf enter into userAskAmountBTC i == allBidsFromdb.length - 1 bidDetails.askownerBCH");
+              //var updatedBCHbalanceBidder = ((parseFloat(userAllDetailsInDBBid.BCHbalance) + parseFloat(userBidAmountBCH)) - parseFloat(totoalBidRemainingBCH));
+              var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBid.BCHbalance);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(userBidAmountBCH);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(totoalBidRemainingBCH);
 
               //var updatedFreezedBTCbalanceBidder = parseFloat(totoalBidRemainingBTC);
               //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBid.FreezedBTCbalance) - parseFloat(totoalBidRemainingBTC));
@@ -1386,25 +1393,25 @@ module.exports = {
               updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.plus(totoalBidRemainingBTC);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainPYY totoalBidRemainingBTC " + totoalBidRemainingBTC);
-              console.log("Total Ask RemainPYY BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + userAllDetailsInDBBid.FreezedBTCbalance);
-              console.log("Total Ask RemainPYY updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Total Ask RemainBCH totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Total Ask RemainBCH BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + userAllDetailsInDBBid.FreezedBTCbalance);
+              console.log("Total Ask RemainBCH updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
-              //var bchAmountSucess = (parseFloat(userBidAmountPYY) - parseFloat(totoalBidRemainingPYY));
-              // var bchAmountSucess = new BigNumber(userBidAmountPYY);
-              // bchAmountSucess = bchAmountSucess.minus(totoalBidRemainingPYY);
+              console.log("Before deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
+              //var bchAmountSucess = (parseFloat(userBidAmountBCH) - parseFloat(totoalBidRemainingBCH));
+              // var bchAmountSucess = new BigNumber(userBidAmountBCH);
+              // bchAmountSucess = bchAmountSucess.minus(totoalBidRemainingBCH);
               //
-              // //var txFeesBidderPYY = (parseFloat(bchAmountSucess) * parseFloat(txFeePYYWithdrawSuccess));
-              // var txFeesBidderPYY = new BigNumber(bchAmountSucess);
-              // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
+              // //var txFeesBidderBCH = (parseFloat(bchAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+              // var txFeesBidderBCH = new BigNumber(bchAmountSucess);
+              // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
               //
-              // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
-              // console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+              // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
+              // console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
 
 
@@ -1413,25 +1420,25 @@ module.exports = {
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderPYY=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
-              console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updateasdfdFreezedPYYbalanceAsker updatedFreezedBTCbalanceBidder::: " + updatedFreezedBTCbalanceBidder);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updateasdfdFreezedBCHbalanceAsker updatedFreezedBTCbalanceBidder::: " + updatedFreezedBTCbalanceBidder);
 
 
               console.log("Before Update :: qweqwer11113 userAllDetailsInDBBid " + JSON.stringify(userAllDetailsInDBBid));
               console.log("Before Update :: qweqwer11113 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-              console.log("Before Update :: qweqwer11113 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-              console.log("Before Update :: qweqwer11113 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log("Before Update :: qweqwer11113 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+              console.log("Before Update :: qweqwer11113 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log("Before Update :: qweqwer11113 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
               try {
                 var updatedUser = await User.update({
-                  id: bidDetails.bidownerPYY
+                  id: bidDetails.bidownerBCH
                 }, {
-                  PYYbalance: updatedPYYbalanceBidder,
+                  BCHbalance: updatedBCHbalanceBidder,
                   FreezedBTCbalance: updatedFreezedBTCbalanceBidder
                 });
               } catch (e) {
@@ -1442,14 +1449,14 @@ module.exports = {
                 });
               }
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountBTC totoalBidRemainingBTC " + totoalBidRemainingBTC);
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountPYY totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountBCH totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1bidDetails.id ::: " + bidDetails.id);
               try {
-                var updatedbidDetails = await BidPYY.update({
+                var updatedbidDetails = await BidBCH.update({
                   id: bidDetails.id
                 }, {
                   bidAmountBTC: totoalBidRemainingBTC,
-                  bidAmountPYY: totoalBidRemainingPYY,
+                  bidAmountBCH: totoalBidRemainingBCH,
                   status: statusTwo,
                   statusName: statusTwoPending
                 });
@@ -1460,7 +1467,7 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              sails.sockets.blast(constants.PYY_BID_DESTROYED, updatedbidDetails);
+              sails.sockets.blast(constants.BCH_BID_DESTROYED, updatedbidDetails);
 
             }
 
@@ -1468,21 +1475,21 @@ module.exports = {
         } else {
           for (var i = 0; i < allAsksFromdb.length; i++) {
             currentAskDetails = allAsksFromdb[i];
-            console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1totoalBidRemainingPYY :: " + totoalBidRemainingPYY);
+            console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1totoalBidRemainingBCH :: " + totoalBidRemainingBCH);
             console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1 totoalBidRemainingBTC :: " + totoalBidRemainingBTC);
             console.log(" else of i == allAsksFromdb.length - 1currentAskDetails ::: " + JSON.stringify(currentAskDetails)); //.6 <=.5
-            //totoalBidRemainingPYY = totoalBidRemainingPYY - allAsksFromdb[i].bidAmountPYY;
+            //totoalBidRemainingBCH = totoalBidRemainingBCH - allAsksFromdb[i].bidAmountBCH;
             if (totoalBidRemainingBTC >= currentAskDetails.askAmountBTC) {
-              totoalBidRemainingPYY = totoalBidRemainingPYY.minus(currentAskDetails.askAmountPYY);
+              totoalBidRemainingBCH = totoalBidRemainingBCH.minus(currentAskDetails.askAmountBCH);
               totoalBidRemainingBTC = totoalBidRemainingBTC.minus(currentAskDetails.askAmountBTC);
-              console.log(" else of i == allAsksFromdb.length - 1start from here totoalBidRemainingPYY == 0::: " + totoalBidRemainingPYY);
+              console.log(" else of i == allAsksFromdb.length - 1start from here totoalBidRemainingBCH == 0::: " + totoalBidRemainingBCH);
 
-              if (totoalBidRemainingPYY == 0) {
+              if (totoalBidRemainingBCH == 0) {
                 //destroy bid and ask and update bidder and asker balances and break
-                console.log(" totoalBidRemainingPYY == 0Enter into totoalBidRemainingPYY == 0");
+                console.log(" totoalBidRemainingBCH == 0Enter into totoalBidRemainingBCH == 0");
                 try {
                   var userAllDetailsInDBAsker = await User.findOne({
-                    id: currentAskDetails.askownerPYY
+                    id: currentAskDetails.askownerBCH
                   });
                 } catch (e) {
                   return res.json({
@@ -1493,7 +1500,7 @@ module.exports = {
                 }
                 try {
                   var userAllDetailsInDBBidder = await User.findOne({
-                    id: bidDetails.bidownerPYY
+                    id: bidDetails.bidownerBCH
                   });
                 } catch (e) {
                   return res.json({
@@ -1502,11 +1509,11 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(" totoalBidRemainingPYY == 0userAll bidDetails.askownerPYY :: ");
-                console.log(" totoalBidRemainingPYY == 0Update value of Bidder and asker");
-                //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(currentAskDetails.askAmountPYY));
-                var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-                updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(currentAskDetails.askAmountPYY);
+                console.log(" totoalBidRemainingBCH == 0userAll bidDetails.askownerBCH :: ");
+                console.log(" totoalBidRemainingBCH == 0Update value of Bidder and asker");
+                //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(currentAskDetails.askAmountBCH));
+                var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+                updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(currentAskDetails.askAmountBCH);
 
                 //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
                 var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
@@ -1522,27 +1529,27 @@ module.exports = {
                 //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
                 updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
 
-                console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+                console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
                 console.log("--------------------------------------------------------------------------------");
-                console.log(" totoalBidRemainingPYY == 0userAllDetailsInDBAsker ::: " + JSON.stringify(userAllDetailsInDBAsker));
-                console.log(" totoalBidRemainingPYY == 0updatedFreezedPYYbalanceAsker ::: " + updatedFreezedPYYbalanceAsker);
-                console.log(" totoalBidRemainingPYY == 0updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
+                console.log(" totoalBidRemainingBCH == 0userAllDetailsInDBAsker ::: " + JSON.stringify(userAllDetailsInDBAsker));
+                console.log(" totoalBidRemainingBCH == 0updatedFreezedBCHbalanceAsker ::: " + updatedFreezedBCHbalanceAsker);
+                console.log(" totoalBidRemainingBCH == 0updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
                 console.log("----------------------------------------------------------------------------------updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
 
 
 
                 console.log("Before Update :: qweqwer11114 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-                console.log("Before Update :: qweqwer11114 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+                console.log("Before Update :: qweqwer11114 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
                 console.log("Before Update :: qweqwer11114 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-                console.log("Before Update :: qweqwer11114 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+                console.log("Before Update :: qweqwer11114 totoalBidRemainingBCH " + totoalBidRemainingBCH);
                 console.log("Before Update :: qweqwer11114 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
 
                 try {
                   var userUpdateAsker = await User.update({
-                    id: currentAskDetails.askownerPYY
+                    id: currentAskDetails.askownerBCH
                   }, {
-                    FreezedPYYbalance: updatedFreezedPYYbalanceAsker,
+                    FreezedBCHbalance: updatedFreezedBCHbalanceAsker,
                     BTCbalance: updatedBTCbalanceAsker
                   });
                 } catch (e) {
@@ -1552,11 +1559,11 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                //var updatedPYYbalanceBidder = ((parseFloat(userAllDetailsInDBBidder.PYYbalance) + parseFloat(userBidAmountPYY)) - parseFloat(totoalBidRemainingPYY));
+                //var updatedBCHbalanceBidder = ((parseFloat(userAllDetailsInDBBidder.BCHbalance) + parseFloat(userBidAmountBCH)) - parseFloat(totoalBidRemainingBCH));
 
-                var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBidder.PYYbalance);
-                updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(userBidAmountPYY);
-                updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(totoalBidRemainingPYY);
+                var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.BCHbalance);
+                updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(userBidAmountBCH);
+                updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(totoalBidRemainingBCH);
 
                 //var updatedFreezedBTCbalanceBidder = parseFloat(totoalBidRemainingBTC);
                 //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(totoalBidRemainingBTC));
@@ -1566,55 +1573,55 @@ module.exports = {
                 updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.plus(totoalBidRemainingBTC);
 
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                console.log("Total Ask RemainPYY totoalAskRemainingPYY " + totoalBidRemainingBTC);
-                console.log("Total Ask RemainPYY BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + userAllDetailsInDBBidder.FreezedBTCbalance);
-                console.log("Total Ask RemainPYY updatedFreezedPYYbalanceAsker " + updatedFreezedBTCbalanceBidder);
+                console.log("Total Ask RemainBCH totoalAskRemainingBCH " + totoalBidRemainingBTC);
+                console.log("Total Ask RemainBCH BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + userAllDetailsInDBBidder.FreezedBTCbalance);
+                console.log("Total Ask RemainBCH updatedFreezedBCHbalanceAsker " + updatedFreezedBTCbalanceBidder);
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
                 //Deduct Transation Fee Bidder
-                console.log("Before deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
-                //var bchAmountSucess = (parseFloat(userBidAmountPYY) - parseFloat(totoalBidRemainingPYY));
-                // var bchAmountSucess = new BigNumber(userBidAmountPYY);
-                // bchAmountSucess = bchAmountSucess.minus(totoalBidRemainingPYY);
+                console.log("Before deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
+                //var bchAmountSucess = (parseFloat(userBidAmountBCH) - parseFloat(totoalBidRemainingBCH));
+                // var bchAmountSucess = new BigNumber(userBidAmountBCH);
+                // bchAmountSucess = bchAmountSucess.minus(totoalBidRemainingBCH);
                 //
                 //
-                // //var txFeesBidderPYY = (parseFloat(bchAmountSucess) * parseFloat(txFeePYYWithdrawSuccess));
-                // var txFeesBidderPYY = new BigNumber(bchAmountSucess);
-                // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
-                // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-                // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-                // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+                // //var txFeesBidderBCH = (parseFloat(bchAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+                // var txFeesBidderBCH = new BigNumber(bchAmountSucess);
+                // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+                // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+                // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+                // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
                 var BTCAmountSucess = new BigNumber(userBidAmountBTC);
                 BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
 
                 var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
                 txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-                var txFeesBidderPYY=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
-                console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-                //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-                updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+                var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+                console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+                //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+                updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
 
 
-                console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+                console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
-                console.log(currentAskDetails.id + " totoalBidRemainingPYY == 0 updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-                console.log(currentAskDetails.id + " totoalBidRemainingPYY == 0 updatedFreezedPYYbalaasdf updatedFreezedBTCbalanceBidder ::: " + updatedFreezedBTCbalanceBidder);
+                console.log(currentAskDetails.id + " totoalBidRemainingBCH == 0 updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
+                console.log(currentAskDetails.id + " totoalBidRemainingBCH == 0 updatedFreezedBCHbalaasdf updatedFreezedBTCbalanceBidder ::: " + updatedFreezedBTCbalanceBidder);
 
 
                 console.log("Before Update :: qweqwer11115 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
                 console.log("Before Update :: qweqwer11115 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-                console.log("Before Update :: qweqwer11115 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-                console.log("Before Update :: qweqwer11115 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+                console.log("Before Update :: qweqwer11115 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+                console.log("Before Update :: qweqwer11115 totoalBidRemainingBCH " + totoalBidRemainingBCH);
                 console.log("Before Update :: qweqwer11115 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
 
                 try {
                   var updatedUser = await User.update({
-                    id: bidDetails.bidownerPYY
+                    id: bidDetails.bidownerBCH
                   }, {
-                    PYYbalance: updatedPYYbalanceBidder,
+                    BCHbalance: updatedBCHbalanceBidder,
                     FreezedBTCbalance: updatedFreezedBTCbalanceBidder
                   });
                 } catch (e) {
@@ -1624,12 +1631,12 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(currentAskDetails.id + " totoalBidRemainingPYY == 0 BidPYY.destroy currentAskDetails.id::: " + currentAskDetails.id);
-                // var askDestroy = await AskPYY.destroy({
+                console.log(currentAskDetails.id + " totoalBidRemainingBCH == 0 BidBCH.destroy currentAskDetails.id::: " + currentAskDetails.id);
+                // var askDestroy = await AskBCH.destroy({
                 //   id: currentAskDetails.id
                 // });
                 try {
-                  var askDestroy = await AskPYY.update({
+                  var askDestroy = await AskBCH.update({
                     id: currentAskDetails.id
                   }, {
                     status: statusOne,
@@ -1642,29 +1649,29 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                sails.sockets.blast(constants.PYY_ASK_DESTROYED, askDestroy);
-                console.log(currentAskDetails.id + " totoalBidRemainingPYY == 0 AskPYY.destroy bidDetails.id::: " + bidDetails.id);
-                // var bidDestroy = await BidPYY.destroy({
+                sails.sockets.blast(constants.BCH_ASK_DESTROYED, askDestroy);
+                console.log(currentAskDetails.id + " totoalBidRemainingBCH == 0 AskBCH.destroy bidDetails.id::: " + bidDetails.id);
+                // var bidDestroy = await BidBCH.destroy({
                 //   id: bidDetails.id
                 // });
-                var bidDestroy = await BidPYY.update({
+                var bidDestroy = await BidBCH.update({
                   id: bidDetails.id
                 }, {
                   status: statusOne,
                   statusName: statusOneSuccessfull
                 });
-                sails.sockets.blast(constants.PYY_BID_DESTROYED, bidDestroy);
+                sails.sockets.blast(constants.BCH_BID_DESTROYED, bidDestroy);
                 return res.json({
                   "message": "Bid Executed successfully",
                   statusCode: 200
                 });
               } else {
                 //destroy bid
-                console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0 enter into else of totoalBidRemainingPYY == 0");
-                console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0totoalBidRemainingPYY == 0 start User.findOne currentAskDetails.bidownerPYY " + currentAskDetails.bidownerPYY);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0 enter into else of totoalBidRemainingBCH == 0");
+                console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0totoalBidRemainingBCH == 0 start User.findOne currentAskDetails.bidownerBCH " + currentAskDetails.bidownerBCH);
                 try {
                   var userAllDetailsInDBAsker = await User.findOne({
-                    id: currentAskDetails.askownerPYY
+                    id: currentAskDetails.askownerBCH
                   });
                 } catch (e) {
                   return res.json({
@@ -1673,11 +1680,11 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
-                //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(currentAskDetails.askAmountPYY));
+                console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
+                //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(currentAskDetails.askAmountBCH));
 
-                var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-                updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(currentAskDetails.askAmountPYY);
+                var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+                updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(currentAskDetails.askAmountBCH);
 
                 //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
                 var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
@@ -1692,24 +1699,24 @@ module.exports = {
                 console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
                 //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
                 updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-                console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+                console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
-                console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0 updatedFreezedPYYbalanceAsker:: " + updatedFreezedPYYbalanceAsker);
-                console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0 updatedBTCbalance asd asd updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0 updatedFreezedBCHbalanceAsker:: " + updatedFreezedBCHbalanceAsker);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0 updatedBTCbalance asd asd updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
 
 
                 console.log("Before Update :: qweqwer11116 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-                console.log("Before Update :: qweqwer11116 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+                console.log("Before Update :: qweqwer11116 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
                 console.log("Before Update :: qweqwer11116 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-                console.log("Before Update :: qweqwer11116 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+                console.log("Before Update :: qweqwer11116 totoalBidRemainingBCH " + totoalBidRemainingBCH);
                 console.log("Before Update :: qweqwer11116 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
 
                 try {
                   var userAllDetailsInDBAskerUpdate = await User.update({
-                    id: currentAskDetails.askownerPYY
+                    id: currentAskDetails.askownerBCH
                   }, {
-                    FreezedPYYbalance: updatedFreezedPYYbalanceAsker,
+                    FreezedBCHbalance: updatedFreezedBCHbalanceAsker,
                     BTCbalance: updatedBTCbalanceAsker
                   });
                 } catch (e) {
@@ -1719,12 +1726,12 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(currentAskDetails.id + " else of totoalBidRemainingPYY == 0 userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
-                // var destroyCurrentAsk = await AskPYY.destroy({
+                console.log(currentAskDetails.id + " else of totoalBidRemainingBCH == 0 userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
+                // var destroyCurrentAsk = await AskBCH.destroy({
                 //   id: currentAskDetails.id
                 // });
                 try {
-                  var destroyCurrentAsk = await AskPYY.update({
+                  var destroyCurrentAsk = await AskBCH.update({
                     id: currentAskDetails.id
                   }, {
                     status: statusOne,
@@ -1737,7 +1744,7 @@ module.exports = {
                     statusCode: 200
                   });
                 }
-                sails.sockets.blast(constants.PYY_ASK_DESTROYED, destroyCurrentAsk);
+                sails.sockets.blast(constants.BCH_ASK_DESTROYED, destroyCurrentAsk);
                 console.log(currentAskDetails.id + "Bid destroy successfully destroyCurrentAsk ::" + JSON.stringify(destroyCurrentAsk));
               }
             } else {
@@ -1746,20 +1753,20 @@ module.exports = {
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC  enter into i == allBidsFromdb.length - 1");
 
               //Update Ask
-              //  var updatedAskAmountPYY = (parseFloat(currentAskDetails.askAmountPYY) - parseFloat(totoalBidRemainingPYY));
+              //  var updatedAskAmountBCH = (parseFloat(currentAskDetails.askAmountBCH) - parseFloat(totoalBidRemainingBCH));
 
-              var updatedAskAmountPYY = new BigNumber(currentAskDetails.askAmountPYY);
-              updatedAskAmountPYY = updatedAskAmountPYY.minus(totoalBidRemainingPYY);
+              var updatedAskAmountBCH = new BigNumber(currentAskDetails.askAmountBCH);
+              updatedAskAmountBCH = updatedAskAmountBCH.minus(totoalBidRemainingBCH);
 
               //var updatedAskAmountBTC = (parseFloat(currentAskDetails.askAmountBTC) - parseFloat(totoalBidRemainingBTC));
               var updatedAskAmountBTC = new BigNumber(currentAskDetails.askAmountBTC);
               updatedAskAmountBTC = updatedAskAmountBTC.minus(totoalBidRemainingBTC);
               try {
-                var updatedaskDetails = await AskPYY.update({
+                var updatedaskDetails = await AskBCH.update({
                   id: currentAskDetails.id
                 }, {
                   askAmountBTC: updatedAskAmountBTC,
-                  askAmountPYY: updatedAskAmountPYY,
+                  askAmountBCH: updatedAskAmountBCH,
                   status: statusTwo,
                   statusName: statusTwoPending,
                 });
@@ -1770,11 +1777,11 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              sails.sockets.blast(constants.PYY_ASK_DESTROYED, updatedaskDetails);
+              sails.sockets.blast(constants.BCH_ASK_DESTROYED, updatedaskDetails);
               //Update Asker===========================================11
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: currentAskDetails.askownerPYY
+                  id: currentAskDetails.askownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -1784,18 +1791,18 @@ module.exports = {
                 });
               }
 
-              //var updatedFreezedPYYbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedPYYbalance) - parseFloat(totoalBidRemainingPYY));
-              var updatedFreezedPYYbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedPYYbalance);
-              updatedFreezedPYYbalanceAsker = updatedFreezedPYYbalanceAsker.minus(totoalBidRemainingPYY);
+              //var updatedFreezedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedBCHbalance) - parseFloat(totoalBidRemainingBCH));
+              var updatedFreezedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedBCHbalance);
+              updatedFreezedBCHbalanceAsker = updatedFreezedBCHbalanceAsker.minus(totoalBidRemainingBCH);
 
               //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(totoalBidRemainingBTC));
               var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(totoalBidRemainingBTC);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainPYY totoalBidRemainingBTC " + totoalBidRemainingBTC);
-              console.log("Total Ask RemainPYY userAllDetailsInDBAsker.FreezedPYYbalance " + userAllDetailsInDBAsker.FreezedPYYbalance);
-              console.log("Total Ask RemainPYY updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+              console.log("Total Ask RemainBCH totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Total Ask RemainBCH userAllDetailsInDBAsker.FreezedBCHbalance " + userAllDetailsInDBAsker.FreezedBCHbalance);
+              console.log("Total Ask RemainBCH updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
               //Deduct Transation Fee Asker
@@ -1807,25 +1814,25 @@ module.exports = {
               console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
               //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
               updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-              console.log("After deduct TX Fees of PYY Update user " + updatedBTCbalanceAsker);
+              console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC updatedFreezedPYYbalanceAsker:: " + updatedFreezedPYYbalanceAsker);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC updatedFreezedBCHbalanceAsker:: " + updatedFreezedBCHbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails asdfasd .askAmountBTC updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
 
 
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: qweqwer11117 updatedFreezedPYYbalanceAsker " + updatedFreezedPYYbalanceAsker);
+              console.log("Before Update :: qweqwer11117 updatedFreezedBCHbalanceAsker " + updatedFreezedBCHbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              console.log("Before Update :: qweqwer11117 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log("Before Update :: qweqwer11117 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
 
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
-                  id: currentAskDetails.askownerPYY
+                  id: currentAskDetails.askownerBCH
                 }, {
-                  FreezedPYYbalance: updatedFreezedPYYbalanceAsker,
+                  FreezedBCHbalance: updatedFreezedBCHbalanceAsker,
                   BTCbalance: updatedBTCbalanceAsker
                 });
               } catch (e) {
@@ -1841,7 +1848,7 @@ module.exports = {
 
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
-                  id: bidDetails.bidownerPYY
+                  id: bidDetails.bidownerBCH
                 });
               } catch (e) {
                 return res.json({
@@ -1852,13 +1859,13 @@ module.exports = {
               }
 
               //Update bidder =========================================== 11
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC enter into userAskAmountBTC i == allBidsFromdb.length - 1 bidDetails.askownerPYY");
-              //var updatedPYYbalanceBidder = (parseFloat(userAllDetailsInDBBidder.PYYbalance) + parseFloat(userBidAmountPYY));
-              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userBidAmountPYY " + userBidAmountPYY);
-              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userAllDetailsInDBBidder.PYYbalance " + userAllDetailsInDBBidder.PYYbalance);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC enter into userAskAmountBTC i == allBidsFromdb.length - 1 bidDetails.askownerBCH");
+              //var updatedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.BCHbalance) + parseFloat(userBidAmountBCH));
+              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userBidAmountBCH " + userBidAmountBCH);
+              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userAllDetailsInDBBidder.BCHbalance " + userAllDetailsInDBBidder.BCHbalance);
 
-              var updatedPYYbalanceBidder = new BigNumber(userAllDetailsInDBBidder.PYYbalance);
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.plus(userBidAmountPYY);
+              var updatedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.BCHbalance);
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.plus(userBidAmountBCH);
 
 
               //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(userBidAmountBTC));
@@ -1866,14 +1873,14 @@ module.exports = {
               updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(userBidAmountBTC);
 
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
-              //var txFeesBidderPYY = (parseFloat(updatedPYYbalanceBidder) * parseFloat(txFeePYYWithdrawSuccess));
-              // var txFeesBidderPYY = new BigNumber(userBidAmountPYY);
-              // txFeesBidderPYY = txFeesBidderPYY.times(txFeePYYWithdrawSuccess);
+              console.log("Before deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
+              //var txFeesBidderBCH = (parseFloat(updatedBCHbalanceBidder) * parseFloat(txFeeBCHWithdrawSuccess));
+              // var txFeesBidderBCH = new BigNumber(userBidAmountBCH);
+              // txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
               //
-              // console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              // //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              // updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              // console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              // //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
               var BTCAmountSucess = new BigNumber(userBidAmountBTC);
               BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
@@ -1881,29 +1888,29 @@ module.exports = {
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
 
-              var txFeesBidderPYY=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
-              console.log("txFeesBidderPYY :: " + txFeesBidderPYY);
-              //updatedPYYbalanceBidder = (parseFloat(updatedPYYbalanceBidder) - parseFloat(txFeesBidderPYY));
-              updatedPYYbalanceBidder = updatedPYYbalanceBidder.minus(txFeesBidderPYY);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
+              //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
+              updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
-              console.log("After deduct TX Fees of PYY Update user " + updatedPYYbalanceBidder);
+              console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC asdf updatedPYYbalanceBidder ::: " + updatedPYYbalanceBidder);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC asdf updatedBCHbalanceBidder ::: " + updatedBCHbalanceBidder);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAsk asdfasd fDetails.askAmountBTC asdf updatedFreezedBTCbalanceBidder ::: " + updatedFreezedBTCbalanceBidder);
 
 
 
               console.log("Before Update :: qweqwer11118 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
               console.log("Before Update :: qweqwer11118 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
-              console.log("Before Update :: qweqwer11118 updatedPYYbalanceBidder " + updatedPYYbalanceBidder);
-              console.log("Before Update :: qweqwer11118 totoalBidRemainingPYY " + totoalBidRemainingPYY);
+              console.log("Before Update :: qweqwer11118 updatedBCHbalanceBidder " + updatedBCHbalanceBidder);
+              console.log("Before Update :: qweqwer11118 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               console.log("Before Update :: qweqwer11118 totoalBidRemainingBTC " + totoalBidRemainingBTC);
 
               try {
                 var updatedUser = await User.update({
-                  id: bidDetails.bidownerPYY
+                  id: bidDetails.bidownerBCH
                 }, {
-                  PYYbalance: updatedPYYbalanceBidder,
+                  BCHbalance: updatedBCHbalanceBidder,
                   FreezedBTCbalance: updatedFreezedBTCbalanceBidder
                 });
               } catch (e) {
@@ -1915,12 +1922,12 @@ module.exports = {
               }
 
               //Destroy Bid===========================================Working
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC BidPYY.destroy bidDetails.id::: " + bidDetails.id);
-              // var bidDestroy = await BidPYY.destroy({
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC BidBCH.destroy bidDetails.id::: " + bidDetails.id);
+              // var bidDestroy = await BidBCH.destroy({
               //   id: bidDetails.id
               // });
               try {
-                var bidDestroy = await BidPYY.update({
+                var bidDestroy = await BidBCH.update({
                   id: bidDetails.id
                 }, {
                   status: statusOne,
@@ -1933,7 +1940,7 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.PYY_BID_DESTROYED, bidDestroy);
+              sails.sockets.blast(constants.BCH_BID_DESTROYED, bidDestroy);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC Bid destroy successfully desctroyCurrentBid ::");
               return res.json({
                 "message": "Bid Executed successfully",
@@ -1956,9 +1963,9 @@ module.exports = {
       });
     }
   },
-  removeBidPYYMarket: function(req, res) {
+  removeBidBCHMarket: function(req, res) {
     console.log("Enter into bid api removeBid :: ");
-    var userBidId = req.body.bidIdPYY;
+    var userBidId = req.body.bidIdBCH;
     var bidownerId = req.body.bidownerId;
     if (!userBidId || !bidownerId) {
       console.log("User Entered invalid parameter !!!");
@@ -1967,11 +1974,14 @@ module.exports = {
         statusCode: 400
       });
     }
-    BidPYY.findOne({
-      bidownerPYY: bidownerId,
+    BidBCH.findOne({
+      bidownerBCH: bidownerId,
       id: userBidId,
       status: {
         '!': statusOne
+      },
+      status: {
+        '!': statusThree
       }
     }).exec(function(err, bidDetails) {
       if (err) {
@@ -2028,8 +2038,11 @@ module.exports = {
               });
             }
             console.log("Removing bid !!!");
-            BidPYY.destroy({
+            BidBCH.update({
               id: userBidId
+            }, {
+              status: statusThree,
+              statusName: statusThreeCancelled
             }).exec(function(err, bid) {
               if (err) {
                 return res.json({
@@ -2037,22 +2050,20 @@ module.exports = {
                   statusCode: 400
                 });
               }
-
-              sails.sockets.blast(constants.PYY_BID_DESTROYED, bid);
-
-
+              sails.sockets.blast(constants.BCH_BID_DESTROYED, bid);
               return res.json({
                 "message": "Bid removed successfully!!!",
                 statusCode: 200
               });
             });
+
           });
       });
     });
   },
-  removeAskPYYMarket: function(req, res) {
+  removeAskBCHMarket: function(req, res) {
     console.log("Enter into ask api removeAsk :: ");
-    var userAskId = req.body.askIdPYY;
+    var userAskId = req.body.askIdBCH;
     var askownerId = req.body.askownerId;
     if (!userAskId || !askownerId) {
       console.log("User Entered invalid parameter !!!");
@@ -2061,11 +2072,14 @@ module.exports = {
         statusCode: 400
       });
     }
-    AskPYY.findOne({
-      askownerPYY: askownerId,
+    AskBCH.findOne({
+      askownerBCH: askownerId,
       id: userAskId,
       status: {
         '!': statusOne
+      },
+      status: {
+        '!': statusThree
       }
     }).exec(function(err, askDetails) {
       if (err) {
@@ -2096,19 +2110,19 @@ module.exports = {
             statusCode: 401
           });
         }
-        var userPYYBalanceInDb = parseFloat(user.PYYbalance);
-        var askAmountOfPYYInAskTableDB = parseFloat(askDetails.askAmountPYY);
-        var userFreezedPYYbalanceInDB = parseFloat(user.FreezedPYYbalance);
-        console.log("userPYYBalanceInDb :" + userPYYBalanceInDb);
-        console.log("askAmountOfPYYInAskTableDB :" + askAmountOfPYYInAskTableDB);
-        console.log("userFreezedPYYbalanceInDB :" + userFreezedPYYbalanceInDB);
-        var updateFreezedPYYBalance = (parseFloat(userFreezedPYYbalanceInDB) - parseFloat(askAmountOfPYYInAskTableDB));
-        var updateUserPYYBalance = (parseFloat(userPYYBalanceInDb) + parseFloat(askAmountOfPYYInAskTableDB));
+        var userBCHBalanceInDb = parseFloat(user.BCHbalance);
+        var askAmountOfBCHInAskTableDB = parseFloat(askDetails.askAmountBCH);
+        var userFreezedBCHbalanceInDB = parseFloat(user.FreezedBCHbalance);
+        console.log("userBCHBalanceInDb :" + userBCHBalanceInDb);
+        console.log("askAmountOfBCHInAskTableDB :" + askAmountOfBCHInAskTableDB);
+        console.log("userFreezedBCHbalanceInDB :" + userFreezedBCHbalanceInDB);
+        var updateFreezedBCHBalance = (parseFloat(userFreezedBCHbalanceInDB) - parseFloat(askAmountOfBCHInAskTableDB));
+        var updateUserBCHBalance = (parseFloat(userBCHBalanceInDb) + parseFloat(askAmountOfBCHInAskTableDB));
         User.update({
             id: askownerId
           }, {
-            PYYbalance: parseFloat(updateUserPYYBalance),
-            FreezedPYYbalance: parseFloat(updateFreezedPYYBalance)
+            BCHbalance: parseFloat(updateUserBCHBalance),
+            FreezedBCHbalance: parseFloat(updateFreezedBCHBalance)
           })
           .exec(function(err, updatedUser) {
             if (err) {
@@ -2119,7 +2133,7 @@ module.exports = {
               });
             }
             console.log("Removing ask !!!");
-            AskPYY.destroy({
+            AskBCH.destroy({
               id: userAskId
             }).exec(function(err, ask) {
               if (err) {
@@ -2128,7 +2142,7 @@ module.exports = {
                   statusCode: 400
                 });
               }
-              sails.sockets.blast(constants.PYY_ASK_DESTROYED, ask);
+              sails.sockets.blast(constants.BCH_ASK_DESTROYED, ask);
               return res.json({
                 "message": "Ask removed successfully!!",
                 statusCode: 200
@@ -2138,9 +2152,9 @@ module.exports = {
       });
     });
   },
-  getAllBidPYY: function(req, res) {
-    console.log("Enter into ask api getAllBidPYY :: ");
-    BidPYY.find()
+  getAllBidBCH: function(req, res) {
+    console.log("Enter into ask api getAllBidBCH :: ");
+    BidBCH.find()
       .sort('bidRate DESC')
       .exec(function(err, allAskDetailsToExecute) {
         if (err) {
@@ -2157,35 +2171,41 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            BidPYY.find({
+            BidBCH.find({
                 status: {
                   '!': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
-              .sum('bidAmountPYY')
-              .exec(function(err, bidAmountPYYSum) {
+              .sum('bidAmountBCH')
+              .exec(function(err, bidAmountBCHSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of bidAmountPYYSum",
+                    "message": "Error to sum Of bidAmountBCHSum",
                     statusCode: 401
                   });
                 }
-                BidPYY.find({
+                BidBCH.find({
                     status: {
                       '!': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('bidAmountBTC')
                   .exec(function(err, bidAmountBTCSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of bidAmountPYYSum",
+                        "message": "Error to sum Of bidAmountBCHSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      bidsPYY: allAskDetailsToExecute,
-                      bidAmountPYYSum: bidAmountPYYSum[0].bidAmountPYY,
+                      bidsBCH: allAskDetailsToExecute,
+                      bidAmountBCHSum: bidAmountBCHSum[0].bidAmountBCH,
                       bidAmountBTCSum: bidAmountBTCSum[0].bidAmountBTC,
                       statusCode: 200
                     });
@@ -2200,9 +2220,9 @@ module.exports = {
         }
       });
   },
-  getAllAskPYY: function(req, res) {
-    console.log("Enter into ask api getAllAskPYY :: ");
-    AskPYY.find()
+  getAllAskBCH: function(req, res) {
+    console.log("Enter into ask api getAllAskBCH :: ");
+    AskBCH.find()
       .sort('askRate ASC')
       .exec(function(err, allAskDetailsToExecute) {
         if (err) {
@@ -2219,35 +2239,41 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            AskPYY.find({
+            AskBCH.find({
                 status: {
                   '!': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
-              .sum('askAmountPYY')
-              .exec(function(err, askAmountPYYSum) {
+              .sum('askAmountBCH')
+              .exec(function(err, askAmountBCHSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of askAmountPYYSum",
+                    "message": "Error to sum Of askAmountBCHSum",
                     statusCode: 401
                   });
                 }
-                AskPYY.find({
+                AskBCH.find({
                     status: {
                       '!': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('askAmountBTC')
                   .exec(function(err, askAmountBTCSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of askAmountPYYSum",
+                        "message": "Error to sum Of askAmountBCHSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      asksPYY: allAskDetailsToExecute,
-                      askAmountPYYSum: askAmountPYYSum[0].askAmountPYY,
+                      asksBCH: allAskDetailsToExecute,
+                      askAmountBCHSum: askAmountBCHSum[0].askAmountBCH,
                       askAmountBTCSum: askAmountBTCSum[0].askAmountBTC,
                       statusCode: 200
                     });
@@ -2255,18 +2281,21 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskPYY Found!!",
+              "message": "No AskBCH Found!!",
               statusCode: 401
             });
           }
         }
       });
   },
-  getBidsPYYSuccess: function(req, res) {
-    console.log("Enter into ask api getBidsPYYSuccess :: ");
-    BidPYY.find({
+  getBidsBCHSuccess: function(req, res) {
+    console.log("Enter into ask api getBidsBCHSuccess :: ");
+    BidBCH.find({
         status: {
           'like': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2285,35 +2314,41 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            BidPYY.find({
+            BidBCH.find({
                 status: {
                   'like': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
-              .sum('bidAmountPYY')
-              .exec(function(err, bidAmountPYYSum) {
+              .sum('bidAmountBCH')
+              .exec(function(err, bidAmountBCHSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of bidAmountPYYSum",
+                    "message": "Error to sum Of bidAmountBCHSum",
                     statusCode: 401
                   });
                 }
-                BidPYY.find({
+                BidBCH.find({
                     status: {
                       'like': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('bidAmountBTC')
                   .exec(function(err, bidAmountBTCSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of bidAmountPYYSum",
+                        "message": "Error to sum Of bidAmountBCHSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      bidsPYY: allAskDetailsToExecute,
-                      bidAmountPYYSum: bidAmountPYYSum[0].bidAmountPYY,
+                      bidsBCH: allAskDetailsToExecute,
+                      bidAmountBCHSum: bidAmountBCHSum[0].bidAmountBCH,
                       bidAmountBTCSum: bidAmountBTCSum[0].bidAmountBTC,
                       statusCode: 200
                     });
@@ -2328,11 +2363,14 @@ module.exports = {
         }
       });
   },
-  getAsksPYYSuccess: function(req, res) {
-    console.log("Enter into ask api getAsksPYYSuccess :: ");
-    AskPYY.find({
+  getAsksBCHSuccess: function(req, res) {
+    console.log("Enter into ask api getAsksBCHSuccess :: ");
+    AskBCH.find({
         status: {
           'like': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2351,35 +2389,41 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            AskPYY.find({
+            AskBCH.find({
                 status: {
                   'like': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
-              .sum('askAmountPYY')
-              .exec(function(err, askAmountPYYSum) {
+              .sum('askAmountBCH')
+              .exec(function(err, askAmountBCHSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of askAmountPYYSum",
+                    "message": "Error to sum Of askAmountBCHSum",
                     statusCode: 401
                   });
                 }
-                AskPYY.find({
+                AskBCH.find({
                     status: {
                       'like': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('askAmountBTC')
                   .exec(function(err, askAmountBTCSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of askAmountPYYSum",
+                        "message": "Error to sum Of askAmountBCHSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      asksPYY: allAskDetailsToExecute,
-                      askAmountPYYSum: askAmountPYYSum[0].askAmountPYY,
+                      asksBCH: allAskDetailsToExecute,
+                      askAmountBCHSum: askAmountBCHSum[0].askAmountBCH,
                       askAmountBTCSum: askAmountBTCSum[0].askAmountBTC,
                       statusCode: 200
                     });
@@ -2387,7 +2431,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskPYY Found!!",
+              "message": "No AskBCH Found!!",
               statusCode: 401
             });
           }

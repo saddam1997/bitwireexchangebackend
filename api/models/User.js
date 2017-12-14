@@ -48,36 +48,19 @@ module.exports = {
     userBCHAddress: {
       type: 'string'
     },
-
-    GDSMainbalance: {
+    INRMainbalance: {
       type: 'float',
       defaultsTo: 0
     },
-    GDSbalance: {
+    INRbalance: {
       type: 'float',
       defaultsTo: 0
     },
-    FreezedGDSbalance: {
+    FreezedINRbalance: {
       type: 'float',
       defaultsTo: 0
     },
-    userGDSAddress: {
-      type: 'string'
-    },
-
-    PYYMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    PYYbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    FreezedPYYbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    userPYYAddress: {
+    userINRAddress: {
       type: 'string'
     },
 
@@ -125,24 +108,17 @@ module.exports = {
       collection: 'askBCH',
       via: 'askownerBCH'
     },
-    //GDS
-    bidsGDS: {
-      collection: 'bidGDS',
-      via: 'bidownerGDS'
+    //INR
+    bidsINR: {
+      collection: 'bidINR',
+      via: 'bidownerINR'
     },
-    asksGDS: {
-      collection: 'askGDS',
-      via: 'askownerGDS'
+    asksINR: {
+      collection: 'askINR',
+      via: 'askownerINR'
     },
-    //PYY
-    bidsPYY: {
-      collection: 'bidPYY',
-      via: 'bidownerPYY'
-    },
-    asksPYY: {
-      collection: 'askPYY',
-      via: 'askownerPYY'
-    },
+
+
     loginHistory: {
       collection: 'LoginHistory',
       via: 'loginowner'

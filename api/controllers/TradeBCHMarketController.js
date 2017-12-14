@@ -7,13 +7,15 @@
 
 var BigNumber = require('bignumber.js');
 
-var statusZero = sails.config.company.statusZero;
-var statusOne = sails.config.company.statusOne;
-var statusTwo = sails.config.company.statusTwo;
+var statusZero = sails.config.common.statusZero;
+var statusOne = sails.config.common.statusOne;
+var statusTwo = sails.config.common.statusTwo;
+var statusThree = sails.config.common.statusThree;
 
-var statusZeroCreated = sails.config.company.statusZeroCreated;
-var statusOneSuccessfull = sails.config.company.statusOneSuccessfull;
-var statusTwoPending = sails.config.company.statusTwoPending;
+var statusZeroCreated = sails.config.common.statusZeroCreated;
+var statusOneSuccessfull = sails.config.common.statusOneSuccessfull;
+var statusTwoPending = sails.config.common.statusTwoPending;
+var statusThreeCancelled = sails.config.common.statusThreeCancelled;
 var constants = require('./../../config/constants');
 
 const txFeeBCHWithdrawSuccess = sails.config.common.txFeeBCHWithdrawSuccess;
@@ -62,8 +64,8 @@ module.exports = {
     var userBCHBalanceInDb = new BigNumber(userAsker.BCHbalance);
     var userFreezedBCHBalanceInDb = new BigNumber(userAsker.FreezedBCHbalance);
 
-    userBCHBalanceInDb =  parseFloat(userBCHBalanceInDb);
-    userFreezedBCHBalanceInDb =  parseFloat(userFreezedBCHBalanceInDb);
+    userBCHBalanceInDb = parseFloat(userBCHBalanceInDb);
+    userFreezedBCHBalanceInDb = parseFloat(userFreezedBCHBalanceInDb);
 
     var userIdInDb = userAsker.id;
     if (userAskAmountBCH.greaterThanOrEqualTo(userBCHBalanceInDb)) {
@@ -83,9 +85,9 @@ module.exports = {
 
 
 
-    userAskAmountBTC =  parseFloat(userAskAmountBTC);
-    userAskAmountBCH =  parseFloat(userAskAmountBCH);
-    userAskRate =  parseFloat(userAskRate);
+    userAskAmountBTC = parseFloat(userAskAmountBTC);
+    userAskAmountBCH = parseFloat(userAskAmountBCH);
+    userAskRate = parseFloat(userAskRate);
     try {
       var askDetails = await AskBCH.create({
         askAmountBTC: userAskAmountBTC,
@@ -113,10 +115,10 @@ module.exports = {
     // x.minus(0.1)
     userBCHBalanceInDb = new BigNumber(userBCHBalanceInDb);
     var updateUserBCHBalance = userBCHBalanceInDb.minus(userAskAmountBCH);
-    updateUserBCHBalance =  parseFloat(updateUserBCHBalance);
+    updateUserBCHBalance = parseFloat(updateUserBCHBalance);
     userFreezedBCHBalanceInDb = new BigNumber(userFreezedBCHBalanceInDb);
     var updateFreezedBCHBalance = userFreezedBCHBalanceInDb.plus(userAskAmountBCH);
-    updateFreezedBCHBalance =  parseFloat(updateFreezedBCHBalance);
+    updateFreezedBCHBalance = parseFloat(updateFreezedBCHBalance);
     try {
       var userUpdateAsk = await User.update({
         id: userIdInDb
@@ -138,6 +140,9 @@ module.exports = {
         },
         status: {
           '!': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       });
     } catch (e) {
@@ -210,8 +215,8 @@ module.exports = {
             // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
             var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var  txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+            var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
             updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
@@ -263,7 +268,7 @@ module.exports = {
             console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
             //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
             updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-            updatedBTCbalanceAsker =  parseFloat(updatedBTCbalanceAsker);
+            updatedBTCbalanceAsker = parseFloat(updatedBTCbalanceAsker);
             console.log("After deduct TX Fees of BCH Update user " + updatedBTCbalanceAsker);
 
             console.log("Before Update :: asdf112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
@@ -352,8 +357,8 @@ module.exports = {
             // updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
             var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var  txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+            var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
             updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
@@ -554,8 +559,8 @@ module.exports = {
               // console.log("After deduct TX Fees of BCH Update user rtert updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
 
               var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-              txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var  txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
               updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
@@ -715,8 +720,8 @@ module.exports = {
               // console.log("After deduct TX Fees of BCH Update user " + updatedBCHbalanceBidder);
 
               var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-              txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var  txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
               updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
@@ -839,7 +844,7 @@ module.exports = {
 
             //Need to change here ...111...............askDetails
             var txFeesBidderBTC = new BigNumber(totoalAskRemainingBTC);
-            txFeesBidderBTC=txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
             var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
             updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
@@ -961,9 +966,9 @@ module.exports = {
     var userBidRate = new BigNumber(req.body.bidRate);
     var userBid1ownerId = req.body.bidownerId;
 
-    userBidAmountBTC =  parseFloat(userBidAmountBTC);
-    userBidAmountBCH =  parseFloat(userBidAmountBCH);
-    userBidRate =  parseFloat(userBidRate);
+    userBidAmountBTC = parseFloat(userBidAmountBTC);
+    userBidAmountBCH = parseFloat(userBidAmountBCH);
+    userBidRate = parseFloat(userBidRate);
 
 
     if (!userBidAmountBCH || !userBidAmountBTC ||
@@ -1003,7 +1008,7 @@ module.exports = {
         statusCode: 401
       });
     }
-    userBidAmountBTC =  parseFloat(userBidAmountBTC);
+    userBidAmountBTC = parseFloat(userBidAmountBTC);
     try {
       var bidDetails = await BidBCH.create({
         bidAmountBTC: userBidAmountBTC,
@@ -1041,8 +1046,8 @@ module.exports = {
       var userUpdateBidDetails = await User.update({
         id: userIdInDb
       }, {
-        FreezedBTCbalance:  parseFloat(updateFreezedBTCBalance),
-        BTCbalance:  parseFloat(updateUserBTCBalance),
+        FreezedBTCbalance: parseFloat(updateFreezedBTCBalance),
+        BTCbalance: parseFloat(updateUserBTCBalance),
       });
     } catch (e) {
       return res.json({
@@ -1058,6 +1063,9 @@ module.exports = {
         },
         status: {
           '!': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       });
     } catch (e) {
@@ -1199,7 +1207,7 @@ module.exports = {
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderBCH=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
               //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
               updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
@@ -1414,7 +1422,7 @@ module.exports = {
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderBCH=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
               updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
 
@@ -1591,7 +1599,7 @@ module.exports = {
 
                 var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
                 txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-                var txFeesBidderBCH=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+                var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
                 console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
                 //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
                 updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
@@ -1882,7 +1890,7 @@ module.exports = {
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
 
-              var txFeesBidderBCH=txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              var txFeesBidderBCH = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderBCH :: " + txFeesBidderBCH);
               //updatedBCHbalanceBidder = (parseFloat(updatedBCHbalanceBidder) - parseFloat(txFeesBidderBCH));
               updatedBCHbalanceBidder = updatedBCHbalanceBidder.minus(txFeesBidderBCH);
@@ -1973,6 +1981,9 @@ module.exports = {
       id: userBidId,
       status: {
         '!': statusOne
+      },
+      status: {
+        '!': statusThree
       }
     }).exec(function(err, bidDetails) {
       if (err) {
@@ -2029,8 +2040,11 @@ module.exports = {
               });
             }
             console.log("Removing bid !!!");
-            BidBCH.destroy({
+            BidBCH.update({
               id: userBidId
+            }, {
+              status: statusThree,
+              statusName: statusThreeCancelled
             }).exec(function(err, bid) {
               if (err) {
                 return res.json({
@@ -2038,15 +2052,13 @@ module.exports = {
                   statusCode: 400
                 });
               }
-
               sails.sockets.blast(constants.BCH_BID_DESTROYED, bid);
-
-
               return res.json({
                 "message": "Bid removed successfully!!!",
                 statusCode: 200
               });
             });
+
           });
       });
     });
@@ -2067,6 +2079,9 @@ module.exports = {
       id: userAskId,
       status: {
         '!': statusOne
+      },
+      status: {
+        '!': statusThree
       }
     }).exec(function(err, askDetails) {
       if (err) {
@@ -2161,6 +2176,9 @@ module.exports = {
             BidBCH.find({
                 status: {
                   '!': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
               .sum('bidAmountBCH')
@@ -2174,6 +2192,9 @@ module.exports = {
                 BidBCH.find({
                     status: {
                       '!': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('bidAmountBTC')
@@ -2223,6 +2244,9 @@ module.exports = {
             AskBCH.find({
                 status: {
                   '!': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
               .sum('askAmountBCH')
@@ -2236,6 +2260,9 @@ module.exports = {
                 AskBCH.find({
                     status: {
                       '!': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('askAmountBTC')
@@ -2268,6 +2295,9 @@ module.exports = {
     BidBCH.find({
         status: {
           'like': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2289,6 +2319,9 @@ module.exports = {
             BidBCH.find({
                 status: {
                   'like': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
               .sum('bidAmountBCH')
@@ -2302,6 +2335,9 @@ module.exports = {
                 BidBCH.find({
                     status: {
                       'like': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('bidAmountBTC')
@@ -2334,6 +2370,9 @@ module.exports = {
     AskBCH.find({
         status: {
           'like': statusOne
+        },
+        status: {
+          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2355,6 +2394,9 @@ module.exports = {
             AskBCH.find({
                 status: {
                   'like': statusOne
+                },
+                status: {
+                  '!': statusThree
                 }
               })
               .sum('askAmountBCH')
@@ -2368,6 +2410,9 @@ module.exports = {
                 AskBCH.find({
                     status: {
                       'like': statusOne
+                    },
+                    status: {
+                      '!': statusThree
                     }
                   })
                   .sum('askAmountBTC')

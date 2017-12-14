@@ -1,13 +1,15 @@
 /**
- * BidGDS.js
+ * BidINR.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 var moment = require('moment');
+
 module.exports = {
 
   schema: true,
+
   attributes: {
     createTimeUTC: {
       type: 'string',
@@ -17,7 +19,7 @@ module.exports = {
       defaultsTo: 0.00,
       required: true
     },
-    bidAmountGDS: {
+    bidAmountINR: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
@@ -27,7 +29,7 @@ module.exports = {
       defaultsTo: 0.00,
       required: true
     },
-    totalbidAmountGDS: {
+    totalbidAmountINR: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
@@ -43,15 +45,17 @@ module.exports = {
     statusName: {
       type: 'string'
     },
-    bidownerGDS: {
+    marketId: {
+      type: 'integer'
+    },
+    bidownerINR: {
       model: 'user'
     }
-
   },
   afterCreate: function(values, next) {
     //values.createTimeUTC = moment.utc().format();
     values.createTimeUTC = Date.parse(moment.utc().format()) / 1000;
-    BidGDS.update({
+    BidINR.update({
       id: values.id
     }, values, next);
   }

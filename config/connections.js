@@ -45,7 +45,7 @@ module.exports.connections = {
     host: 'localhost',
     user: 'root', //optional
     password: 'password', //optional
-    database: 'zenithnex' //optional
+    database: 'bitwireexchange' //optional
   }
   // ,
   // memory: {

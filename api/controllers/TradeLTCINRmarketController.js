@@ -1,10 +1,9 @@
 /**
- * TradeBTCINRmarketController
+ * TradeLTCINRmarketController
  *
- * @description :: Server-side logic for managing tradebtcinrmarkets
+ * @description :: Server-side logic for managing tradeltcinrmarkets
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
 var BigNumber = require('bignumber.js');
 
 var statusZero = sails.config.common.statusZero;
@@ -19,25 +18,26 @@ var statusThreeCancelled = sails.config.common.statusThreeCancelled;
 var constants = require('./../../config/constants');
 
 const txFeeINRWithdrawSuccess = sails.config.common.txFeeINRWithdrawSuccess;
-const txFeeBTCWithdrawSuccess = sails.config.common.txFeeBTCWithdrawSuccess;
-const BTCMARKETID = sails.config.common.BTCMARKETID;
+const txFeeLTCWithdrawSuccess = sails.config.common.txFeeLTCWithdrawSuccess;
+const LTCMARKETID = sails.config.common.LTCMARKETID;
 
 module.exports = {
+
   addAskINRMarket: async function(req, res) {
     console.log("Enter into ask api addAskINRMarket : : " + JSON.stringify(req.body));
-    var userAskAmountBTC = new BigNumber(req.body.askAmountBTC);
+    var userAskAmountLTC = new BigNumber(req.body.askAmountLTC);
     var userAskAmountINR = new BigNumber(req.body.askAmountINR);
     var userAskRate = new BigNumber(req.body.askRate);
     var userAskownerId = req.body.askownerId;
 
-    if (!userAskAmountINR || !userAskAmountBTC || !userAskRate || !userAskownerId) {
+    if (!userAskAmountINR || !userAskAmountLTC || !userAskRate || !userAskownerId) {
       console.log("Can't be empty!!!!!!");
       return res.json({
         "message": "Invalid Paramter!!!!",
         statusCode: 400
       });
     }
-    if (userAskAmountINR < 0 || userAskAmountBTC < 0 || userAskRate < 0) {
+    if (userAskAmountINR < 0 || userAskAmountLTC < 0 || userAskRate < 0) {
       console.log("Negative Paramter");
       return res.json({
         "message": "Negative Paramter!!!!",
@@ -87,19 +87,19 @@ module.exports = {
 
 
 
-    userAskAmountBTC = parseFloat(userAskAmountBTC);
+    userAskAmountLTC = parseFloat(userAskAmountLTC);
     userAskAmountINR = parseFloat(userAskAmountINR);
     userAskRate = parseFloat(userAskRate);
     try {
       var askDetails = await AskINR.create({
-        askAmountBTC: userAskAmountBTC,
+        askAmountLTC: userAskAmountLTC,
         askAmountINR: userAskAmountINR,
-        totalaskAmountBTC: userAskAmountBTC,
+        totalaskAmountLTC: userAskAmountLTC,
         totalaskAmountINR: userAskAmountINR,
         askRate: userAskRate,
         status: statusTwo,
         statusName: statusTwoPending,
-        marketId: BTCMARKETID,
+        marketId: LTCMARKETID,
         askownerINR: userIdInDb
       });
     } catch (e) {
@@ -142,7 +142,7 @@ module.exports = {
           'like': parseFloat(userAskRate)
         },
         marketId: {
-          'like': BTCMARKETID
+          'like': LTCMARKETID
         },
         status: {
           '!': statusOne
@@ -163,7 +163,7 @@ module.exports = {
     if (allBidsFromdb.length >= 1) {
       //Find exact bid if available in db
       var totoalAskRemainingINR = new BigNumber(userAskAmountINR);
-      var totoalAskRemainingBTC = new BigNumber(userAskAmountBTC);
+      var totoalAskRemainingLTC = new BigNumber(userAskAmountLTC);
       //this loop for sum of all Bids amount of INR
       for (var i = 0; i < allBidsFromdb.length; i++) {
         total_bid = total_bid + allBidsFromdb[i].bidAmountINR;
@@ -174,15 +174,15 @@ module.exports = {
           console.log("Inside of For Loop total_bid <= totoalAskRemainingINR");
           currentBidDetails = allBidsFromdb[i];
           console.log(currentBidDetails.id + " Before totoalAskRemainingINR :: " + totoalAskRemainingINR);
-          console.log(currentBidDetails.id + " Before totoalAskRemainingBTC :: " + totoalAskRemainingBTC);
+          console.log(currentBidDetails.id + " Before totoalAskRemainingLTC :: " + totoalAskRemainingLTC);
           // totoalAskRemainingINR = (parseFloat(totoalAskRemainingINR) - parseFloat(currentBidDetails.bidAmountINR));
-          // totoalAskRemainingBTC = (parseFloat(totoalAskRemainingBTC) - parseFloat(currentBidDetails.bidAmountBTC));
+          // totoalAskRemainingLTC = (parseFloat(totoalAskRemainingLTC) - parseFloat(currentBidDetails.bidAmountLTC));
           totoalAskRemainingINR = totoalAskRemainingINR.minus(currentBidDetails.bidAmountINR);
-          totoalAskRemainingBTC = totoalAskRemainingBTC.minus(currentBidDetails.bidAmountBTC);
+          totoalAskRemainingLTC = totoalAskRemainingLTC.minus(currentBidDetails.bidAmountLTC);
 
 
           console.log(currentBidDetails.id + " After totoalAskRemainingINR :: " + totoalAskRemainingINR);
-          console.log(currentBidDetails.id + " After totoalAskRemainingBTC :: " + totoalAskRemainingBTC);
+          console.log(currentBidDetails.id + " After totoalAskRemainingLTC :: " + totoalAskRemainingLTC);
 
           if (totoalAskRemainingINR == 0) {
             //destroy bid and ask and update bidder and asker balances and break
@@ -201,12 +201,12 @@ module.exports = {
                 statusCode: 401
               });
             }
-            // var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
+            // var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(currentBidDetails.bidAmountLTC));
             // var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
 
-            var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
-            updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
-            //updatedFreezedBTCbalanceBidder =  parseFloat(updatedFreezedBTCbalanceBidder);
+            var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedLTCbalance);
+            updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(currentBidDetails.bidAmountLTC);
+            //updatedFreezedLTCbalanceBidder =  parseFloat(updatedFreezedLTCbalanceBidder);
             var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
             updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
 
@@ -220,9 +220,9 @@ module.exports = {
             // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-            var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
+            txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+            var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
@@ -231,15 +231,15 @@ module.exports = {
 
             console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
             console.log("Before Update :: asdf111 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
-            console.log("Before Update :: asdf111 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+            console.log("Before Update :: asdf111 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
             console.log("Before Update :: asdf111 updatedINRbalanceBidder " + updatedINRbalanceBidder);
             console.log("Before Update :: asdf111 totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("Before Update :: asdf111 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log("Before Update :: asdf111 totoalAskRemainingLTC " + totoalAskRemainingLTC);
             try {
               var userUpdateBidder = await User.update({
                 id: currentBidDetails.bidownerINR
               }, {
-                FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
+                FreezedLTCbalance: updatedFreezedLTCbalanceBidder,
                 INRbalance: updatedINRbalanceBidder
               });
             } catch (e) {
@@ -251,10 +251,10 @@ module.exports = {
             }
 
             //Workding.................asdfasdf
-            //var updatedBTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(userAskAmountBTC)) - parseFloat(totoalAskRemainingBTC));
-            var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(totoalAskRemainingBTC);
+            //var updatedLTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(userAskAmountLTC)) - parseFloat(totoalAskRemainingLTC));
+            var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(userAskAmountLTC);
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(totoalAskRemainingLTC);
             //var updatedFreezedINRbalanceAsker = parseFloat(totoalAskRemainingINR);
             //var updatedFreezedINRbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR)) + parseFloat(totoalAskRemainingINR));
             var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
@@ -263,38 +263,38 @@ module.exports = {
 
             //updatedFreezedINRbalanceAsker =  parseFloat(updatedFreezedINRbalanceAsker);
             //Deduct Transation Fee Asker
-            //var BTCAmountSucess = (parseFloat(userAskAmountBTC) - parseFloat(totoalAskRemainingBTC));
-            var BTCAmountSucess = new BigNumber(userAskAmountBTC);
-            BTCAmountSucess = BTCAmountSucess.minus(totoalAskRemainingBTC);
-            console.log("userAllDetailsInDBAsker.BTCbalance :: " + userAllDetailsInDBAsker.BTCbalance);
-            console.log("Before deduct TX Fees of Update Asker Amount BTC updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-            //var txFeesAskerBTC = (parseFloat(BTCAmountSucess) * parseFloat(txFeeBTCWithdrawSuccess));
-            var txFeesAskerBTC = new BigNumber(BTCAmountSucess);
-            txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
-            console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-            //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-            updatedBTCbalanceAsker = parseFloat(updatedBTCbalanceAsker);
-            console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+            //var LTCAmountSucess = (parseFloat(userAskAmountLTC) - parseFloat(totoalAskRemainingLTC));
+            var LTCAmountSucess = new BigNumber(userAskAmountLTC);
+            LTCAmountSucess = LTCAmountSucess.minus(totoalAskRemainingLTC);
+            console.log("userAllDetailsInDBAsker.LTCbalance :: " + userAllDetailsInDBAsker.LTCbalance);
+            console.log("Before deduct TX Fees of Update Asker Amount LTC updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+            //var txFeesAskerLTC = (parseFloat(LTCAmountSucess) * parseFloat(txFeeLTCWithdrawSuccess));
+            var txFeesAskerLTC = new BigNumber(LTCAmountSucess);
+            txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+            console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+            //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
+            updatedLTCbalanceAsker = parseFloat(updatedLTCbalanceAsker);
+            console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
 
             console.log("Before Update :: asdf112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
             console.log("Before Update :: asdf112 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-            console.log("Before Update :: asdf112 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+            console.log("Before Update :: asdf112 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
             console.log("Before Update :: asdf112 totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("Before Update :: asdf112 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log("Before Update :: asdf112 totoalAskRemainingLTC " + totoalAskRemainingLTC);
 
 
             try {
               var updatedUser = await User.update({
                 id: askDetails.askownerINR
               }, {
-                BTCbalance: updatedBTCbalanceAsker,
+                LTCbalance: updatedLTCbalanceAsker,
                 FreezedINRbalance: updatedFreezedINRbalanceAsker
               });
             } catch (e) {
               return res.json({
                 error: e,
-                message: 'Failed to update users BTCBalance and Freezed INRBalance',
+                message: 'Failed to update users LTCBalance and Freezed INRBalance',
                 statusCode: 401
               });
             }
@@ -345,11 +345,11 @@ module.exports = {
               id: currentBidDetails.bidownerINR
             });
             console.log(currentBidDetails.id + " Find all details of  userAllDetailsInDBBidder:: " + userAllDetailsInDBBidder.email);
-            // var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
+            // var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(currentBidDetails.bidAmountLTC));
             // var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
 
-            var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
-            updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
+            var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedLTCbalance);
+            updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(currentBidDetails.bidAmountLTC);
             var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
             updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
 
@@ -362,29 +362,29 @@ module.exports = {
             // // updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-            var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
+            txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+            var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
 
             console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-            //updatedFreezedBTCbalanceBidder =  parseFloat(updatedFreezedBTCbalanceBidder);
-            console.log(currentBidDetails.id + " updatedFreezedBTCbalanceBidder:: " + updatedFreezedBTCbalanceBidder);
+            //updatedFreezedLTCbalanceBidder =  parseFloat(updatedFreezedLTCbalanceBidder);
+            console.log(currentBidDetails.id + " updatedFreezedLTCbalanceBidder:: " + updatedFreezedLTCbalanceBidder);
             console.log(currentBidDetails.id + " updatedINRbalanceBidder:: " + updatedINRbalanceBidder);
 
 
             console.log("Before Update :: asdf113 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBBidder));
-            console.log("Before Update :: asdf113 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+            console.log("Before Update :: asdf113 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
             console.log("Before Update :: asdf113 updatedINRbalanceBidder " + updatedINRbalanceBidder);
             console.log("Before Update :: asdf113 totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("Before Update :: asdf113 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log("Before Update :: asdf113 totoalAskRemainingLTC " + totoalAskRemainingLTC);
             try {
               var userAllDetailsInDBBidderUpdate = await User.update({
                 id: currentBidDetails.bidownerINR
               }, {
-                FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
+                FreezedLTCbalance: updatedFreezedLTCbalanceBidder,
                 INRbalance: updatedINRbalanceBidder
               });
             } catch (e) {
@@ -428,11 +428,11 @@ module.exports = {
                 statusCode: 401
               });
             }
-            console.log(currentBidDetails.id + " enter 234 into userAskAmountBTC i == allBidsFromdb.length - 1 askDetails.askownerINR");
-            //var updatedBTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(userAskAmountBTC)) - parseFloat(totoalAskRemainingBTC));
-            var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(totoalAskRemainingBTC);
+            console.log(currentBidDetails.id + " enter 234 into userAskAmountLTC i == allBidsFromdb.length - 1 askDetails.askownerINR");
+            //var updatedLTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(userAskAmountLTC)) - parseFloat(totoalAskRemainingLTC));
+            var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(userAskAmountLTC);
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(totoalAskRemainingLTC);
 
             //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(totoalAskRemainingINR));
             //var updatedFreezedINRbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR)) + parseFloat(totoalAskRemainingINR));
@@ -442,38 +442,38 @@ module.exports = {
             //Deduct Transation Fee Asker
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("userAllDetailsInDBAsker.BTCbalance :: " + userAllDetailsInDBAsker.BTCbalance);
+            console.log("userAllDetailsInDBAsker.LTCbalance :: " + userAllDetailsInDBAsker.LTCbalance);
             console.log("Total Ask RemainINR userAllDetailsInDBAsker.FreezedINRbalance " + userAllDetailsInDBAsker.FreezedINRbalance);
             console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-            //var BTCAmountSucess = (parseFloat(userAskAmountBTC) - parseFloat(totoalAskRemainingBTC));
-            var BTCAmountSucess = new BigNumber(userAskAmountBTC);
-            BTCAmountSucess = BTCAmountSucess.minus(totoalAskRemainingBTC);
+            console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+            //var LTCAmountSucess = (parseFloat(userAskAmountLTC) - parseFloat(totoalAskRemainingLTC));
+            var LTCAmountSucess = new BigNumber(userAskAmountLTC);
+            LTCAmountSucess = LTCAmountSucess.minus(totoalAskRemainingLTC);
 
-            //var txFeesAskerBTC = (parseFloat(BTCAmountSucess) * parseFloat(txFeeBTCWithdrawSuccess));
-            var txFeesAskerBTC = new BigNumber(BTCAmountSucess);
-            txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
-            console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-            //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
+            //var txFeesAskerLTC = (parseFloat(LTCAmountSucess) * parseFloat(txFeeLTCWithdrawSuccess));
+            var txFeesAskerLTC = new BigNumber(LTCAmountSucess);
+            txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+            console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+            //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
             //Workding.................asdfasdf2323
-            console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
-            //updatedBTCbalanceAsker =  parseFloat(updatedBTCbalanceAsker);
-            console.log(currentBidDetails.id + " updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
+            console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
+            //updatedLTCbalanceAsker =  parseFloat(updatedLTCbalanceAsker);
+            console.log(currentBidDetails.id + " updatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
             console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker ::: " + updatedFreezedINRbalanceAsker);
 
 
             console.log("Before Update :: asdf114 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-            console.log("Before Update :: asdf114 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+            console.log("Before Update :: asdf114 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
             console.log("Before Update :: asdf114 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
             console.log("Before Update :: asdf114 totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("Before Update :: asdf114 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log("Before Update :: asdf114 totoalAskRemainingLTC " + totoalAskRemainingLTC);
             try {
               var updatedUser = await User.update({
                 id: askDetails.askownerINR
               }, {
-                BTCbalance: updatedBTCbalanceAsker,
+                LTCbalance: updatedLTCbalanceAsker,
                 FreezedINRbalance: updatedFreezedINRbalanceAsker
               });
             } catch (e) {
@@ -483,14 +483,14 @@ module.exports = {
                 statusCode: 401
               });
             }
-            console.log(currentBidDetails.id + " Update In last Ask askAmountBTC totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log(currentBidDetails.id + " Update In last Ask askAmountLTC totoalAskRemainingLTC " + totoalAskRemainingLTC);
             console.log(currentBidDetails.id + " Update In last Ask askAmountINR totoalAskRemainingINR " + totoalAskRemainingINR);
             console.log(currentBidDetails.id + " askDetails.id ::: " + askDetails.id);
             try {
               var updatedaskDetails = await AskINR.update({
                 id: askDetails.id
               }, {
-                askAmountBTC: parseFloat(totoalAskRemainingBTC),
+                askAmountLTC: parseFloat(totoalAskRemainingLTC),
                 askAmountINR: parseFloat(totoalAskRemainingINR),
                 status: statusTwo,
                 statusName: statusTwoPending,
@@ -509,15 +509,15 @@ module.exports = {
         for (var i = 0; i < allBidsFromdb.length; i++) {
           currentBidDetails = allBidsFromdb[i];
           console.log(currentBidDetails.id + " totoalAskRemainingINR :: " + totoalAskRemainingINR);
-          console.log(currentBidDetails.id + " totoalAskRemainingBTC :: " + totoalAskRemainingBTC);
+          console.log(currentBidDetails.id + " totoalAskRemainingLTC :: " + totoalAskRemainingLTC);
           console.log("currentBidDetails ::: " + JSON.stringify(currentBidDetails)); //.6 <=.5
           console.log("currentBidDetails ::: " + JSON.stringify(currentBidDetails));
           //totoalAskRemainingINR = totoalAskRemainingINR - allBidsFromdb[i].bidAmountINR;
           if (totoalAskRemainingINR >= currentBidDetails.bidAmountINR) {
             //totoalAskRemainingINR = (parseFloat(totoalAskRemainingINR) - parseFloat(currentBidDetails.bidAmountINR));
             totoalAskRemainingINR = totoalAskRemainingINR.minus(currentBidDetails.bidAmountINR);
-            //totoalAskRemainingBTC = (parseFloat(totoalAskRemainingBTC) - parseFloat(currentBidDetails.bidAmountBTC));
-            totoalAskRemainingBTC = totoalAskRemainingBTC.minus(currentBidDetails.bidAmountBTC);
+            //totoalAskRemainingLTC = (parseFloat(totoalAskRemainingLTC) - parseFloat(currentBidDetails.bidAmountLTC));
+            totoalAskRemainingLTC = totoalAskRemainingLTC.minus(currentBidDetails.bidAmountLTC);
             console.log("start from here totoalAskRemainingINR == 0::: " + totoalAskRemainingINR);
 
             if (totoalAskRemainingINR == 0) {
@@ -547,9 +547,9 @@ module.exports = {
               }
               console.log("userAll askDetails.askownerINR :: ");
               console.log("Update value of Bidder and asker");
-              //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
-              var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
+              //var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(currentBidDetails.bidAmountLTC));
+              var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedLTCbalance);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(currentBidDetails.bidAmountLTC);
               //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
               var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
@@ -562,27 +562,27 @@ module.exports = {
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
-              // console.log("After deduct TX Fees of INR Update user rtert updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              // console.log("After deduct TX Fees of INR Update user rtert updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
 
-              var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+              var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
 
               console.log("Before Update :: asdf115 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBBidder));
-              console.log("Before Update :: asdf115 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Before Update :: asdf115 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("Before Update :: asdf115 updatedINRbalanceBidder " + updatedINRbalanceBidder);
               console.log("Before Update :: asdf115 totoalAskRemainingINR " + totoalAskRemainingINR);
-              console.log("Before Update :: asdf115 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+              console.log("Before Update :: asdf115 totoalAskRemainingLTC " + totoalAskRemainingLTC);
 
 
               try {
                 var userUpdateBidder = await User.update({
                   id: currentBidDetails.bidownerINR
                 }, {
-                  FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
+                  FreezedLTCbalance: updatedFreezedLTCbalanceBidder,
                   INRbalance: updatedINRbalanceBidder
                 });
               } catch (e) {
@@ -592,10 +592,10 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              //var updatedBTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(userAskAmountBTC)) - parseFloat(totoalAskRemainingBTC));
-              var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(totoalAskRemainingBTC);
+              //var updatedLTCbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(userAskAmountLTC)) - parseFloat(totoalAskRemainingLTC));
+              var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(userAskAmountLTC);
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(totoalAskRemainingLTC);
               //var updatedFreezedINRbalanceAsker = parseFloat(totoalAskRemainingINR);
               //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(totoalAskRemainingINR));
               //var updatedFreezedINRbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR)) + parseFloat(totoalAskRemainingINR));
@@ -605,42 +605,42 @@ module.exports = {
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
               console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalAskRemainingINR);
-              console.log("userAllDetailsInDBAsker.BTCbalance " + userAllDetailsInDBAsker.BTCbalance);
+              console.log("userAllDetailsInDBAsker.LTCbalance " + userAllDetailsInDBAsker.LTCbalance);
               console.log("Total Ask RemainINR userAllDetailsInDBAsker.FreezedINRbalance " + userAllDetailsInDBAsker.FreezedINRbalance);
               console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
               //Deduct Transation Fee Asker
-              console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              //var BTCAmountSucess = (parseFloat(userAskAmountBTC) - parseFloat(totoalAskRemainingBTC));
-              var BTCAmountSucess = new BigNumber(userAskAmountBTC);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalAskRemainingBTC);
-              //var txFeesAskerBTC = (parseFloat(updatedBTCbalanceAsker) * parseFloat(txFeeBTCWithdrawSuccess));
-              var txFeesAskerBTC = new BigNumber(updatedBTCbalanceAsker);
-              txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
+              console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+              //var LTCAmountSucess = (parseFloat(userAskAmountLTC) - parseFloat(totoalAskRemainingLTC));
+              var LTCAmountSucess = new BigNumber(userAskAmountLTC);
+              LTCAmountSucess = LTCAmountSucess.minus(totoalAskRemainingLTC);
+              //var txFeesAskerLTC = (parseFloat(updatedLTCbalanceAsker) * parseFloat(txFeeLTCWithdrawSuccess));
+              var txFeesAskerLTC = new BigNumber(updatedLTCbalanceAsker);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
 
-              console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-              //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
+              console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+              //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
 
-              console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+              console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
 
-              console.log(currentBidDetails.id + " asdfasdfupdatedBTCbalanceAsker updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
+              console.log(currentBidDetails.id + " asdfasdfupdatedLTCbalanceAsker updatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
               console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker ::: " + updatedFreezedINRbalanceAsker);
 
 
 
               console.log("Before Update :: asdf116 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: asdf116 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-              console.log("Before Update :: asdf116 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+              console.log("Before Update :: asdf116 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: asdf116 totoalAskRemainingINR " + totoalAskRemainingINR);
-              console.log("Before Update :: asdf116 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+              console.log("Before Update :: asdf116 totoalAskRemainingLTC " + totoalAskRemainingLTC);
 
 
               try {
                 var updatedUser = await User.update({
                   id: askDetails.askownerINR
                 }, {
-                  BTCbalance: updatedBTCbalanceAsker,
+                  LTCbalance: updatedLTCbalanceAsker,
                   FreezedINRbalance: updatedFreezedINRbalanceAsker
                 });
               } catch (e) {
@@ -708,9 +708,9 @@ module.exports = {
                 });
               }
               console.log(currentBidDetails.id + " Find all details of  userAllDetailsInDBBidder:: " + JSON.stringify(userAllDetailsInDBBidder));
-              //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(currentBidDetails.bidAmountBTC));
-              var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(currentBidDetails.bidAmountBTC);
+              //var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(currentBidDetails.bidAmountLTC));
+              var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedLTCbalance);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(currentBidDetails.bidAmountLTC);
 
               //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
               var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
@@ -725,27 +725,27 @@ module.exports = {
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
               // console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
-              var txFeesBidderBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+              var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-              console.log(currentBidDetails.id + " updatedFreezedBTCbalanceBidder:: " + updatedFreezedBTCbalanceBidder);
-              console.log(currentBidDetails.id + " updatedINRbalanceBidder:: sadfsdf updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log(currentBidDetails.id + " updatedFreezedLTCbalanceBidder:: " + updatedFreezedLTCbalanceBidder);
+              console.log(currentBidDetails.id + " updatedINRbalanceBidder:: sadfsdf updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
 
 
               console.log("Before Update :: asdf117 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
-              console.log("Before Update :: asdf117 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Before Update :: asdf117 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("Before Update :: asdf117 updatedINRbalanceBidder " + updatedINRbalanceBidder);
               console.log("Before Update :: asdf117 totoalAskRemainingINR " + totoalAskRemainingINR);
-              console.log("Before Update :: asdf117 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+              console.log("Before Update :: asdf117 totoalAskRemainingLTC " + totoalAskRemainingLTC);
 
               try {
                 var userAllDetailsInDBBidderUpdate = await User.update({
                   id: currentBidDetails.bidownerINR
                 }, {
-                  FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
+                  FreezedLTCbalance: updatedFreezedLTCbalanceBidder,
                   INRbalance: updatedINRbalanceBidder
                 });
               } catch (e) {
@@ -786,9 +786,9 @@ module.exports = {
               });
             }
             //Update Bid
-            //var updatedBidAmountBTC = (parseFloat(currentBidDetails.bidAmountBTC) - parseFloat(totoalAskRemainingBTC));
-            var updatedBidAmountBTC = new BigNumber(currentBidDetails.bidAmountBTC);
-            updatedBidAmountBTC = updatedBidAmountBTC.minus(totoalAskRemainingBTC);
+            //var updatedBidAmountLTC = (parseFloat(currentBidDetails.bidAmountLTC) - parseFloat(totoalAskRemainingLTC));
+            var updatedBidAmountLTC = new BigNumber(currentBidDetails.bidAmountLTC);
+            updatedBidAmountLTC = updatedBidAmountLTC.minus(totoalAskRemainingLTC);
             //var updatedBidAmountINR = (parseFloat(currentBidDetails.bidAmountINR) - parseFloat(totoalAskRemainingINR));
             var updatedBidAmountINR = new BigNumber(currentBidDetails.bidAmountINR);
             updatedBidAmountINR = updatedBidAmountINR.minus(totoalAskRemainingINR);
@@ -797,7 +797,7 @@ module.exports = {
               var updatedaskDetails = await BidINR.update({
                 id: currentBidDetails.id
               }, {
-                bidAmountBTC: updatedBidAmountBTC,
+                bidAmountLTC: updatedBidAmountLTC,
                 bidAmountINR: updatedBidAmountINR,
                 status: statusTwo,
                 statusName: statusTwoPending,
@@ -823,9 +823,9 @@ module.exports = {
                 statusCode: 401
               });
             }
-            //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.FreezedBTCbalance) - parseFloat(totoalAskRemainingBTC));
-            var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBiddder.FreezedBTCbalance);
-            updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(totoalAskRemainingBTC);
+            //var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.FreezedLTCbalance) - parseFloat(totoalAskRemainingLTC));
+            var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBiddder.FreezedLTCbalance);
+            updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(totoalAskRemainingLTC);
 
 
             //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.INRbalance) + parseFloat(totoalAskRemainingINR));
@@ -849,29 +849,29 @@ module.exports = {
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             //Need to change here ...111...............askDetails
-            var txFeesBidderBTC = new BigNumber(totoalAskRemainingBTC);
-            txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-            var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentBidDetails.bidRate);
+            var txFeesBidderLTC = new BigNumber(totoalAskRemainingLTC);
+            txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+            var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
-            console.log(currentBidDetails.id + " updatedFreezedBTCbalanceBidder:: " + updatedFreezedBTCbalanceBidder);
-            console.log(currentBidDetails.id + " updatedINRbalanceBidder:asdfasdf:updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+            console.log(currentBidDetails.id + " updatedFreezedLTCbalanceBidder:: " + updatedFreezedLTCbalanceBidder);
+            console.log(currentBidDetails.id + " updatedINRbalanceBidder:asdfasdf:updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
 
 
             console.log("Before Update :: asdf118 userAllDetailsInDBBiddder " + JSON.stringify(userAllDetailsInDBBiddder));
-            console.log("Before Update :: asdf118 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+            console.log("Before Update :: asdf118 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
             console.log("Before Update :: asdf118 updatedINRbalanceBidder " + updatedINRbalanceBidder);
             console.log("Before Update :: asdf118 totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("Before Update :: asdf118 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log("Before Update :: asdf118 totoalAskRemainingLTC " + totoalAskRemainingLTC);
 
             try {
               var userAllDetailsInDBBidderUpdate = await User.update({
                 id: currentBidDetails.bidownerINR
               }, {
-                FreezedBTCbalance: updatedFreezedBTCbalanceBidder,
+                FreezedLTCbalance: updatedFreezedLTCbalanceBidder,
                 INRbalance: updatedINRbalanceBidder
               });
             } catch (e) {
@@ -883,43 +883,43 @@ module.exports = {
             }
             //Update asker ===========================================
 
-            console.log(currentBidDetails.id + " enter into asdf userAskAmountBTC i == allBidsFromdb.length - 1 askDetails.askownerINR");
-            //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(userAskAmountBTC));
-            var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(userAskAmountBTC);
+            console.log(currentBidDetails.id + " enter into asdf userAskAmountLTC i == allBidsFromdb.length - 1 askDetails.askownerINR");
+            //var updatedLTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(userAskAmountLTC));
+            var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(userAskAmountLTC);
 
             //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR));
             var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
             updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(userAskAmountINR);
 
             //Deduct Transation Fee Asker
-            console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-            //var txFeesAskerBTC = (parseFloat(userAskAmountBTC) * parseFloat(txFeeBTCWithdrawSuccess));
-            var txFeesAskerBTC = new BigNumber(userAskAmountBTC);
-            txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
+            console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+            //var txFeesAskerLTC = (parseFloat(userAskAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+            var txFeesAskerLTC = new BigNumber(userAskAmountLTC);
+            txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
 
-            console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-            console.log("userAllDetailsInDBAsker.BTCbalance :: " + userAllDetailsInDBAsker.BTCbalance);
-            //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-            updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
+            console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+            console.log("userAllDetailsInDBAsker.LTCbalance :: " + userAllDetailsInDBAsker.LTCbalance);
+            //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+            updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
 
-            console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+            console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
 
-            console.log(currentBidDetails.id + " updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-            console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker safsdfsdfupdatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
+            console.log(currentBidDetails.id + " updatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
+            console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker safsdfsdfupdatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
 
 
             console.log("Before Update :: asdf119 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
             console.log("Before Update :: asdf119 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-            console.log("Before Update :: asdf119 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+            console.log("Before Update :: asdf119 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
             console.log("Before Update :: asdf119 totoalAskRemainingINR " + totoalAskRemainingINR);
-            console.log("Before Update :: asdf119 totoalAskRemainingBTC " + totoalAskRemainingBTC);
+            console.log("Before Update :: asdf119 totoalAskRemainingLTC " + totoalAskRemainingLTC);
 
             try {
               var updatedUser = await User.update({
                 id: askDetails.askownerINR
               }, {
-                BTCbalance: updatedBTCbalanceAsker,
+                LTCbalance: updatedLTCbalanceAsker,
                 FreezedINRbalance: updatedFreezedINRbalanceAsker
               });
             } catch (e) {
@@ -967,17 +967,17 @@ module.exports = {
   },
   addBidINRMarket: async function(req, res) {
     console.log("Enter into ask api addBidINRMarket :: " + JSON.stringify(req.body));
-    var userBidAmountBTC = new BigNumber(req.body.bidAmountBTC);
+    var userBidAmountLTC = new BigNumber(req.body.bidAmountLTC);
     var userBidAmountINR = new BigNumber(req.body.bidAmountINR);
     var userBidRate = new BigNumber(req.body.bidRate);
     var userBid1ownerId = req.body.bidownerId;
 
-    userBidAmountBTC = parseFloat(userBidAmountBTC);
+    userBidAmountLTC = parseFloat(userBidAmountLTC);
     userBidAmountINR = parseFloat(userBidAmountINR);
     userBidRate = parseFloat(userBidRate);
 
 
-    if (!userBidAmountINR || !userBidAmountBTC ||
+    if (!userBidAmountINR || !userBidAmountLTC ||
       !userBidRate || !userBid1ownerId) {
       console.log("User Entered invalid parameter !!!");
       return res.json({
@@ -1003,28 +1003,28 @@ module.exports = {
       });
     }
     console.log("Getting user details !! !");
-    var userBTCBalanceInDb = new BigNumber(userBidder.BTCbalance);
-    var userFreezedBTCBalanceInDb = new BigNumber(userBidder.FreezedBTCbalance);
+    var userLTCBalanceInDb = new BigNumber(userBidder.LTCbalance);
+    var userFreezedLTCBalanceInDb = new BigNumber(userBidder.FreezedLTCbalance);
     var userIdInDb = userBidder.id;
     console.log("userBidder ::: " + JSON.stringify(userBidder));
-    userBidAmountBTC = new BigNumber(userBidAmountBTC);
-    if (userBidAmountBTC.greaterThanOrEqualTo(userBTCBalanceInDb)) {
+    userBidAmountLTC = new BigNumber(userBidAmountLTC);
+    if (userBidAmountLTC.greaterThanOrEqualTo(userLTCBalanceInDb)) {
       return res.json({
-        "message": "You have insufficient BTC Balance",
+        "message": "You have insufficient LTC Balance",
         statusCode: 401
       });
     }
-    userBidAmountBTC = parseFloat(userBidAmountBTC);
+    userBidAmountLTC = parseFloat(userBidAmountLTC);
     try {
       var bidDetails = await BidINR.create({
-        bidAmountBTC: userBidAmountBTC,
+        bidAmountLTC: userBidAmountLTC,
         bidAmountINR: userBidAmountINR,
-        totalbidAmountBTC: userBidAmountBTC,
+        totalbidAmountLTC: userBidAmountLTC,
         totalbidAmountINR: userBidAmountINR,
         bidRate: userBidRate,
         status: statusTwo,
         statusName: statusTwoPending,
-        marketId: BTCMARKETID,
+        marketId: LTCMARKETID,
         bidownerINR: userIdInDb
       });
     } catch (e) {
@@ -1039,22 +1039,22 @@ module.exports = {
     sails.sockets.blast(constants.INR_BID_ADDED, bidDetails);
 
     console.log("Bid created .........");
-    //var updateUserBTCBalance = (parseFloat(userBTCBalanceInDb) - parseFloat(userBidAmountBTC));
-    var updateUserBTCBalance = new BigNumber(userBTCBalanceInDb);
-    updateUserBTCBalance = updateUserBTCBalance.minus(userBidAmountBTC);
+    //var updateUserLTCBalance = (parseFloat(userLTCBalanceInDb) - parseFloat(userBidAmountLTC));
+    var updateUserLTCBalance = new BigNumber(userLTCBalanceInDb);
+    updateUserLTCBalance = updateUserLTCBalance.minus(userBidAmountLTC);
     //Workding.................asdfasdfyrtyrty
-    //var updateFreezedBTCBalance = (parseFloat(userFreezedBTCBalanceInDb) + parseFloat(userBidAmountBTC));
-    var updateFreezedBTCBalance = new BigNumber(userBidder.FreezedBTCbalance);
-    updateFreezedBTCBalance = updateFreezedBTCBalance.plus(userBidAmountBTC);
+    //var updateFreezedLTCBalance = (parseFloat(userFreezedLTCBalanceInDb) + parseFloat(userBidAmountLTC));
+    var updateFreezedLTCBalance = new BigNumber(userBidder.FreezedLTCbalance);
+    updateFreezedLTCBalance = updateFreezedLTCBalance.plus(userBidAmountLTC);
 
-    console.log("Updating user's bid details sdfyrtyupdateFreezedBTCBalance  " + updateFreezedBTCBalance);
-    console.log("Updating user's bid details asdfasdf updateUserBTCBalance  " + updateUserBTCBalance);
+    console.log("Updating user's bid details sdfyrtyupdateFreezedLTCBalance  " + updateFreezedLTCBalance);
+    console.log("Updating user's bid details asdfasdf updateUserLTCBalance  " + updateUserLTCBalance);
     try {
       var userUpdateBidDetails = await User.update({
         id: userIdInDb
       }, {
-        FreezedBTCbalance: parseFloat(updateFreezedBTCBalance),
-        BTCbalance: parseFloat(updateUserBTCBalance),
+        FreezedLTCbalance: parseFloat(updateFreezedLTCBalance),
+        LTCbalance: parseFloat(updateUserLTCBalance),
       });
     } catch (e) {
       return res.json({
@@ -1069,7 +1069,7 @@ module.exports = {
           'like': parseFloat(userBidRate)
         },
         marketId: {
-          'like': BTCMARKETID
+          'like': LTCMARKETID
         },
         status: {
           '!': statusOne
@@ -1091,7 +1091,7 @@ module.exports = {
         //Find exact bid if available in db
         var total_ask = 0;
         var totoalBidRemainingINR = new BigNumber(userBidAmountINR);
-        var totoalBidRemainingBTC = new BigNumber(userBidAmountBTC);
+        var totoalBidRemainingLTC = new BigNumber(userBidAmountLTC);
         //this loop for sum of all Bids amount of INR
         for (var i = 0; i < allAsksFromdb.length; i++) {
           total_ask = total_ask + allAsksFromdb[i].askAmountINR;
@@ -1100,15 +1100,15 @@ module.exports = {
           for (var i = 0; i < allAsksFromdb.length; i++) {
             currentAskDetails = allAsksFromdb[i];
             console.log(currentAskDetails.id + " totoalBidRemainingINR :: " + totoalBidRemainingINR);
-            console.log(currentAskDetails.id + " totoalBidRemainingBTC :: " + totoalBidRemainingBTC);
+            console.log(currentAskDetails.id + " totoalBidRemainingLTC :: " + totoalBidRemainingLTC);
             console.log("currentAskDetails ::: " + JSON.stringify(currentAskDetails)); //.6 <=.5
 
             //totoalBidRemainingINR = totoalBidRemainingINR - allAsksFromdb[i].bidAmountINR;
             //totoalBidRemainingINR = (parseFloat(totoalBidRemainingINR) - parseFloat(currentAskDetails.askAmountINR));
             totoalBidRemainingINR = totoalBidRemainingINR.minus(currentAskDetails.askAmountINR);
 
-            //totoalBidRemainingBTC = (parseFloat(totoalBidRemainingBTC) - parseFloat(currentAskDetails.askAmountBTC));
-            totoalBidRemainingBTC = totoalBidRemainingBTC.minus(currentAskDetails.askAmountBTC);
+            //totoalBidRemainingLTC = (parseFloat(totoalBidRemainingLTC) - parseFloat(currentAskDetails.askAmountLTC));
+            totoalBidRemainingLTC = totoalBidRemainingLTC.minus(currentAskDetails.askAmountLTC);
             console.log("start from here totoalBidRemainingINR == 0::: " + totoalBidRemainingINR);
             if (totoalBidRemainingINR == 0) {
               //destroy bid and ask and update bidder and asker balances and break
@@ -1130,34 +1130,34 @@ module.exports = {
               //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(currentAskDetails.askAmountINR));
               var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
               updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
-              //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
-              var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(currentAskDetails.askAmountBTC);
+              //var updatedLTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(currentAskDetails.askAmountLTC));
+              var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(currentAskDetails.askAmountLTC);
 
               //Deduct Transation Fee Asker
-              console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              //var txFeesAskerBTC = (parseFloat(currentAskDetails.askAmountBTC) * parseFloat(txFeeBTCWithdrawSuccess));
-              var txFeesAskerBTC = new BigNumber(currentAskDetails.askAmountBTC);
-              txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
-              console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-              //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-              console.log("After deduct TX Fees of INR Update user d gsdfgdf  " + updatedBTCbalanceAsker);
+              console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+              //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+              var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+              console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+              //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
+              console.log("After deduct TX Fees of INR Update user d gsdfgdf  " + updatedLTCbalanceAsker);
 
               //current ask details of Asker  updated
-              //Ask FreezedINRbalance balance of asker deducted and BTC to give asker
+              //Ask FreezedINRbalance balance of asker deducted and LTC to give asker
 
               console.log("Before Update :: qweqwer11110 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11110 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-              console.log("Before Update :: qweqwer11110 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+              console.log("Before Update :: qweqwer11110 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: qweqwer11110 totoalBidRemainingINR " + totoalBidRemainingINR);
-              console.log("Before Update :: qweqwer11110 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Before Update :: qweqwer11110 totoalBidRemainingLTC " + totoalBidRemainingLTC);
               try {
                 var userUpdateAsker = await User.update({
                   id: currentAskDetails.askownerINR
                 }, {
                   FreezedINRbalance: updatedFreezedINRbalanceAsker,
-                  BTCbalance: updatedBTCbalanceAsker
+                  LTCbalance: updatedLTCbalanceAsker
                 });
               } catch (e) {
                 return res.json({
@@ -1179,22 +1179,22 @@ module.exports = {
                 });
               }
               //current bid details Bidder updated
-              //Bid FreezedBTCbalance of bidder deduct and INR  give to bidder
-              //var updatedINRbalanceBidder = (parseFloat(BidderuserAllDetailsInDBBidder.INRbalance) + parseFloat(totoalBidRemainingINR)) - parseFloat(totoalBidRemainingBTC);
+              //Bid FreezedLTCbalance of bidder deduct and INR  give to bidder
+              //var updatedINRbalanceBidder = (parseFloat(BidderuserAllDetailsInDBBidder.INRbalance) + parseFloat(totoalBidRemainingINR)) - parseFloat(totoalBidRemainingLTC);
               //var updatedINRbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.INRbalance) + parseFloat(userBidAmountINR)) - parseFloat(totoalBidRemainingINR));
               var updatedINRbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.INRbalance);
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(totoalBidRemainingINR);
-              //var updatedFreezedBTCbalanceBidder = parseFloat(totoalBidRemainingBTC);
-              //var updatedFreezedBTCbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(userBidAmountBTC)) + parseFloat(totoalBidRemainingBTC));
-              var updatedFreezedBTCbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.FreezedBTCbalance);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(userBidAmountBTC);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.plus(totoalBidRemainingBTC);
+              //var updatedFreezedLTCbalanceBidder = parseFloat(totoalBidRemainingLTC);
+              //var updatedFreezedLTCbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(userBidAmountLTC)) + parseFloat(totoalBidRemainingLTC));
+              var updatedFreezedLTCbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.FreezedLTCbalance);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(userBidAmountLTC);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.plus(totoalBidRemainingLTC);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalBidRemainingBTC " + totoalBidRemainingBTC);
-              console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + BidderuserAllDetailsInDBBidder.FreezedBTCbalance);
-              console.log("Total Ask RemainINR updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Total Ask RemainINR totoalBidRemainingLTC " + totoalBidRemainingLTC);
+              console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedLTCbalance " + BidderuserAllDetailsInDBBidder.FreezedLTCbalance);
+              console.log("Total Ask RemainINR updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 
@@ -1212,12 +1212,12 @@ module.exports = {
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-              var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+              var LTCAmountSucess = new BigNumber(userBidAmountLTC);
+              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
-              var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
-              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -1225,14 +1225,14 @@ module.exports = {
               console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
               console.log(currentAskDetails.id + " asdftotoalBidRemainingINR == 0updatedINRbalanceBidder ::: " + updatedINRbalanceBidder);
-              console.log(currentAskDetails.id + " asdftotoalBidRemainingINR asdf== updatedFreezedBTCbalanceBidder updatedFreezedBTCbalanceBidder::: " + updatedFreezedBTCbalanceBidder);
+              console.log(currentAskDetails.id + " asdftotoalBidRemainingINR asdf== updatedFreezedLTCbalanceBidder updatedFreezedLTCbalanceBidder::: " + updatedFreezedLTCbalanceBidder);
 
 
               console.log("Before Update :: qweqwer11111 BidderuserAllDetailsInDBBidder " + JSON.stringify(BidderuserAllDetailsInDBBidder));
-              console.log("Before Update :: qweqwer11111 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Before Update :: qweqwer11111 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("Before Update :: qweqwer11111 updatedINRbalanceBidder " + updatedINRbalanceBidder);
               console.log("Before Update :: qweqwer11111 totoalBidRemainingINR " + totoalBidRemainingINR);
-              console.log("Before Update :: qweqwer11111 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Before Update :: qweqwer11111 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
 
               try {
@@ -1240,7 +1240,7 @@ module.exports = {
                   id: bidDetails.bidownerINR
                 }, {
                   INRbalance: updatedINRbalanceBidder,
-                  FreezedBTCbalance: updatedFreezedBTCbalanceBidder
+                  FreezedLTCbalance: updatedFreezedLTCbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -1310,30 +1310,30 @@ module.exports = {
               //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(currentAskDetails.askAmountINR));
               var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
               updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
-              //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
-              var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(currentAskDetails.askAmountBTC);
+              //var updatedLTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(currentAskDetails.askAmountLTC));
+              var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(currentAskDetails.askAmountLTC);
 
               //Deduct Transation Fee Asker
-              console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              //var txFeesAskerBTC = (parseFloat(currentAskDetails.askAmountBTC) * parseFloat(txFeeBTCWithdrawSuccess));
-              var txFeesAskerBTC = new BigNumber(currentAskDetails.askAmountBTC);
-              txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
-              console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-              //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
+              console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+              //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+              var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+              console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+              //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
 
-              console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+              console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
 
               console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == :: ");
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0updaasdfsdftedBTCbalanceBidder updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0updaasdfsdftedLTCbalanceBidder updatedLTCbalanceAsker:: " + updatedLTCbalanceAsker);
 
 
               console.log("Before Update :: qweqwer11112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11112 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-              console.log("Before Update :: qweqwer11112 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+              console.log("Before Update :: qweqwer11112 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: qweqwer11112 totoalBidRemainingINR " + totoalBidRemainingINR);
-              console.log("Before Update :: qweqwer11112 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Before Update :: qweqwer11112 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
 
               try {
@@ -1341,7 +1341,7 @@ module.exports = {
                   id: currentAskDetails.askownerINR
                 }, {
                   FreezedINRbalance: updatedFreezedINRbalanceAsker,
-                  BTCbalance: updatedBTCbalanceAsker
+                  LTCbalance: updatedLTCbalanceAsker
                 });
               } catch (e) {
                 return res.json({
@@ -1391,23 +1391,23 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1 asdf enter into userAskAmountBTC i == allBidsFromdb.length - 1 bidDetails.askownerINR");
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1 asdf enter into userAskAmountLTC i == allBidsFromdb.length - 1 bidDetails.askownerINR");
               //var updatedINRbalanceBidder = ((parseFloat(userAllDetailsInDBBid.INRbalance) + parseFloat(userBidAmountINR)) - parseFloat(totoalBidRemainingINR));
               var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBid.INRbalance);
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(totoalBidRemainingINR);
 
-              //var updatedFreezedBTCbalanceBidder = parseFloat(totoalBidRemainingBTC);
-              //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBid.FreezedBTCbalance) - parseFloat(totoalBidRemainingBTC));
-              //var updatedFreezedBTCbalanceBidder = ((parseFloat(userAllDetailsInDBBid.FreezedBTCbalance) - parseFloat(userBidAmountBTC)) + parseFloat(totoalBidRemainingBTC));
-              var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBid.FreezedBTCbalance);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(userBidAmountBTC);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.plus(totoalBidRemainingBTC);
+              //var updatedFreezedLTCbalanceBidder = parseFloat(totoalBidRemainingLTC);
+              //var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBid.FreezedLTCbalance) - parseFloat(totoalBidRemainingLTC));
+              //var updatedFreezedLTCbalanceBidder = ((parseFloat(userAllDetailsInDBBid.FreezedLTCbalance) - parseFloat(userBidAmountLTC)) + parseFloat(totoalBidRemainingLTC));
+              var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBid.FreezedLTCbalance);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(userBidAmountLTC);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.plus(totoalBidRemainingLTC);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalBidRemainingBTC " + totoalBidRemainingBTC);
-              console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + userAllDetailsInDBBid.FreezedBTCbalance);
-              console.log("Total Ask RemainINR updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Total Ask RemainINR totoalBidRemainingLTC " + totoalBidRemainingLTC);
+              console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedLTCbalance " + userAllDetailsInDBBid.FreezedLTCbalance);
+              console.log("Total Ask RemainINR updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
               //Deduct Transation Fee Bidder
@@ -1427,31 +1427,31 @@ module.exports = {
 
 
 
-              var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+              var LTCAmountSucess = new BigNumber(userBidAmountLTC);
+              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
-              var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
-              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-              var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updateasdfdFreezedINRbalanceAsker updatedFreezedBTCbalanceBidder::: " + updatedFreezedBTCbalanceBidder);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updateasdfdFreezedINRbalanceAsker updatedFreezedLTCbalanceBidder::: " + updatedFreezedLTCbalanceBidder);
 
 
               console.log("Before Update :: qweqwer11113 userAllDetailsInDBBid " + JSON.stringify(userAllDetailsInDBBid));
-              console.log("Before Update :: qweqwer11113 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Before Update :: qweqwer11113 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("Before Update :: qweqwer11113 updatedINRbalanceBidder " + updatedINRbalanceBidder);
               console.log("Before Update :: qweqwer11113 totoalBidRemainingINR " + totoalBidRemainingINR);
-              console.log("Before Update :: qweqwer11113 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Before Update :: qweqwer11113 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
               try {
                 var updatedUser = await User.update({
                   id: bidDetails.bidownerINR
                 }, {
                   INRbalance: updatedINRbalanceBidder,
-                  FreezedBTCbalance: updatedFreezedBTCbalanceBidder
+                  FreezedLTCbalance: updatedFreezedLTCbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -1460,14 +1460,14 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountBTC totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountLTC totoalBidRemainingLTC " + totoalBidRemainingLTC);
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountINR totoalBidRemainingINR " + totoalBidRemainingINR);
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1bidDetails.id ::: " + bidDetails.id);
               try {
                 var updatedbidDetails = await BidINR.update({
                   id: bidDetails.id
                 }, {
-                  bidAmountBTC: totoalBidRemainingBTC,
+                  bidAmountLTC: totoalBidRemainingLTC,
                   bidAmountINR: totoalBidRemainingINR,
                   status: statusTwo,
                   statusName: statusTwoPending
@@ -1488,12 +1488,12 @@ module.exports = {
           for (var i = 0; i < allAsksFromdb.length; i++) {
             currentAskDetails = allAsksFromdb[i];
             console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1totoalBidRemainingINR :: " + totoalBidRemainingINR);
-            console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1 totoalBidRemainingBTC :: " + totoalBidRemainingBTC);
+            console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1 totoalBidRemainingLTC :: " + totoalBidRemainingLTC);
             console.log(" else of i == allAsksFromdb.length - 1currentAskDetails ::: " + JSON.stringify(currentAskDetails)); //.6 <=.5
             //totoalBidRemainingINR = totoalBidRemainingINR - allAsksFromdb[i].bidAmountINR;
-            if (totoalBidRemainingBTC >= currentAskDetails.askAmountBTC) {
+            if (totoalBidRemainingLTC >= currentAskDetails.askAmountLTC) {
               totoalBidRemainingINR = totoalBidRemainingINR.minus(currentAskDetails.askAmountINR);
-              totoalBidRemainingBTC = totoalBidRemainingBTC.minus(currentAskDetails.askAmountBTC);
+              totoalBidRemainingLTC = totoalBidRemainingLTC.minus(currentAskDetails.askAmountLTC);
               console.log(" else of i == allAsksFromdb.length - 1start from here totoalBidRemainingINR == 0::: " + totoalBidRemainingINR);
 
               if (totoalBidRemainingINR == 0) {
@@ -1527,34 +1527,34 @@ module.exports = {
                 var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
                 updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
 
-                //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
-                var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-                updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(currentAskDetails.askAmountBTC);
+                //var updatedLTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(currentAskDetails.askAmountLTC));
+                var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+                updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(currentAskDetails.askAmountLTC);
 
                 //Deduct Transation Fee Asker
-                console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-                //var txFeesAskerBTC = (parseFloat(currentAskDetails.askAmountBTC) * parseFloat(txFeeBTCWithdrawSuccess));
-                var txFeesAskerBTC = new BigNumber(currentAskDetails.askAmountBTC);
-                txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
+                console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+                //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+                var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
+                txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
 
-                console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-                //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-                updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
+                console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+                //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+                updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
 
-                console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+                console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
                 console.log("--------------------------------------------------------------------------------");
                 console.log(" totoalBidRemainingINR == 0userAllDetailsInDBAsker ::: " + JSON.stringify(userAllDetailsInDBAsker));
                 console.log(" totoalBidRemainingINR == 0updatedFreezedINRbalanceAsker ::: " + updatedFreezedINRbalanceAsker);
-                console.log(" totoalBidRemainingINR == 0updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-                console.log("----------------------------------------------------------------------------------updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+                console.log(" totoalBidRemainingINR == 0updatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
+                console.log("----------------------------------------------------------------------------------updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
 
 
 
                 console.log("Before Update :: qweqwer11114 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
                 console.log("Before Update :: qweqwer11114 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-                console.log("Before Update :: qweqwer11114 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+                console.log("Before Update :: qweqwer11114 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
                 console.log("Before Update :: qweqwer11114 totoalBidRemainingINR " + totoalBidRemainingINR);
-                console.log("Before Update :: qweqwer11114 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+                console.log("Before Update :: qweqwer11114 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
 
                 try {
@@ -1562,7 +1562,7 @@ module.exports = {
                     id: currentAskDetails.askownerINR
                   }, {
                     FreezedINRbalance: updatedFreezedINRbalanceAsker,
-                    BTCbalance: updatedBTCbalanceAsker
+                    LTCbalance: updatedLTCbalanceAsker
                   });
                 } catch (e) {
                   return res.json({
@@ -1577,17 +1577,17 @@ module.exports = {
                 updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
                 updatedINRbalanceBidder = updatedINRbalanceBidder.minus(totoalBidRemainingINR);
 
-                //var updatedFreezedBTCbalanceBidder = parseFloat(totoalBidRemainingBTC);
-                //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(totoalBidRemainingBTC));
-                //var updatedFreezedBTCbalanceBidder = ((parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(userBidAmountBTC)) + parseFloat(totoalBidRemainingBTC));
-                var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
-                updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(userBidAmountBTC);
-                updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.plus(totoalBidRemainingBTC);
+                //var updatedFreezedLTCbalanceBidder = parseFloat(totoalBidRemainingLTC);
+                //var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(totoalBidRemainingLTC));
+                //var updatedFreezedLTCbalanceBidder = ((parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(userBidAmountLTC)) + parseFloat(totoalBidRemainingLTC));
+                var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedLTCbalance);
+                updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(userBidAmountLTC);
+                updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.plus(totoalBidRemainingLTC);
 
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalBidRemainingBTC);
-                console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedBTCbalance " + userAllDetailsInDBBidder.FreezedBTCbalance);
-                console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedBTCbalanceBidder);
+                console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalBidRemainingLTC);
+                console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedLTCbalance " + userAllDetailsInDBBidder.FreezedLTCbalance);
+                console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedLTCbalanceBidder);
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
                 //Deduct Transation Fee Bidder
@@ -1604,12 +1604,12 @@ module.exports = {
                 // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
                 // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-                var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-                BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+                var LTCAmountSucess = new BigNumber(userBidAmountLTC);
+                LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
-                var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
-                txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
-                var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+                var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
+                txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+                var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
                 console.log("txFeesBidderINR :: " + txFeesBidderINR);
                 //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
                 updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -1618,15 +1618,15 @@ module.exports = {
 
                 console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
-                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 updatedBTCbalanceAsker ::: " + updatedBTCbalanceAsker);
-                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 updatedFreezedINRbalaasdf updatedFreezedBTCbalanceBidder ::: " + updatedFreezedBTCbalanceBidder);
+                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 updatedLTCbalanceAsker ::: " + updatedLTCbalanceAsker);
+                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 updatedFreezedINRbalaasdf updatedFreezedLTCbalanceBidder ::: " + updatedFreezedLTCbalanceBidder);
 
 
                 console.log("Before Update :: qweqwer11115 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
-                console.log("Before Update :: qweqwer11115 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+                console.log("Before Update :: qweqwer11115 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
                 console.log("Before Update :: qweqwer11115 updatedINRbalanceBidder " + updatedINRbalanceBidder);
                 console.log("Before Update :: qweqwer11115 totoalBidRemainingINR " + totoalBidRemainingINR);
-                console.log("Before Update :: qweqwer11115 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+                console.log("Before Update :: qweqwer11115 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
 
                 try {
@@ -1634,7 +1634,7 @@ module.exports = {
                     id: bidDetails.bidownerINR
                   }, {
                     INRbalance: updatedINRbalanceBidder,
-                    FreezedBTCbalance: updatedFreezedBTCbalanceBidder
+                    FreezedLTCbalance: updatedFreezedLTCbalanceBidder
                   });
                 } catch (e) {
                   return res.json({
@@ -1698,30 +1698,30 @@ module.exports = {
                 var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
                 updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
 
-                //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(currentAskDetails.askAmountBTC));
-                var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-                updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(currentAskDetails.askAmountBTC);
+                //var updatedLTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(currentAskDetails.askAmountLTC));
+                var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+                updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(currentAskDetails.askAmountLTC);
 
                 //Deduct Transation Fee Asker
-                console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-                //var txFeesAskerBTC = (parseFloat(currentAskDetails.askAmountBTC) * parseFloat(txFeeBTCWithdrawSuccess));
-                var txFeesAskerBTC = new BigNumber(currentAskDetails.askAmountBTC);
-                txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
+                console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+                //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+                var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
+                txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
 
-                console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-                //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-                updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-                console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+                console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+                //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+                updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
+                console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
 
                 console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 updatedBTCbalance asd asd updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 updatedLTCbalance asd asd updatedLTCbalanceAsker:: " + updatedLTCbalanceAsker);
 
 
                 console.log("Before Update :: qweqwer11116 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
                 console.log("Before Update :: qweqwer11116 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-                console.log("Before Update :: qweqwer11116 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+                console.log("Before Update :: qweqwer11116 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
                 console.log("Before Update :: qweqwer11116 totoalBidRemainingINR " + totoalBidRemainingINR);
-                console.log("Before Update :: qweqwer11116 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+                console.log("Before Update :: qweqwer11116 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
 
                 try {
@@ -1729,7 +1729,7 @@ module.exports = {
                     id: currentAskDetails.askownerINR
                   }, {
                     FreezedINRbalance: updatedFreezedINRbalanceAsker,
-                    BTCbalance: updatedBTCbalanceAsker
+                    LTCbalance: updatedLTCbalanceAsker
                   });
                 } catch (e) {
                   return res.json({
@@ -1761,8 +1761,8 @@ module.exports = {
               }
             } else {
               //destroy ask and update bid and  update asker and bidder and break
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userAll Details :: ");
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC  enter into i == allBidsFromdb.length - 1");
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC userAll Details :: ");
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC  enter into i == allBidsFromdb.length - 1");
 
               //Update Ask
               //  var updatedAskAmountINR = (parseFloat(currentAskDetails.askAmountINR) - parseFloat(totoalBidRemainingINR));
@@ -1770,14 +1770,14 @@ module.exports = {
               var updatedAskAmountINR = new BigNumber(currentAskDetails.askAmountINR);
               updatedAskAmountINR = updatedAskAmountINR.minus(totoalBidRemainingINR);
 
-              //var updatedAskAmountBTC = (parseFloat(currentAskDetails.askAmountBTC) - parseFloat(totoalBidRemainingBTC));
-              var updatedAskAmountBTC = new BigNumber(currentAskDetails.askAmountBTC);
-              updatedAskAmountBTC = updatedAskAmountBTC.minus(totoalBidRemainingBTC);
+              //var updatedAskAmountLTC = (parseFloat(currentAskDetails.askAmountLTC) - parseFloat(totoalBidRemainingLTC));
+              var updatedAskAmountLTC = new BigNumber(currentAskDetails.askAmountLTC);
+              updatedAskAmountLTC = updatedAskAmountLTC.minus(totoalBidRemainingLTC);
               try {
                 var updatedaskDetails = await AskINR.update({
                   id: currentAskDetails.id
                 }, {
-                  askAmountBTC: updatedAskAmountBTC,
+                  askAmountLTC: updatedAskAmountLTC,
                   askAmountINR: updatedAskAmountINR,
                   status: statusTwo,
                   statusName: statusTwoPending,
@@ -1807,36 +1807,36 @@ module.exports = {
               var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
               updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(totoalBidRemainingINR);
 
-              //var updatedBTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BTCbalance) + parseFloat(totoalBidRemainingBTC));
-              var updatedBTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BTCbalance);
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.plus(totoalBidRemainingBTC);
+              //var updatedLTCbalanceAsker = (parseFloat(userAllDetailsInDBAsker.LTCbalance) + parseFloat(totoalBidRemainingLTC));
+              var updatedLTCbalanceAsker = new BigNumber(userAllDetailsInDBAsker.LTCbalance);
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.plus(totoalBidRemainingLTC);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Total Ask RemainINR totoalBidRemainingLTC " + totoalBidRemainingLTC);
               console.log("Total Ask RemainINR userAllDetailsInDBAsker.FreezedINRbalance " + userAllDetailsInDBAsker.FreezedINRbalance);
-              console.log("Total Ask RemainINR updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+              console.log("Total Ask RemainINR updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
               //Deduct Transation Fee Asker
-              console.log("Before deduct TX Fees of updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
-              //var txFeesAskerBTC = (parseFloat(totoalBidRemainingBTC) * parseFloat(txFeeBTCWithdrawSuccess));
-              var txFeesAskerBTC = new BigNumber(totoalBidRemainingBTC);
-              txFeesAskerBTC = txFeesAskerBTC.times(txFeeBTCWithdrawSuccess);
+              console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
+              //var txFeesAskerLTC = (parseFloat(totoalBidRemainingLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+              var txFeesAskerLTC = new BigNumber(totoalBidRemainingLTC);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
 
-              console.log("txFeesAskerBTC ::: " + txFeesAskerBTC);
-              //updatedBTCbalanceAsker = (parseFloat(updatedBTCbalanceAsker) - parseFloat(txFeesAskerBTC));
-              updatedBTCbalanceAsker = updatedBTCbalanceAsker.minus(txFeesAskerBTC);
-              console.log("After deduct TX Fees of INR Update user " + updatedBTCbalanceAsker);
+              console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
+              //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
+              updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
+              console.log("After deduct TX Fees of INR Update user " + updatedLTCbalanceAsker);
 
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails asdfasd .askAmountBTC updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails asdfasd .askAmountLTC updatedLTCbalanceAsker:: " + updatedLTCbalanceAsker);
 
 
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-              console.log("Before Update :: qweqwer11117 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
+              console.log("Before Update :: qweqwer11117 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingINR " + totoalBidRemainingINR);
-              console.log("Before Update :: qweqwer11117 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Before Update :: qweqwer11117 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
 
 
@@ -1845,7 +1845,7 @@ module.exports = {
                   id: currentAskDetails.askownerINR
                 }, {
                   FreezedINRbalance: updatedFreezedINRbalanceAsker,
-                  BTCbalance: updatedBTCbalanceAsker
+                  LTCbalance: updatedLTCbalanceAsker
                 });
               } catch (e) {
                 return res.json({
@@ -1871,18 +1871,18 @@ module.exports = {
               }
 
               //Update bidder =========================================== 11
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC enter into userAskAmountBTC i == allBidsFromdb.length - 1 bidDetails.askownerINR");
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC enter into userAskAmountLTC i == allBidsFromdb.length - 1 bidDetails.askownerINR");
               //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(userBidAmountINR));
-              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userBidAmountINR " + userBidAmountINR);
-              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBTC >= currentAskDetails.askAmountBTC userAllDetailsInDBBidder.INRbalance " + userAllDetailsInDBBidder.INRbalance);
+              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingLTC >= currentAskDetails.askAmountLTC userBidAmountINR " + userBidAmountINR);
+              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingLTC >= currentAskDetails.askAmountLTC userAllDetailsInDBBidder.INRbalance " + userAllDetailsInDBBidder.INRbalance);
 
               var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
 
 
-              //var updatedFreezedBTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBTCbalance) - parseFloat(userBidAmountBTC));
-              var updatedFreezedBTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBTCbalance);
-              updatedFreezedBTCbalanceBidder = updatedFreezedBTCbalanceBidder.minus(userBidAmountBTC);
+              //var updatedFreezedLTCbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedLTCbalance) - parseFloat(userBidAmountLTC));
+              var updatedFreezedLTCbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedLTCbalance);
+              updatedFreezedLTCbalanceBidder = updatedFreezedLTCbalanceBidder.minus(userBidAmountLTC);
 
               //Deduct Transation Fee Bidder
               console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
@@ -1894,36 +1894,36 @@ module.exports = {
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
-              var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+              var LTCAmountSucess = new BigNumber(userBidAmountLTC);
+              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
-              var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
-              txFeesBidderBTC = txFeesBidderBTC.times(txFeeBTCWithdrawSuccess);
+              var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
 
-              var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
               console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC asdf updatedINRbalanceBidder ::: " + updatedINRbalanceBidder);
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAsk asdfasd fDetails.askAmountBTC asdf updatedFreezedBTCbalanceBidder ::: " + updatedFreezedBTCbalanceBidder);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC asdf updatedINRbalanceBidder ::: " + updatedINRbalanceBidder);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAsk asdfasd fDetails.askAmountLTC asdf updatedFreezedLTCbalanceBidder ::: " + updatedFreezedLTCbalanceBidder);
 
 
 
               console.log("Before Update :: qweqwer11118 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
-              console.log("Before Update :: qweqwer11118 updatedFreezedBTCbalanceBidder " + updatedFreezedBTCbalanceBidder);
+              console.log("Before Update :: qweqwer11118 updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
               console.log("Before Update :: qweqwer11118 updatedINRbalanceBidder " + updatedINRbalanceBidder);
               console.log("Before Update :: qweqwer11118 totoalBidRemainingINR " + totoalBidRemainingINR);
-              console.log("Before Update :: qweqwer11118 totoalBidRemainingBTC " + totoalBidRemainingBTC);
+              console.log("Before Update :: qweqwer11118 totoalBidRemainingLTC " + totoalBidRemainingLTC);
 
               try {
                 var updatedUser = await User.update({
                   id: bidDetails.bidownerINR
                 }, {
                   INRbalance: updatedINRbalanceBidder,
-                  FreezedBTCbalance: updatedFreezedBTCbalanceBidder
+                  FreezedLTCbalance: updatedFreezedLTCbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -1934,7 +1934,7 @@ module.exports = {
               }
 
               //Destroy Bid===========================================Working
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC BidINR.destroy bidDetails.id::: " + bidDetails.id);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC BidINR.destroy bidDetails.id::: " + bidDetails.id);
               // var bidDestroy = await BidINR.destroy({
               //   id: bidDetails.id
               // });
@@ -1953,7 +1953,7 @@ module.exports = {
                 });
               }
               sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC Bid destroy successfully desctroyCurrentBid ::");
+              console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC Bid destroy successfully desctroyCurrentBid ::");
               return res.json({
                 "message": "Bid Executed successfully",
                 statusCode: 200
@@ -1992,7 +1992,7 @@ module.exports = {
         '!': statusOne
       },
       marketId: {
-        'like': BTCMARKETID
+        'like': LTCMARKETID
       },
       status: {
         '!': statusThree
@@ -2026,26 +2026,26 @@ module.exports = {
             statusCode: 401
           });
         }
-        var userBTCBalanceInDb = parseFloat(user.BTCbalance);
-        var bidAmountOfBTCInBidTableDB = parseFloat(bidDetails.bidAmountBTC);
-        var userFreezedBTCbalanceInDB = parseFloat(user.FreezedBTCbalance);
-        var updateFreezedBalance = (parseFloat(userFreezedBTCbalanceInDB) - parseFloat(bidAmountOfBTCInBidTableDB));
-        var updateUserBTCBalance = (parseFloat(userBTCBalanceInDb) + parseFloat(bidAmountOfBTCInBidTableDB));
-        console.log("userBTCBalanceInDb :" + userBTCBalanceInDb);
-        console.log("bidAmountOfBTCInBidTableDB :" + bidAmountOfBTCInBidTableDB);
-        console.log("userFreezedBTCbalanceInDB :" + userFreezedBTCbalanceInDB);
+        var userLTCBalanceInDb = parseFloat(user.LTCbalance);
+        var bidAmountOfLTCInBidTableDB = parseFloat(bidDetails.bidAmountLTC);
+        var userFreezedLTCbalanceInDB = parseFloat(user.FreezedLTCbalance);
+        var updateFreezedBalance = (parseFloat(userFreezedLTCbalanceInDB) - parseFloat(bidAmountOfLTCInBidTableDB));
+        var updateUserLTCBalance = (parseFloat(userLTCBalanceInDb) + parseFloat(bidAmountOfLTCInBidTableDB));
+        console.log("userLTCBalanceInDb :" + userLTCBalanceInDb);
+        console.log("bidAmountOfLTCInBidTableDB :" + bidAmountOfLTCInBidTableDB);
+        console.log("userFreezedLTCbalanceInDB :" + userFreezedLTCbalanceInDB);
         console.log("updateFreezedBalance :" + updateFreezedBalance);
-        console.log("updateUserBTCBalance :" + updateUserBTCBalance);
+        console.log("updateUserLTCBalance :" + updateUserLTCBalance);
 
         User.update({
             id: bidownerId
           }, {
-            BTCbalance: parseFloat(updateUserBTCBalance),
-            FreezedBTCbalance: parseFloat(updateFreezedBalance)
+            LTCbalance: parseFloat(updateUserLTCBalance),
+            FreezedLTCbalance: parseFloat(updateFreezedBalance)
           })
           .exec(function(err, updatedUser) {
             if (err) {
-              console.log("Error to update user BTC balance");
+              console.log("Error to update user LTC balance");
               return res.json({
                 "message": "Error to update User values",
                 statusCode: 400
@@ -2093,7 +2093,7 @@ module.exports = {
         '!': statusOne
       },
       marketId: {
-        'like': BTCMARKETID
+        'like': LTCMARKETID
       },
       status: {
         '!': statusThree
@@ -2143,7 +2143,7 @@ module.exports = {
           })
           .exec(function(err, updatedUser) {
             if (err) {
-              console.log("Error to update user BTC balance");
+              console.log("Error to update user LTC balance");
               return res.json({
                 "message": "Error to update User values",
                 statusCode: 400
@@ -2176,7 +2176,7 @@ module.exports = {
           '!': statusOne
         },
         marketId: {
-          'like': BTCMARKETID
+          'like': LTCMARKETID
         },
         status: {
           '!': statusThree
@@ -2203,7 +2203,7 @@ module.exports = {
                   '!': statusOne
                 },
                 marketId: {
-                  'like': BTCMARKETID
+                  'like': LTCMARKETID
                 },
                 status: {
                   '!': statusThree
@@ -2222,14 +2222,14 @@ module.exports = {
                       '!': statusOne
                     },
                     marketId: {
-                      'like': BTCMARKETID
+                      'like': LTCMARKETID
                     },
                     status: {
                       '!': statusThree
                     }
                   })
-                  .sum('bidAmountBTC')
-                  .exec(function(err, bidAmountBTCSum) {
+                  .sum('bidAmountLTC')
+                  .exec(function(err, bidAmountLTCSum) {
                     if (err) {
                       return res.json({
                         "message": "Error to sum Of bidAmountINRSum",
@@ -2239,7 +2239,7 @@ module.exports = {
                     return res.json({
                       bidsINR: allAskDetailsToExecute,
                       bidAmountINRSum: bidAmountINRSum[0].bidAmountINR,
-                      bidAmountBTCSum: bidAmountBTCSum[0].bidAmountBTC,
+                      bidAmountLTCSum: bidAmountLTCSum[0].bidAmountLTC,
                       statusCode: 200
                     });
                   });
@@ -2260,7 +2260,7 @@ module.exports = {
           '!': statusOne
         },
         marketId: {
-          'like': BTCMARKETID
+          'like': LTCMARKETID
         },
         status: {
           '!': statusThree
@@ -2287,7 +2287,7 @@ module.exports = {
                   '!': statusOne
                 },
                 marketId: {
-                  'like': BTCMARKETID
+                  'like': LTCMARKETID
                 },
                 status: {
                   '!': statusThree
@@ -2306,14 +2306,14 @@ module.exports = {
                       '!': statusOne
                     },
                     marketId: {
-                      'like': BTCMARKETID
+                      'like': LTCMARKETID
                     },
                     status: {
                       '!': statusThree
                     }
                   })
-                  .sum('askAmountBTC')
-                  .exec(function(err, askAmountBTCSum) {
+                  .sum('askAmountLTC')
+                  .exec(function(err, askAmountLTCSum) {
                     if (err) {
                       return res.json({
                         "message": "Error to sum Of askAmountINRSum",
@@ -2323,7 +2323,7 @@ module.exports = {
                     return res.json({
                       asksINR: allAskDetailsToExecute,
                       askAmountINRSum: askAmountINRSum[0].askAmountINR,
-                      askAmountBTCSum: askAmountBTCSum[0].askAmountBTC,
+                      askAmountLTCSum: askAmountLTCSum[0].askAmountLTC,
                       statusCode: 200
                     });
                   });
@@ -2344,7 +2344,7 @@ module.exports = {
           'like': statusOne
         },
         marketId: {
-          'like': BTCMARKETID
+          'like': LTCMARKETID
         },
         status: {
           '!': statusThree
@@ -2371,7 +2371,7 @@ module.exports = {
                   'like': statusOne
                 },
                 marketId: {
-                  'like': BTCMARKETID
+                  'like': LTCMARKETID
                 },
                 status: {
                   '!': statusThree
@@ -2390,14 +2390,14 @@ module.exports = {
                       'like': statusOne
                     },
                     marketId: {
-                      'like': BTCMARKETID
+                      'like': LTCMARKETID
                     },
                     status: {
                       '!': statusThree
                     }
                   })
-                  .sum('bidAmountBTC')
-                  .exec(function(err, bidAmountBTCSum) {
+                  .sum('bidAmountLTC')
+                  .exec(function(err, bidAmountLTCSum) {
                     if (err) {
                       return res.json({
                         "message": "Error to sum Of bidAmountINRSum",
@@ -2407,7 +2407,7 @@ module.exports = {
                     return res.json({
                       bidsINR: allAskDetailsToExecute,
                       bidAmountINRSum: bidAmountINRSum[0].bidAmountINR,
-                      bidAmountBTCSum: bidAmountBTCSum[0].bidAmountBTC,
+                      bidAmountLTCSum: bidAmountLTCSum[0].bidAmountLTC,
                       statusCode: 200
                     });
                   });
@@ -2428,7 +2428,7 @@ module.exports = {
           'like': statusOne
         },
         marketId: {
-          'like': BTCMARKETID
+          'like': LTCMARKETID
         },
         status: {
           '!': statusThree
@@ -2455,7 +2455,7 @@ module.exports = {
                   'like': statusOne
                 },
                 marketId: {
-                  'like': BTCMARKETID
+                  'like': LTCMARKETID
                 },
                 status: {
                   '!': statusThree
@@ -2474,14 +2474,14 @@ module.exports = {
                       'like': statusOne
                     },
                     marketId: {
-                      'like': BTCMARKETID
+                      'like': LTCMARKETID
                     },
                     status: {
                       '!': statusThree
                     }
                   })
-                  .sum('askAmountBTC')
-                  .exec(function(err, askAmountBTCSum) {
+                  .sum('askAmountLTC')
+                  .exec(function(err, askAmountLTCSum) {
                     if (err) {
                       return res.json({
                         "message": "Error to sum Of askAmountINRSum",
@@ -2491,7 +2491,7 @@ module.exports = {
                     return res.json({
                       asksINR: allAskDetailsToExecute,
                       askAmountINRSum: askAmountINRSum[0].askAmountINR,
-                      askAmountBTCSum: askAmountBTCSum[0].askAmountBTC,
+                      askAmountLTCSum: askAmountLTCSum[0].askAmountLTC,
                       statusCode: 200
                     });
                   });
@@ -2505,4 +2505,5 @@ module.exports = {
         }
       });
   },
+
 };

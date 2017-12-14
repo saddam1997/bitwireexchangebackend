@@ -19,12 +19,32 @@ module.exports = {
       defaultsTo: 0.00,
       required: true
     },
-    bidAmountINR: {
+    totalbidAmountBTC: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    totalbidAmountBTC: {
+    bidAmountLTC: {
+      type: 'float',
+      defaultsTo: 0.00,
+      required: true
+    },
+    totalbidAmountLTC: {
+      type: 'float',
+      defaultsTo: 0.00,
+      required: true
+    },
+    bidAmountBCH: {
+      type: 'float',
+      defaultsTo: 0.00,
+      required: true
+    },
+    totalbidAmountBCH: {
+      type: 'float',
+      defaultsTo: 0.00,
+      required: true
+    },
+    bidAmountINR: {
       type: 'float',
       defaultsTo: 0.00,
       required: true

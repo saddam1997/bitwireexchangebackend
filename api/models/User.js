@@ -42,6 +42,19 @@ module.exports = {
       defaultsTo: 0
     },
 
+    LTCMainbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    LTCbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedLTCbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+
     INRMainbalance: {
       type: 'float',
       defaultsTo: 0
@@ -63,6 +76,10 @@ module.exports = {
       type: 'integer',
       defaultsTo: 0
     },
+    isLTCAddress: {
+      type: 'integer',
+      defaultsTo: 0
+    },
     isINRAddress: {
       type: 'integer',
       defaultsTo: 0
@@ -72,6 +89,9 @@ module.exports = {
       type: 'string'
     },
     userBCHAddress: {
+      type: 'string'
+    },
+    userLTCAddress: {
       type: 'string'
     },
     userINRAddress: {
@@ -112,15 +132,6 @@ module.exports = {
     tradebalanceorderDetails: {
       collection: 'tradebalanceorder',
       via: 'tradebalanceorderowner'
-    },
-    //BCH
-    bidsBCH: {
-      collection: 'bidBCH',
-      via: 'bidownerBCH'
-    },
-    asksBCH: {
-      collection: 'askBCH',
-      via: 'askownerBCH'
     },
     //INR
     bidsINR: {

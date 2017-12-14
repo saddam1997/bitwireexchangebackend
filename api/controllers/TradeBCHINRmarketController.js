@@ -22,7 +22,6 @@ const txFeeBCHWithdrawSuccess = sails.config.common.txFeeBCHWithdrawSuccess;
 const BCHMARKETID = sails.config.common.BCHMARKETID;
 
 module.exports = {
-
   addAskINRMarket: async function(req, res) {
     console.log("Enter into ask api addAskINRMarket : : " + JSON.stringify(req.body));
     var userAskAmountBCH = new BigNumber(req.body.askAmountBCH);
@@ -145,10 +144,7 @@ module.exports = {
           'like': BCHMARKETID
         },
         status: {
-          '!': statusOne
-        },
-        status: {
-          '!': statusThree
+          '!': [statusOne, statusThree]
         }
       });
     } catch (e) {
@@ -263,13 +259,13 @@ module.exports = {
 
             //updatedFreezedINRbalanceAsker =  parseFloat(updatedFreezedINRbalanceAsker);
             //Deduct Transation Fee Asker
-            //var BTCAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
-            var BTCAmountSucess = new BigNumber(userAskAmountBCH);
-            BTCAmountSucess = BTCAmountSucess.minus(totoalAskRemainingBCH);
+            //var BCHAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
+            var BCHAmountSucess = new BigNumber(userAskAmountBCH);
+            BCHAmountSucess = BCHAmountSucess.minus(totoalAskRemainingBCH);
             console.log("userAllDetailsInDBAsker.BCHbalance :: " + userAllDetailsInDBAsker.BCHbalance);
             console.log("Before deduct TX Fees of Update Asker Amount BCH updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            //var txFeesAskerBCH = (parseFloat(BTCAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
-            var txFeesAskerBCH = new BigNumber(BTCAmountSucess);
+            //var txFeesAskerBCH = (parseFloat(BCHAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+            var txFeesAskerBCH = new BigNumber(BCHAmountSucess);
             txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
             console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
@@ -447,12 +443,12 @@ module.exports = {
             console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            //var BTCAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
-            var BTCAmountSucess = new BigNumber(userAskAmountBCH);
-            BTCAmountSucess = BTCAmountSucess.minus(totoalAskRemainingBCH);
+            //var BCHAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
+            var BCHAmountSucess = new BigNumber(userAskAmountBCH);
+            BCHAmountSucess = BCHAmountSucess.minus(totoalAskRemainingBCH);
 
-            //var txFeesAskerBCH = (parseFloat(BTCAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
-            var txFeesAskerBCH = new BigNumber(BTCAmountSucess);
+            //var txFeesAskerBCH = (parseFloat(BCHAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+            var txFeesAskerBCH = new BigNumber(BCHAmountSucess);
             txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
             console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
@@ -611,9 +607,9 @@ module.exports = {
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              //var BTCAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
-              var BTCAmountSucess = new BigNumber(userAskAmountBCH);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalAskRemainingBCH);
+              //var BCHAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
+              var BCHAmountSucess = new BigNumber(userAskAmountBCH);
+              BCHAmountSucess = BCHAmountSucess.minus(totoalAskRemainingBCH);
               //var txFeesAskerBCH = (parseFloat(updatedBCHbalanceAsker) * parseFloat(txFeeBCHWithdrawSuccess));
               var txFeesAskerBCH = new BigNumber(updatedBCHbalanceAsker);
               txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
@@ -1072,10 +1068,7 @@ module.exports = {
           'like': BCHMARKETID
         },
         status: {
-          '!': statusOne
-        },
-        status: {
-          '!': statusThree
+          '!': [statusOne, statusThree]
         }
       });
     } catch (e) {
@@ -1988,14 +1981,11 @@ module.exports = {
     BidINR.findOne({
       bidownerINR: bidownerId,
       id: userBidId,
-      status: {
-        '!': statusOne
-      },
       marketId: {
         'like': BCHMARKETID
       },
       status: {
-        '!': statusThree
+        '!': [statusOne, statusThree]
       }
     }).exec(function(err, bidDetails) {
       if (err) {
@@ -2090,14 +2080,11 @@ module.exports = {
       askownerINR: askownerId,
       id: userAskId,
       status: {
-        '!': statusOne
+        '!': [statusOne, statusThree]
       },
       marketId: {
         'like': BCHMARKETID
       },
-      status: {
-        '!': statusThree
-      }
     }).exec(function(err, askDetails) {
       if (err) {
         return res.json({
@@ -2150,16 +2137,19 @@ module.exports = {
               });
             }
             console.log("Removing ask !!!");
-            AskINR.destroy({
+            AskINR.update({
               id: userAskId
-            }).exec(function(err, ask) {
+            }, {
+              status: statusThree,
+              statusName: statusThreeCancelled
+            }).exec(function(err, bid) {
               if (err) {
                 return res.json({
-                  "message": "Error to remove ask",
+                  "message": "Error to remove bid",
                   statusCode: 400
                 });
               }
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, ask);
+              sails.sockets.blast(constants.INR_ASK_DESTROYED, bid);
               return res.json({
                 "message": "Ask removed successfully!!",
                 statusCode: 200
@@ -2173,13 +2163,10 @@ module.exports = {
     console.log("Enter into ask api getAllBidINR :: ");
     BidINR.find({
         status: {
-          '!': statusOne
+          '!': [statusOne, statusThree]
         },
         marketId: {
           'like': BCHMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('bidRate DESC')
@@ -2200,13 +2187,10 @@ module.exports = {
           if (allAskDetailsToExecute.length >= 1) {
             BidINR.find({
                 status: {
-                  '!': statusOne
+                  '!': [statusOne, statusThree]
                 },
                 marketId: {
                   'like': BCHMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('bidAmountINR')
@@ -2219,13 +2203,10 @@ module.exports = {
                 }
                 BidINR.find({
                     status: {
-                      '!': statusOne
+                      '!': [statusOne, statusThree]
                     },
                     marketId: {
                       'like': BCHMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('bidAmountBCH')
@@ -2257,13 +2238,10 @@ module.exports = {
     console.log("Enter into ask api getAllAskINR :: ");
     AskINR.find({
         status: {
-          '!': statusOne
+          '!': [statusOne, statusThree]
         },
         marketId: {
           'like': BCHMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('askRate ASC')
@@ -2284,13 +2262,10 @@ module.exports = {
           if (allAskDetailsToExecute.length >= 1) {
             AskINR.find({
                 status: {
-                  '!': statusOne
+                  '!': [statusOne, statusThree]
                 },
                 marketId: {
                   'like': BCHMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('askAmountINR')
@@ -2303,13 +2278,10 @@ module.exports = {
                 }
                 AskINR.find({
                     status: {
-                      '!': statusOne
+                      '!': [statusOne, statusThree]
                     },
                     marketId: {
                       'like': BCHMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('askAmountBCH')
@@ -2345,9 +2317,6 @@ module.exports = {
         },
         marketId: {
           'like': BCHMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2372,9 +2341,6 @@ module.exports = {
                 },
                 marketId: {
                   'like': BCHMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('bidAmountINR')
@@ -2391,9 +2357,6 @@ module.exports = {
                     },
                     marketId: {
                       'like': BCHMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('bidAmountBCH')
@@ -2429,9 +2392,6 @@ module.exports = {
         },
         marketId: {
           'like': BCHMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2456,9 +2416,6 @@ module.exports = {
                 },
                 marketId: {
                   'like': BCHMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('askAmountINR')
@@ -2475,9 +2432,6 @@ module.exports = {
                     },
                     marketId: {
                       'like': BCHMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('askAmountBCH')

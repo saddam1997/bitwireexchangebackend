@@ -145,10 +145,7 @@ module.exports = {
           'like': LTCMARKETID
         },
         status: {
-          '!': statusOne
-        },
-        status: {
-          '!': statusThree
+          '!': [statusOne, statusThree]
         }
       });
     } catch (e) {
@@ -1072,10 +1069,7 @@ module.exports = {
           'like': LTCMARKETID
         },
         status: {
-          '!': statusOne
-        },
-        status: {
-          '!': statusThree
+          '!': [statusOne, statusThree]
         }
       });
     } catch (e) {
@@ -1988,14 +1982,11 @@ module.exports = {
     BidINR.findOne({
       bidownerINR: bidownerId,
       id: userBidId,
-      status: {
-        '!': statusOne
-      },
       marketId: {
         'like': LTCMARKETID
       },
       status: {
-        '!': statusThree
+        '!': [statusOne, statusThree]
       }
     }).exec(function(err, bidDetails) {
       if (err) {
@@ -2090,14 +2081,11 @@ module.exports = {
       askownerINR: askownerId,
       id: userAskId,
       status: {
-        '!': statusOne
+        '!': [statusOne, statusThree]
       },
       marketId: {
         'like': LTCMARKETID
       },
-      status: {
-        '!': statusThree
-      }
     }).exec(function(err, askDetails) {
       if (err) {
         return res.json({
@@ -2150,16 +2138,19 @@ module.exports = {
               });
             }
             console.log("Removing ask !!!");
-            AskINR.destroy({
+            AskINR.update({
               id: userAskId
-            }).exec(function(err, ask) {
+            }, {
+              status: statusThree,
+              statusName: statusThreeCancelled
+            }).exec(function(err, bid) {
               if (err) {
                 return res.json({
-                  "message": "Error to remove ask",
+                  "message": "Error to remove bid",
                   statusCode: 400
                 });
               }
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, ask);
+              sails.sockets.blast(constants.INR_ASK_DESTROYED, bid);
               return res.json({
                 "message": "Ask removed successfully!!",
                 statusCode: 200
@@ -2173,13 +2164,10 @@ module.exports = {
     console.log("Enter into ask api getAllBidINR :: ");
     BidINR.find({
         status: {
-          '!': statusOne
+          '!': [statusOne, statusThree]
         },
         marketId: {
           'like': LTCMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('bidRate DESC')
@@ -2200,13 +2188,10 @@ module.exports = {
           if (allAskDetailsToExecute.length >= 1) {
             BidINR.find({
                 status: {
-                  '!': statusOne
+                  '!': [statusOne, statusThree]
                 },
                 marketId: {
                   'like': LTCMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('bidAmountINR')
@@ -2219,13 +2204,10 @@ module.exports = {
                 }
                 BidINR.find({
                     status: {
-                      '!': statusOne
+                      '!': [statusOne, statusThree]
                     },
                     marketId: {
                       'like': LTCMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('bidAmountLTC')
@@ -2257,13 +2239,10 @@ module.exports = {
     console.log("Enter into ask api getAllAskINR :: ");
     AskINR.find({
         status: {
-          '!': statusOne
+          '!': [statusOne, statusThree]
         },
         marketId: {
           'like': LTCMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('askRate ASC')
@@ -2284,13 +2263,10 @@ module.exports = {
           if (allAskDetailsToExecute.length >= 1) {
             AskINR.find({
                 status: {
-                  '!': statusOne
+                  '!': [statusOne, statusThree]
                 },
                 marketId: {
                   'like': LTCMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('askAmountINR')
@@ -2303,13 +2279,10 @@ module.exports = {
                 }
                 AskINR.find({
                     status: {
-                      '!': statusOne
+                      '!': [statusOne, statusThree]
                     },
                     marketId: {
                       'like': LTCMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('askAmountLTC')
@@ -2345,9 +2318,6 @@ module.exports = {
         },
         marketId: {
           'like': LTCMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2372,9 +2342,6 @@ module.exports = {
                 },
                 marketId: {
                   'like': LTCMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('bidAmountINR')
@@ -2391,9 +2358,6 @@ module.exports = {
                     },
                     marketId: {
                       'like': LTCMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('bidAmountLTC')
@@ -2429,9 +2393,6 @@ module.exports = {
         },
         marketId: {
           'like': LTCMARKETID
-        },
-        status: {
-          '!': statusThree
         }
       })
       .sort('createTimeUTC ASC')
@@ -2456,9 +2417,6 @@ module.exports = {
                 },
                 marketId: {
                   'like': LTCMARKETID
-                },
-                status: {
-                  '!': statusThree
                 }
               })
               .sum('askAmountINR')
@@ -2475,9 +2433,6 @@ module.exports = {
                     },
                     marketId: {
                       'like': LTCMARKETID
-                    },
-                    status: {
-                      '!': statusThree
                     }
                   })
                   .sum('askAmountLTC')
@@ -2505,5 +2460,4 @@ module.exports = {
         }
       });
   },
-
 };

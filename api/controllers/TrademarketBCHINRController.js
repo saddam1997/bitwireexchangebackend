@@ -21,7 +21,6 @@ const txFeeWithdrawSuccessBCH = sails.config.common.txFeeWithdrawSuccessBCH;
 const BCHMARKETID = sails.config.common.BCHMARKETID;
 
 module.exports = {
-
   addAskINRMarket: async function(req, res) {
     console.log("Enter into ask api addAskINRMarket : : " + JSON.stringify(req.body));
     var userAskAmountBCH = new BigNumber(req.body.askAmountBCH);
@@ -2459,5 +2458,4 @@ module.exports = {
         }
       });
   },
-
 };

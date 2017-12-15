@@ -7,7 +7,6 @@
 var moment = require('moment');
 module.exports = {
 
-
   schema: true,
   attributes: {
     createTimeUTC: {

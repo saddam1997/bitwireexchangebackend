@@ -39,23 +39,202 @@ var clientINR = new bitcoinINR.Client({
   pass: sails.config.company.clientINRpass
 });
 
+//USD Wallet Details
+var bitcoinUSD = require('bitcoin');
+var clientUSD = new bitcoinUSD.Client({
+  host: sails.config.company.clientUSDhost,
+  port: sails.config.company.clientUSDport,
+  user: sails.config.company.clientUSDuser,
+  pass: sails.config.company.clientUSDpass
+});
+
+//EUR Wallet Details
+var bitcoinEUR = require('bitcoin');
+var clientEUR = new bitcoinEUR.Client({
+  host: sails.config.company.clientEURhost,
+  port: sails.config.company.clientEURport,
+  user: sails.config.company.clientEURuser,
+  pass: sails.config.company.clientEURpass
+});
+
+//GBP Wallet Details
+var bitcoinGBP = require('bitcoin');
+var clientGBP = new bitcoinGBP.Client({
+  host: sails.config.company.clientGBPhost,
+  port: sails.config.company.clientGBPport,
+  user: sails.config.company.clientGBPuser,
+  pass: sails.config.company.clientGBPpass
+});
+
+//BRL Wallet Details
+var bitcoinBRL = require('bitcoin');
+var clientBRL = new bitcoinBRL.Client({
+  host: sails.config.company.clientBRLhost,
+  port: sails.config.company.clientBRLport,
+  user: sails.config.company.clientBRLuser,
+  pass: sails.config.company.clientBRLpass
+});
+
+//PLN Wallet Details
+var bitcoinPLN = require('bitcoin');
+var clientPLN = new bitcoinPLN.Client({
+  host: sails.config.company.clientPLNhost,
+  port: sails.config.company.clientPLNport,
+  user: sails.config.company.clientPLNuser,
+  pass: sails.config.company.clientPLNpass
+});
+
+//CAD Wallet Details
+var bitcoinCAD = require('bitcoin');
+var clientCAD = new bitcoinCAD.Client({
+  host: sails.config.company.clientCADhost,
+  port: sails.config.company.clientCADport,
+  user: sails.config.company.clientCADuser,
+  pass: sails.config.company.clientCADpass
+});
+
+//TRY Wallet Details
+var bitcoinTRY = require('bitcoin');
+var clientTRY = new bitcoinTRY.Client({
+  host: sails.config.company.clientTRYhost,
+  port: sails.config.company.clientTRYport,
+  user: sails.config.company.clientTRYuser,
+  pass: sails.config.company.clientTRYpass
+});
+
+//RUB Wallet Details
+var bitcoinRUB = require('bitcoin');
+var clientRUB = new bitcoinRUB.Client({
+  host: sails.config.company.clientRUBhost,
+  port: sails.config.company.clientRUBport,
+  user: sails.config.company.clientRUBuser,
+  pass: sails.config.company.clientRUBpass
+});
+
+//MXN Wallet Details
+var bitcoinMXN = require('bitcoin');
+var clientMXN = new bitcoinMXN.Client({
+  host: sails.config.company.clientMXNhost,
+  port: sails.config.company.clientMXNport,
+  user: sails.config.company.clientMXNuser,
+  pass: sails.config.company.clientMXNpass
+});
+
+//CZK Wallet Details
+var bitcoinCZK = require('bitcoin');
+var clientCZK = new bitcoinCZK.Client({
+  host: sails.config.company.clientCZKhost,
+  port: sails.config.company.clientCZKport,
+  user: sails.config.company.clientCZKuser,
+  pass: sails.config.company.clientCZKpass
+});
+
+//ILS Wallet Details
+var bitcoinILS = require('bitcoin');
+var clientILS = new bitcoinILS.Client({
+  host: sails.config.company.clientILShost,
+  port: sails.config.company.clientILSport,
+  user: sails.config.company.clientILSuser,
+  pass: sails.config.company.clientILSpass
+});
+
+//NZD Wallet Details
+var bitcoinNZD = require('bitcoin');
+var clientNZD = new bitcoinNZD.Client({
+  host: sails.config.company.clientNZDhost,
+  port: sails.config.company.clientNZDport,
+  user: sails.config.company.clientNZDuser,
+  pass: sails.config.company.clientNZDpass
+});
+
+//JPY Wallet Details
+var bitcoinJPY = require('bitcoin');
+var clientJPY = new bitcoinJPY.Client({
+  host: sails.config.company.clientJPYhost,
+  port: sails.config.company.clientJPYport,
+  user: sails.config.company.clientJPYuser,
+  pass: sails.config.company.clientJPYpass
+});
+
+//SEK Wallet Details
+var bitcoinSEK = require('bitcoin');
+var clientSEK = new bitcoinSEK.Client({
+  host: sails.config.company.clientSEKhost,
+  port: sails.config.company.clientSEKport,
+  user: sails.config.company.clientSEKuser,
+  pass: sails.config.company.clientSEKpass
+});
+
+//AUD Wallet Details
+var bitcoinAUD = require('bitcoin');
+var clientAUD = new bitcoinAUD.Client({
+  host: sails.config.company.clientAUDhost,
+  port: sails.config.company.clientAUDport,
+  user: sails.config.company.clientAUDuser,
+  pass: sails.config.company.clientAUDpass
+});
 const LABELPREFIX = sails.config.common.LABELPREFIX;
 
 var transactionFeeBCH = sails.config.common.txFeeBCH;
 var transactionFeeBTC = sails.config.common.txFeeBTC;
 var transactionFeeLTC = sails.config.common.txFeeLTC;
 var transactionFeeINR = sails.config.common.txFeeINR;
+var transactionFeeUSD = sails.config.common.txFeeUSD;
+var transactionFeeEUR = sails.config.common.txFeeEUR;
+var transactionFeeGBP = sails.config.common.txFeeGBP;
+var transactionFeeBRL = sails.config.common.txFeeBRL;
+var transactionFeePLN = sails.config.common.txFeePLN;
+var transactionFeeCAD = sails.config.common.txFeeCAD;
+var transactionFeeTRY = sails.config.common.txFeeTRY;
+var transactionFeeRUB = sails.config.common.txFeeRUB;
+var transactionFeeMXN = sails.config.common.txFeeMXN;
+var transactionFeeCZK = sails.config.common.txFeeCZK;
+var transactionFeeILS = sails.config.common.txFeeILS;
+var transactionFeeNZD = sails.config.common.txFeeNZD;
+var transactionFeeJPY = sails.config.common.txFeeJPY;
+var transactionFeeSEK = sails.config.common.txFeeSEK;
+var transactionFeeAUD = sails.config.common.txFeeAUD;
 
 const COMPANYACCOUNTBTC = sails.config.common.COMPANYACCOUNTBTC;
 const COMPANYACCOUNTBCH = sails.config.common.COMPANYACCOUNTBCH;
 const COMPANYACCOUNTLTC = sails.config.common.COMPANYACCOUNTLTC;
 const COMPANYACCOUNTINR = sails.config.common.COMPANYACCOUNTINR;
+const COMPANYACCOUNTUSD = sails.config.common.COMPANYACCOUNTUSD;
+const COMPANYACCOUNTEUR = sails.config.common.COMPANYACCOUNTEUR;
+const COMPANYACCOUNTGBP = sails.config.common.COMPANYACCOUNTGBP;
+const COMPANYACCOUNTBRL = sails.config.common.COMPANYACCOUNTBRL;
+const COMPANYACCOUNTPLN = sails.config.common.COMPANYACCOUNTPLN;
+const COMPANYACCOUNTCAD = sails.config.common.COMPANYACCOUNTCAD;
+const COMPANYACCOUNTTRY = sails.config.common.COMPANYACCOUNTTRY;
+const COMPANYACCOUNTRUB = sails.config.common.COMPANYACCOUNTRUB;
+const COMPANYACCOUNTMXN = sails.config.common.COMPANYACCOUNTMXN;
+const COMPANYACCOUNTCZK = sails.config.common.COMPANYACCOUNTCZK;
+const COMPANYACCOUNTILS = sails.config.common.COMPANYACCOUNTILS;
+const COMPANYACCOUNTNZD = sails.config.common.COMPANYACCOUNTNZD;
+const COMPANYACCOUNTJPY = sails.config.common.COMPANYACCOUNTJPY;
+const COMPANYACCOUNTSEK = sails.config.common.COMPANYACCOUNTSEK;
+const COMPANYACCOUNTAUD = sails.config.common.COMPANYACCOUNTAUD;
+
 
 const CONFIRMATIONOFTXBTC = sails.config.common.CONFIRMATIONOFTXBTC;
 const CONFIRMATIONOFTXBCH = sails.config.common.CONFIRMATIONOFTXBCH;
 const CONFIRMATIONOFTXLTC = sails.config.common.CONFIRMATIONOFTXLTC;
 const CONFIRMATIONOFTXINR = sails.config.common.CONFIRMATIONOFTXINR;
-
+const CONFIRMATIONOFTXUSD = sails.config.common.CONFIRMATIONOFTXUSD;
+const CONFIRMATIONOFTXEUR = sails.config.common.CONFIRMATIONOFTXEUR;
+const CONFIRMATIONOFTXGBP = sails.config.common.CONFIRMATIONOFTXGBP;
+const CONFIRMATIONOFTXBRL = sails.config.common.CONFIRMATIONOFTXBRL;
+const CONFIRMATIONOFTXPLN = sails.config.common.CONFIRMATIONOFTXPLN;
+const CONFIRMATIONOFTXCAD = sails.config.common.CONFIRMATIONOFTXCAD;
+const CONFIRMATIONOFTXTRY = sails.config.common.CONFIRMATIONOFTXTRY;
+const CONFIRMATIONOFTXRUB = sails.config.common.CONFIRMATIONOFTXRUB;
+const CONFIRMATIONOFTXMXN = sails.config.common.CONFIRMATIONOFTXMXN;
+const CONFIRMATIONOFTXCZK = sails.config.common.CONFIRMATIONOFTXCZK;
+const CONFIRMATIONOFTXILS = sails.config.common.CONFIRMATIONOFTXILS;
+const CONFIRMATIONOFTXNZD = sails.config.common.CONFIRMATIONOFTXNZD;
+const CONFIRMATIONOFTXJPY = sails.config.common.CONFIRMATIONOFTXJPY;
+const CONFIRMATIONOFTXSEK = sails.config.common.CONFIRMATIONOFTXSEK;
+const CONFIRMATIONOFTXAUD = sails.config.common.CONFIRMATIONOFTXAUD;
 module.exports = {
   sendBTC: function(req, res, next) {
     console.log("Enter into sendBTC");

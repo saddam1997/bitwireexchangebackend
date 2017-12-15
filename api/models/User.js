@@ -17,10 +17,7 @@ module.exports = {
       unique: true
     },
 
-    BTCMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
+
     BTCbalance: {
       type: 'float',
       defaultsTo: 0
@@ -29,10 +26,7 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
-    BCHMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
+
     BCHbalance: {
       type: 'float',
       defaultsTo: 0
@@ -42,10 +36,6 @@ module.exports = {
       defaultsTo: 0
     },
 
-    LTCMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
     LTCbalance: {
       type: 'float',
       defaultsTo: 0
@@ -55,10 +45,6 @@ module.exports = {
       defaultsTo: 0
     },
 
-    INRMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
     INRbalance: {
       type: 'float',
       defaultsTo: 0
@@ -67,6 +53,130 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
+    USDbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedUSDbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    EURbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedEURbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    GBPbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedGBPbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    BRLbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedBRLbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    PLNbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedPLNbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    CADbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedCADbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    TRYbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedTRYbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    RUBbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedRUBbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    MXNbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedMXNbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    CZKbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedCZKbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    ILSbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedILSbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    NZDbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedNZDbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    JPYbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedJPYbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    SEKbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedSEKbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    AUDbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+    FreezedAUDbalance: {
+      type: 'float',
+      defaultsTo: 0
+    },
+
+
+
+
     isBTCAddress: {
       type: "boolean",
       defaultsTo: false
@@ -83,6 +193,67 @@ module.exports = {
       type: "boolean",
       defaultsTo: false
     },
+
+    isUSDAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isEURAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isGBPAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isBRLAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isPLNAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isCADAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isTRYAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isRUBAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isMXNAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isCZKAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isILSAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isNZDAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isJPYAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isSEKAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
+    isAUDAddress: {
+      type: "boolean",
+      defaultsTo: false
+    },
     userBTCAddress: {
       type: 'string'
     },
@@ -96,6 +267,51 @@ module.exports = {
       type: 'string'
     },
 
+    userUSDAddress: {
+      type: 'string'
+    },
+    userEURAddress: {
+      type: 'string'
+    },
+    userGBPAddress: {
+      type: 'string'
+    },
+    userBRLAddress: {
+      type: 'string'
+    },
+    userPLNAddress: {
+      type: 'string'
+    },
+    userCADAddress: {
+      type: 'string'
+    },
+    userTRYAddress: {
+      type: 'string'
+    },
+    userRUBAddress: {
+      type: 'string'
+    },
+    userMXNAddress: {
+      type: 'string'
+    },
+    userCZKAddress: {
+      type: 'string'
+    },
+    userILSAddress: {
+      type: 'string'
+    },
+    userNZDAddress: {
+      type: 'string'
+    },
+    userJPYAddress: {
+      type: 'string'
+    },
+    userSEKAddress: {
+      type: 'string'
+    },
+    userAUDAddress: {
+      type: 'string'
+    },
     encryptedPassword: {
       type: 'string'
     },
@@ -140,6 +356,157 @@ module.exports = {
       collection: 'askINR',
       via: 'askownerINR'
     },
+
+    //USD
+    bidsUSD: {
+      collection: 'bidUSD',
+      via: 'bidownerUSD'
+    },
+    asksUSD: {
+      collection: 'askUSD',
+      via: 'askownerUSD'
+    },
+
+    //EUR
+    bidsEUR: {
+      collection: 'bidEUR',
+      via: 'bidownerEUR'
+    },
+    asksEUR: {
+      collection: 'askEUR',
+      via: 'askownerEUR'
+    },
+
+    //GBP
+    bidsGBP: {
+      collection: 'bidGBP',
+      via: 'bidownerGBP'
+    },
+    asksGBP: {
+      collection: 'askGBP',
+      via: 'askownerGBP'
+    },
+
+    //BRL
+    bidsBRL: {
+      collection: 'bidBRL',
+      via: 'bidownerBRL'
+    },
+    asksBRL: {
+      collection: 'askBRL',
+      via: 'askownerBRL'
+    },
+
+    //PLN
+    bidsPLN: {
+      collection: 'bidPLN',
+      via: 'bidownerPLN'
+    },
+    asksPLN: {
+      collection: 'askPLN',
+      via: 'askownerPLN'
+    },
+
+    //CAD
+    bidsCAD: {
+      collection: 'bidCAD',
+      via: 'bidownerCAD'
+    },
+    asksCAD: {
+      collection: 'askCAD',
+      via: 'askownerCAD'
+    },
+
+    //TRY
+    bidsTRY: {
+      collection: 'bidTRY',
+      via: 'bidownerTRY'
+    },
+    asksTRY: {
+      collection: 'askTRY',
+      via: 'askownerTRY'
+    },
+
+    //RUB
+    bidsRUB: {
+      collection: 'bidRUB',
+      via: 'bidownerRUB'
+    },
+    asksRUB: {
+      collection: 'askRUB',
+      via: 'askownerRUB'
+    },
+
+    //MXN
+    bidsMXN: {
+      collection: 'bidMXN',
+      via: 'bidownerMXN'
+    },
+    asksMXN: {
+      collection: 'askMXN',
+      via: 'askownerMXN'
+    },
+
+    //CZK
+    bidsCZK: {
+      collection: 'bidCZK',
+      via: 'bidownerCZK'
+    },
+    asksCZK: {
+      collection: 'askCZK',
+      via: 'askownerCZK'
+    },
+
+    //ILS
+    bidsILS: {
+      collection: 'bidILS',
+      via: 'bidownerILS'
+    },
+    asksILS: {
+      collection: 'askILS',
+      via: 'askownerILS'
+    },
+
+    //NZD
+    bidsNZD: {
+      collection: 'bidNZD',
+      via: 'bidownerNZD'
+    },
+    asksNZD: {
+      collection: 'askNZD',
+      via: 'askownerNZD'
+    },
+
+    //JPY
+    bidsJPY: {
+      collection: 'bidJPY',
+      via: 'bidownerJPY'
+    },
+    asksJPY: {
+      collection: 'askJPY',
+      via: 'askownerJPY'
+    },
+
+    //SEK
+    bidsSEK: {
+      collection: 'bidSEK',
+      via: 'bidownerSEK'
+    },
+    asksSEK: {
+      collection: 'askSEK',
+      via: 'askownerSEK'
+    },
+
+    //AUD
+    bidsAUD: {
+      collection: 'bidAUD',
+      via: 'bidownerAUD'
+    },
+    asksAUD: {
+      collection: 'askAUD',
+      via: 'askownerAUD'
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.encryptedPassword;

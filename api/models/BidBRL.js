@@ -12,47 +12,47 @@ module.exports = {
     createTimeUTC: {
       type: 'string',
     },
-    askAmountBTC: {
+    bidAmountBTC: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    askAmountBRL: {
+    bidAmountBRL: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    totalaskAmountBTC: {
+    totalbidAmountBTC: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    totalaskAmountBRL: {
+    totalbidAmountBRL: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    askAmountLTC: {
+    bidAmountLTC: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    totalaskAmountLTC: {
+    totalbidAmountLTC: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    askAmountBCH: {
+    bidAmountBCH: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    totalaskAmountBCH: {
+    totalbidAmountBCH: {
       type: 'float',
       defaultsTo: 0.00,
       required: true
     },
-    askRate: {
+    bidRate: {
       type: 'float',
       required: true,
       defaultsTo: 0
@@ -66,7 +66,7 @@ module.exports = {
     marketId: {
       type: 'integer'
     },
-    askownerBRL: {
+    bidownerBRL: {
       model: 'user'
     }
   },

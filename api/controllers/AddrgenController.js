@@ -36,6 +36,9 @@ var clientINR = new bitcoinINR.Client({
   user: sails.config.company.clientINRuser,
   pass: sails.config.company.clientINRpass
 });
+
+const LABELPREFIX = sails.config.common.LABELPREFIX;
+
 module.exports = {
   getNewBTCAddress: function(req, res) {
     var userMailId = req.body.userMailId;
@@ -66,7 +69,9 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientBTC.cmd('getnewaddress', userMailId, function(err, address) {
+      var labelWithPrefix = LABELPREFIX + userMailId;
+      console.log("labelWithPrefix :: " + labelWithPrefix);
+      clientBTC.cmd('getnewaddress', labelWithPrefix, function(err, address) {
         if (err) {
           return res.json({
             "message": "Failed to get new address from BTC server",
@@ -81,7 +86,7 @@ module.exports = {
             isBTCAddress: true,
             userBTCAddress: address
           }).exec(function afterwards(err, updated) {
-            console.log("Easdlkfjasldfjalskdfjalsdfjl...............");
+
             if (err) {
               console.log("asdfasdf" + JSON.stringify(err));
               return res.json({
@@ -127,7 +132,9 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientBCH.cmd('getnewaddress', userMailId, function(err, address) {
+      var labelWithPrefix = LABELPREFIX + userMailId;
+      console.log("labelWithPrefix :: " + labelWithPrefix);
+      clientBCH.cmd('getnewaddress', labelWithPrefix, function(err, address) {
         if (err) {
           return res.json({
             "message": "Failed to get new address from BCH server",
@@ -142,7 +149,7 @@ module.exports = {
             isBCHAddress: true,
             userBCHAddress: address
           }).exec(function afterwards(err, updated) {
-            console.log("Easdlkfjasldfjalskdfjalsdfjl...............");
+
             if (err) {
               console.log("asdfasdf" + JSON.stringify(err));
               return res.json({
@@ -188,7 +195,9 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientLTC.cmd('getnewaddress', userMailId, function(err, address) {
+      var labelWithPrefix = LABELPREFIX + userMailId;
+      console.log("labelWithPrefix :: " + labelWithPrefix);
+      clientLTC.cmd('getnewaddress', labelWithPrefix, function(err, address) {
         if (err) {
           return res.json({
             "message": "Failed to get new address from LTC server",
@@ -203,7 +212,7 @@ module.exports = {
             isLTCAddress: true,
             userLTCAddress: address
           }).exec(function afterwards(err, updated) {
-            console.log("Easdlkfjasldfjalskdfjalsdfjl...............");
+
             if (err) {
               console.log("asdfasdf" + JSON.stringify(err));
               return res.json({
@@ -249,7 +258,9 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINR.cmd('getnewaddress', userMailId, function(err, address) {
+      var labelWithPrefix = LABELPREFIX + userMailId;
+      console.log("labelWithPrefix :: " + labelWithPrefix);
+      clientINR.cmd('getnewaddress', labelWithPrefix, function(err, address) {
         if (err) {
           return res.json({
             "message": "Failed to get new address from INR server",
@@ -264,7 +275,7 @@ module.exports = {
             isINRAddress: true,
             userINRAddress: address
           }).exec(function afterwards(err, updated) {
-            console.log("Easdlkfjasldfjalskdfjalsdfjl...............");
+
             if (err) {
               console.log("asdfasdf" + JSON.stringify(err));
               return res.json({

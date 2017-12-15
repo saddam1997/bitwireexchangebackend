@@ -24,7 +24,7 @@ module.exports.common = {
   supportEmailId: 'bitwire.io@gmail.com', //Support Email Id to send mail signup and login and forgot password
   supportEmailIdpass: 'bitwire@io', //Support Email Id passoword
   supportEmailIdService: 'gmail',
-  exchangeLabelPrefix: 'EX',
+  LABELPREFIX: 'EX',
   BTCMARKETID: 1,
   BCHMARKETID: 1,
   LTCMARKETID: 1,

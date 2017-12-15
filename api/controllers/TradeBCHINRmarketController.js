@@ -17,8 +17,7 @@ var statusTwoPending = sails.config.common.statusTwoPending;
 var statusThreeCancelled = sails.config.common.statusThreeCancelled;
 var constants = require('./../../config/constants');
 
-const txFeeINRWithdrawSuccess = sails.config.common.txFeeINRWithdrawSuccess;
-const txFeeBCHWithdrawSuccess = sails.config.common.txFeeBCHWithdrawSuccess;
+const txFeeWithdrawSuccessBCH = sails.config.common.txFeeWithdrawSuccessBCH;
 const BCHMARKETID = sails.config.common.BCHMARKETID;
 
 module.exports = {
@@ -208,16 +207,16 @@ module.exports = {
 
             //Deduct Transation Fee Bidder
             console.log("Before deduct TX Fees12312 of INR Update user " + updatedINRbalanceBidder);
-            //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+            //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
             // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
             //
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess)
+            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR)
             // console.log("txFeesBidderINR :: " + txFeesBidderINR);
             // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
-            txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+            txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
             var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -264,9 +263,9 @@ module.exports = {
             BCHAmountSucess = BCHAmountSucess.minus(totoalAskRemainingBCH);
             console.log("userAllDetailsInDBAsker.BCHbalance :: " + userAllDetailsInDBAsker.BCHbalance);
             console.log("Before deduct TX Fees of Update Asker Amount BCH updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            //var txFeesAskerBCH = (parseFloat(BCHAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+            //var txFeesAskerBCH = (parseFloat(BCHAmountSucess) * parseFloat(txFeeWithdrawSuccessBCH));
             var txFeesAskerBCH = new BigNumber(BCHAmountSucess);
-            txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+            txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
             console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
@@ -351,15 +350,15 @@ module.exports = {
 
             //Deduct Transation Fee Bidder
             console.log("Before deduct TX Fees of INR 089089Update user " + updatedINRbalanceBidder);
-            // var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+            // var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
             // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
             // console.log("txFeesBidderINR :: " + txFeesBidderINR);
             // // updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
-            txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+            txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
             var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -447,9 +446,9 @@ module.exports = {
             var BCHAmountSucess = new BigNumber(userAskAmountBCH);
             BCHAmountSucess = BCHAmountSucess.minus(totoalAskRemainingBCH);
 
-            //var txFeesAskerBCH = (parseFloat(BCHAmountSucess) * parseFloat(txFeeBCHWithdrawSuccess));
+            //var txFeesAskerBCH = (parseFloat(BCHAmountSucess) * parseFloat(txFeeWithdrawSuccessBCH));
             var txFeesAskerBCH = new BigNumber(BCHAmountSucess);
-            txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+            txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
             console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
@@ -551,17 +550,17 @@ module.exports = {
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
               //Deduct Transation Fee Bidder
               console.log("Before deduct TX Fees of42342312 INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
 
               // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
               // console.log("After deduct TX Fees of INR Update user rtert updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
 
               var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
-              txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
               var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -610,9 +609,9 @@ module.exports = {
               //var BCHAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
               var BCHAmountSucess = new BigNumber(userAskAmountBCH);
               BCHAmountSucess = BCHAmountSucess.minus(totoalAskRemainingBCH);
-              //var txFeesAskerBCH = (parseFloat(updatedBCHbalanceAsker) * parseFloat(txFeeBCHWithdrawSuccess));
+              //var txFeesAskerBCH = (parseFloat(updatedBCHbalanceAsker) * parseFloat(txFeeWithdrawSuccessBCH));
               var txFeesAskerBCH = new BigNumber(BCHAmountSucess);
-              txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
 
               console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
@@ -713,16 +712,16 @@ module.exports = {
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
               //Deduct Transation Fee Bidder
               console.log("Before deducta7567 TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
               // console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
               var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
-              txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
               var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -833,20 +832,20 @@ module.exports = {
             console.log("Before deduct8768678 TX Fees of INR Update user " + updatedINRbalanceBidder);
             //var INRAmountSucess = parseFloat(totoalAskRemainingINR);
             //var INRAmountSucess = new BigNumber(totoalAskRemainingINR);
-            //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
-            //var txFeesBidderINR = (parseFloat(totoalAskRemainingINR) * parseFloat(txFeeINRWithdrawSuccess));
+            //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
+            //var txFeesBidderINR = (parseFloat(totoalAskRemainingINR) * parseFloat(txFeeWithdrawSuccessINR));
 
 
 
             // var txFeesBidderINR = new BigNumber(totoalAskRemainingINR);
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
             //
             // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             //Need to change here ...111...............askDetails
             var txFeesBidderBCH = new BigNumber(totoalAskRemainingBCH);
-            txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+            txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
             var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
@@ -890,9 +889,9 @@ module.exports = {
 
             //Deduct Transation Fee Asker
             console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            //var txFeesAskerBCH = (parseFloat(userAskAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+            //var txFeesAskerBCH = (parseFloat(userAskAmountBCH) * parseFloat(txFeeWithdrawSuccessBCH));
             var txFeesAskerBCH = new BigNumber(userAskAmountBCH);
-            txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+            txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
 
             console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
             console.log("userAllDetailsInDBAsker.BCHbalance :: " + userAllDetailsInDBAsker.BCHbalance);
@@ -1129,9 +1128,9 @@ module.exports = {
 
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+              //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeWithdrawSuccessBCH));
               var txFeesAskerBCH = new BigNumber(currentAskDetails.askAmountBCH);
-              txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
               console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
@@ -1197,9 +1196,9 @@ module.exports = {
               // var INRAmountSucess = new BigNumber(userBidAmountINR);
               // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
               //
-              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
+              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               //
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1209,7 +1208,7 @@ module.exports = {
               BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
-              txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
               var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1309,9 +1308,9 @@ module.exports = {
 
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+              //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeWithdrawSuccessBCH));
               var txFeesAskerBCH = new BigNumber(currentAskDetails.askAmountBCH);
-              txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
               console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
@@ -1409,9 +1408,9 @@ module.exports = {
               // var INRAmountSucess = new BigNumber(userBidAmountINR);
               // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
               //
-              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
+              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               //
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1424,7 +1423,7 @@ module.exports = {
               BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
-              txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
               var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -1526,9 +1525,9 @@ module.exports = {
 
                 //Deduct Transation Fee Asker
                 console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-                //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+                //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeWithdrawSuccessBCH));
                 var txFeesAskerBCH = new BigNumber(currentAskDetails.askAmountBCH);
-                txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+                txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
 
                 console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
                 //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
@@ -1590,9 +1589,9 @@ module.exports = {
                 // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
                 //
                 //
-                // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
+                // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
                 // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-                // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+                // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
                 // console.log("txFeesBidderINR :: " + txFeesBidderINR);
                 // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
                 // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -1601,7 +1600,7 @@ module.exports = {
                 BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
                 var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
-                txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+                txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
                 var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
                 console.log("txFeesBidderINR :: " + txFeesBidderINR);
                 //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1697,9 +1696,9 @@ module.exports = {
 
                 //Deduct Transation Fee Asker
                 console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-                //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+                //var txFeesAskerBCH = (parseFloat(currentAskDetails.askAmountBCH) * parseFloat(txFeeWithdrawSuccessBCH));
                 var txFeesAskerBCH = new BigNumber(currentAskDetails.askAmountBCH);
-                txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+                txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
 
                 console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
                 //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
@@ -1812,9 +1811,9 @@ module.exports = {
 
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              //var txFeesAskerBCH = (parseFloat(totoalBidRemainingBCH) * parseFloat(txFeeBCHWithdrawSuccess));
+              //var txFeesAskerBCH = (parseFloat(totoalBidRemainingBCH) * parseFloat(txFeeWithdrawSuccessBCH));
               var txFeesAskerBCH = new BigNumber(totoalBidRemainingBCH);
-              txFeesAskerBCH = txFeesAskerBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesAskerBCH = txFeesAskerBCH.times(txFeeWithdrawSuccessBCH);
 
               console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
@@ -1879,9 +1878,9 @@ module.exports = {
 
               //Deduct Transation Fee Bidder
               console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(updatedINRbalanceBidder) * parseFloat(txFeeINRWithdrawSuccess));
+              //var txFeesBidderINR = (parseFloat(updatedINRbalanceBidder) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(userBidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               //
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1891,7 +1890,7 @@ module.exports = {
               BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
-              txFeesBidderBCH = txFeesBidderBCH.times(txFeeBCHWithdrawSuccess);
+              txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
 
               var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);

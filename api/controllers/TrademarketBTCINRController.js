@@ -1,7 +1,7 @@
 /**
- * TradeBTCINRmarketController
+ * TrademarketBTCINRController
  *
- * @description :: Server-side logic for managing tradebtcinrmarkets
+ * @description :: Server-side logic for managing trademarketbtcinrs
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
@@ -23,6 +23,7 @@ const txFeeWithdrawSuccessBTC = sails.config.common.txFeeWithdrawSuccessBTC;
 const BTCMARKETID = sails.config.common.BTCMARKETID;
 
 module.exports = {
+
   addAskINRMarket: async function(req, res) {
     console.log("Enter into ask api addAskINRMarket : : " + JSON.stringify(req.body));
     var userAskAmountBTC = new BigNumber(req.body.askAmountBTC);
@@ -2460,4 +2461,5 @@ module.exports = {
         }
       });
   },
+
 };

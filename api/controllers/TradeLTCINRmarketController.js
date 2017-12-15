@@ -17,8 +17,7 @@ var statusTwoPending = sails.config.common.statusTwoPending;
 var statusThreeCancelled = sails.config.common.statusThreeCancelled;
 var constants = require('./../../config/constants');
 
-const txFeeINRWithdrawSuccess = sails.config.common.txFeeINRWithdrawSuccess;
-const txFeeLTCWithdrawSuccess = sails.config.common.txFeeLTCWithdrawSuccess;
+const txFeeWithdrawSuccessLTC = sails.config.common.txFeeWithdrawSuccessLTC;
 const LTCMARKETID = sails.config.common.LTCMARKETID;
 
 module.exports = {
@@ -208,16 +207,16 @@ module.exports = {
 
             //Deduct Transation Fee Bidder
             console.log("Before deduct TX Fees12312 of INR Update user " + updatedINRbalanceBidder);
-            //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+            //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
             // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
             //
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess)
+            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR)
             // console.log("txFeesBidderINR :: " + txFeesBidderINR);
             // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
-            txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+            txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
             var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -264,9 +263,9 @@ module.exports = {
             LTCAmountSucess = LTCAmountSucess.minus(totoalAskRemainingLTC);
             console.log("userAllDetailsInDBAsker.LTCbalance :: " + userAllDetailsInDBAsker.LTCbalance);
             console.log("Before deduct TX Fees of Update Asker Amount LTC updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-            //var txFeesAskerLTC = (parseFloat(LTCAmountSucess) * parseFloat(txFeeLTCWithdrawSuccess));
+            //var txFeesAskerLTC = (parseFloat(LTCAmountSucess) * parseFloat(txFeeWithdrawSuccessLTC));
             var txFeesAskerLTC = new BigNumber(LTCAmountSucess);
-            txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+            txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
             console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
             //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
             updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
@@ -351,15 +350,15 @@ module.exports = {
 
             //Deduct Transation Fee Bidder
             console.log("Before deduct TX Fees of INR 089089Update user " + updatedINRbalanceBidder);
-            // var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+            // var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
             // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
             // console.log("txFeesBidderINR :: " + txFeesBidderINR);
             // // updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
-            txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+            txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
             var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
             console.log("txFeesBidderINR :: " + txFeesBidderINR);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -447,9 +446,9 @@ module.exports = {
             var LTCAmountSucess = new BigNumber(userAskAmountLTC);
             LTCAmountSucess = LTCAmountSucess.minus(totoalAskRemainingLTC);
 
-            //var txFeesAskerLTC = (parseFloat(LTCAmountSucess) * parseFloat(txFeeLTCWithdrawSuccess));
+            //var txFeesAskerLTC = (parseFloat(LTCAmountSucess) * parseFloat(txFeeWithdrawSuccessLTC));
             var txFeesAskerLTC = new BigNumber(LTCAmountSucess);
-            txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+            txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
             console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
             //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
             updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
@@ -551,17 +550,17 @@ module.exports = {
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
               //Deduct Transation Fee Bidder
               console.log("Before deduct TX Fees of42342312 INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
 
               // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
               // console.log("After deduct TX Fees of INR Update user rtert updatedFreezedLTCbalanceBidder " + updatedFreezedLTCbalanceBidder);
 
               var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
-              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
               var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -610,9 +609,9 @@ module.exports = {
               //var LTCAmountSucess = (parseFloat(userAskAmountLTC) - parseFloat(totoalAskRemainingLTC));
               var LTCAmountSucess = new BigNumber(userAskAmountLTC);
               LTCAmountSucess = LTCAmountSucess.minus(totoalAskRemainingLTC);
-              //var txFeesAskerLTC = (parseFloat(updatedLTCbalanceAsker) * parseFloat(txFeeLTCWithdrawSuccess));
+              //var txFeesAskerLTC = (parseFloat(updatedLTCbalanceAsker) * parseFloat(txFeeWithdrawSuccessLTC));
               var txFeesAskerLTC = new BigNumber(LTCAmountSucess);
-              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
 
               console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
               //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
@@ -713,16 +712,16 @@ module.exports = {
               updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
               //Deduct Transation Fee Bidder
               console.log("Before deducta7567 TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeINRWithdrawSuccess));
+              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
               // console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
 
               var txFeesBidderLTC = new BigNumber(currentBidDetails.bidAmountLTC);
-              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
               var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -833,20 +832,20 @@ module.exports = {
             console.log("Before deduct8768678 TX Fees of INR Update user " + updatedINRbalanceBidder);
             //var INRAmountSucess = parseFloat(totoalAskRemainingINR);
             //var INRAmountSucess = new BigNumber(totoalAskRemainingINR);
-            //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
-            //var txFeesBidderINR = (parseFloat(totoalAskRemainingINR) * parseFloat(txFeeINRWithdrawSuccess));
+            //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
+            //var txFeesBidderINR = (parseFloat(totoalAskRemainingINR) * parseFloat(txFeeWithdrawSuccessINR));
 
 
 
             // var txFeesBidderINR = new BigNumber(totoalAskRemainingINR);
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
             //
             // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
             // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
             //Need to change here ...111...............askDetails
             var txFeesBidderLTC = new BigNumber(totoalAskRemainingLTC);
-            txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+            txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
             var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentBidDetails.bidRate);
             updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
@@ -890,9 +889,9 @@ module.exports = {
 
             //Deduct Transation Fee Asker
             console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-            //var txFeesAskerLTC = (parseFloat(userAskAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+            //var txFeesAskerLTC = (parseFloat(userAskAmountLTC) * parseFloat(txFeeWithdrawSuccessLTC));
             var txFeesAskerLTC = new BigNumber(userAskAmountLTC);
-            txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+            txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
 
             console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
             console.log("userAllDetailsInDBAsker.LTCbalance :: " + userAllDetailsInDBAsker.LTCbalance);
@@ -1129,9 +1128,9 @@ module.exports = {
 
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-              //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+              //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeWithdrawSuccessLTC));
               var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
-              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
               console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
               //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
               updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
@@ -1197,9 +1196,9 @@ module.exports = {
               // var INRAmountSucess = new BigNumber(userBidAmountINR);
               // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
               //
-              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
+              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               //
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1209,7 +1208,7 @@ module.exports = {
               LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
               var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
-              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
               var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1309,9 +1308,9 @@ module.exports = {
 
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-              //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+              //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeWithdrawSuccessLTC));
               var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
-              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
               console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
               //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
               updatedLTCbalanceAsker = updatedLTCbalanceAsker.minus(txFeesAskerLTC);
@@ -1409,9 +1408,9 @@ module.exports = {
               // var INRAmountSucess = new BigNumber(userBidAmountINR);
               // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
               //
-              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
+              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               //
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1424,7 +1423,7 @@ module.exports = {
               LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
               var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
-              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
               var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -1526,9 +1525,9 @@ module.exports = {
 
                 //Deduct Transation Fee Asker
                 console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-                //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+                //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeWithdrawSuccessLTC));
                 var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
-                txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+                txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
 
                 console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
                 //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
@@ -1590,9 +1589,9 @@ module.exports = {
                 // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
                 //
                 //
-                // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeINRWithdrawSuccess));
+                // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
                 // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-                // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+                // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
                 // console.log("txFeesBidderINR :: " + txFeesBidderINR);
                 // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
                 // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -1601,7 +1600,7 @@ module.exports = {
                 LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
                 var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
-                txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+                txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
                 var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
                 console.log("txFeesBidderINR :: " + txFeesBidderINR);
                 //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1697,9 +1696,9 @@ module.exports = {
 
                 //Deduct Transation Fee Asker
                 console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-                //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+                //var txFeesAskerLTC = (parseFloat(currentAskDetails.askAmountLTC) * parseFloat(txFeeWithdrawSuccessLTC));
                 var txFeesAskerLTC = new BigNumber(currentAskDetails.askAmountLTC);
-                txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+                txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
 
                 console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
                 //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
@@ -1812,9 +1811,9 @@ module.exports = {
 
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
-              //var txFeesAskerLTC = (parseFloat(totoalBidRemainingLTC) * parseFloat(txFeeLTCWithdrawSuccess));
+              //var txFeesAskerLTC = (parseFloat(totoalBidRemainingLTC) * parseFloat(txFeeWithdrawSuccessLTC));
               var txFeesAskerLTC = new BigNumber(totoalBidRemainingLTC);
-              txFeesAskerLTC = txFeesAskerLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesAskerLTC = txFeesAskerLTC.times(txFeeWithdrawSuccessLTC);
 
               console.log("txFeesAskerLTC ::: " + txFeesAskerLTC);
               //updatedLTCbalanceAsker = (parseFloat(updatedLTCbalanceAsker) - parseFloat(txFeesAskerLTC));
@@ -1879,9 +1878,9 @@ module.exports = {
 
               //Deduct Transation Fee Bidder
               console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(updatedINRbalanceBidder) * parseFloat(txFeeINRWithdrawSuccess));
+              //var txFeesBidderINR = (parseFloat(updatedINRbalanceBidder) * parseFloat(txFeeWithdrawSuccessINR));
               // var txFeesBidderINR = new BigNumber(userBidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeINRWithdrawSuccess);
+              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
               //
               // console.log("txFeesBidderINR :: " + txFeesBidderINR);
               // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
@@ -1891,7 +1890,7 @@ module.exports = {
               LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
               var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
-              txFeesBidderLTC = txFeesBidderLTC.times(txFeeLTCWithdrawSuccess);
+              txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
 
               var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);

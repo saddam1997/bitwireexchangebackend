@@ -204,4 +204,445 @@ module.exports = {
       }
     });
   },
+  sendBCH: function(req, res, next) {
+    console.log("Enter into sendBCH");
+    var userEmailAddress = req.body.userMailId;
+    var userBCHAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverBCHAddress = req.body.recieverBCHCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniBCHAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userBCHAmountToSend || !userReceiverBCHAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniBCHAmountSentByUser.greaterThanOrEqualTo(userBCHAmountToSend)) {
+      console.log("Sending amount is not less then " + miniBCHAmountSentByUser);
+      return res.json({
+        "message": "Sending amount BCH is not less then " + miniBCHAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var BCHBalanceInDB = new BigNumber(userDetails.BCHbalance);
+
+              console.log("Enter Before If ");
+
+              if (userBCHAmountToSend.greaterThan(BCHBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeBCH);
+                var transactionFeeOfBCH = new BigNumber(transactionFeeBCH);
+                var netamountToSend = userBCHAmountToSend.minus(transactionFeeOfBCH);
+                console.log("clientBCH netamountToSend :: " + netamountToSend);
+                clientBCH.cmd('sendfrom', COMPANYACCOUNTBCH, userReceiverBCHAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXBCH, userReceiverBCHAddress, userReceiverBCHAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromBCHAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "BCH Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid BCH Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in BCH server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in BCH Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateBCHAmountInDB = BCHBalanceInDB.minus(userBCHAmountToSend);
+                    console.log("updateBCHAmountInDB ::: " + updateBCHAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      BCHbalance: updateBCHAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendLTC: function(req, res, next) {
+    console.log("Enter into sendLTC");
+    var userEmailAddress = req.body.userMailId;
+    var userLTCAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverLTCAddress = req.body.recieverLTCCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniLTCAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userLTCAmountToSend || !userReceiverLTCAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniLTCAmountSentByUser.greaterThanOrEqualTo(userLTCAmountToSend)) {
+      console.log("Sending amount is not less then " + miniLTCAmountSentByUser);
+      return res.json({
+        "message": "Sending amount LTC is not less then " + miniLTCAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var LTCBalanceInDB = new BigNumber(userDetails.LTCbalance);
+
+              console.log("Enter Before If ");
+
+              if (userLTCAmountToSend.greaterThan(LTCBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeLTC);
+                var transactionFeeOfLTC = new BigNumber(transactionFeeLTC);
+                var netamountToSend = userLTCAmountToSend.minus(transactionFeeOfLTC);
+                console.log("clientLTC netamountToSend :: " + netamountToSend);
+                clientLTC.cmd('sendfrom', COMPANYACCOUNTLTC, userReceiverLTCAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXLTC, userReceiverLTCAddress, userReceiverLTCAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromLTCAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "LTC Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid LTC Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in LTC server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in LTC Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateLTCAmountInDB = LTCBalanceInDB.minus(userLTCAmountToSend);
+                    console.log("updateLTCAmountInDB ::: " + updateLTCAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      LTCbalance: updateLTCAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendINR: function(req, res, next) {
+    console.log("Enter into sendINR");
+    var userEmailAddress = req.body.userMailId;
+    var userINRAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverINRAddress = req.body.recieverINRCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniINRAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userINRAmountToSend || !userReceiverINRAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniINRAmountSentByUser.greaterThanOrEqualTo(userINRAmountToSend)) {
+      console.log("Sending amount is not less then " + miniINRAmountSentByUser);
+      return res.json({
+        "message": "Sending amount INR is not less then " + miniINRAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var INRBalanceInDB = new BigNumber(userDetails.INRbalance);
+
+              console.log("Enter Before If ");
+
+              if (userINRAmountToSend.greaterThan(INRBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeINR);
+                var transactionFeeOfINR = new BigNumber(transactionFeeINR);
+                var netamountToSend = userINRAmountToSend.minus(transactionFeeOfINR);
+                console.log("clientINR netamountToSend :: " + netamountToSend);
+                clientINR.cmd('sendfrom', COMPANYACCOUNTINR, userReceiverINRAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXINR, userReceiverINRAddress, userReceiverINRAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromINRAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "INR Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid INR Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in INR server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in INR Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateINRAmountInDB = INRBalanceInDB.minus(userINRAmountToSend);
+                    console.log("updateINRAmountInDB ::: " + updateINRAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      INRbalance: updateINRAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
 };

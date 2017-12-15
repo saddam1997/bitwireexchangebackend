@@ -15,17 +15,29 @@ module.exports.common = {
   txFeeBTCWithdrawSuccess: 0.0001,
   txFeeBCHWithdrawSuccess: 0.0001,
   txFeeLTCWithdrawSuccess: 0.0001,
+  txFeeINRWithdrawSuccess: 0.0001,
 
+  txFeeBTC: 0.0001,
+  txFeeBCH: 0.0001,
+  txFeeLTC: 0.0001,
+  txFeeINR: 0.0001,
 
-  companyBTCAccount: "bitwireBTC@gmail.com",
-  companyBCHAccount: "bitwireBCH@gmail.com",
-  companyLTCAccount: "bitwireLTC@gmail.com",
+  COMPANYACCOUNTBTC: "EXbitwireBTC@gmail.com",
+  COMPANYACCOUNTBCH: "EXbitwireBCH@gmail.com",
+  COMPANYACCOUNTLTC: "EXbitwireLTC@gmail.com",
+  COMPANYACCOUNTINR: "EXbitwireLTC@gmail.com",
 
   supportEmailId: 'bitwire.io@gmail.com', //Support Email Id to send mail signup and login and forgot password
   supportEmailIdpass: 'bitwire@io', //Support Email Id passoword
   supportEmailIdService: 'gmail',
   LABELPREFIX: 'EX',
   BTCMARKETID: 1,
-  BCHMARKETID: 1,
-  LTCMARKETID: 1,
+  BCHMARKETID: 2,
+  LTCMARKETID: 3,
+
+
+  CONFIRMATIONOFTXBTC: 1,
+  CONFIRMATIONOFTXBCH: 1,
+  CONFIRMATIONOFTXLTC: 1,
+  CONFIRMATIONOFTXINR: 1,
 }

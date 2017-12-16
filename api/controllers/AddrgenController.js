@@ -218,7 +218,7 @@ module.exports = {
             email: userMailId
           }, {
             isBTCAddress: true,
-            newaddress: address,
+
             userBTCAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -231,6 +231,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -282,7 +283,7 @@ module.exports = {
             email: userMailId
           }, {
             isBCHAddress: true,
-            newaddress: address,
+
             userBCHAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -295,6 +296,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -346,7 +348,7 @@ module.exports = {
             email: userMailId
           }, {
             isLTCAddress: true,
-            newaddress: address,
+
             userLTCAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -359,6 +361,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -410,7 +413,7 @@ module.exports = {
             email: userMailId
           }, {
             isINRAddress: true,
-            newaddress: address,
+
             userINRAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -423,6 +426,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -474,7 +478,7 @@ module.exports = {
             email: userMailId
           }, {
             isUSDAddress: true,
-            newaddress: address,
+
             userUSDAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -487,6 +491,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -538,7 +543,7 @@ module.exports = {
             email: userMailId
           }, {
             isEURAddress: true,
-            newaddress: address,
+
             userEURAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -551,6 +556,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -602,7 +608,7 @@ module.exports = {
             email: userMailId
           }, {
             isGBPAddress: true,
-            newaddress: address,
+
             userGBPAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -615,6 +621,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -666,7 +673,7 @@ module.exports = {
             email: userMailId
           }, {
             isBRLAddress: true,
-            newaddress: address,
+
             userBRLAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -679,6 +686,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -730,7 +738,7 @@ module.exports = {
             email: userMailId
           }, {
             isPLNAddress: true,
-            newaddress: address,
+
             userPLNAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -743,6 +751,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -794,7 +803,7 @@ module.exports = {
             email: userMailId
           }, {
             isCADAddress: true,
-            newaddress: address,
+
             userCADAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -807,6 +816,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -858,7 +868,7 @@ module.exports = {
             email: userMailId
           }, {
             isTRYAddress: true,
-            newaddress: address,
+
             userTRYAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -871,6 +881,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -922,7 +933,7 @@ module.exports = {
             email: userMailId
           }, {
             isRUBAddress: true,
-            newaddress: address,
+
             userRUBAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -935,6 +946,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -986,7 +998,7 @@ module.exports = {
             email: userMailId
           }, {
             isMXNAddress: true,
-            newaddress: address,
+
             userMXNAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -999,6 +1011,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -1050,7 +1063,7 @@ module.exports = {
             email: userMailId
           }, {
             isCZKAddress: true,
-            newaddress: address,
+
             userCZKAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -1063,6 +1076,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -1114,7 +1128,7 @@ module.exports = {
             email: userMailId
           }, {
             isILSAddress: true,
-            newaddress: address,
+
             userILSAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -1127,6 +1141,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -1178,7 +1193,7 @@ module.exports = {
             email: userMailId
           }, {
             isNZDAddress: true,
-            newaddress: address,
+
             userNZDAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -1191,6 +1206,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -1242,7 +1258,7 @@ module.exports = {
             email: userMailId
           }, {
             isJPYAddress: true,
-            newaddress: address,
+
             userJPYAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -1255,6 +1271,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -1306,7 +1323,7 @@ module.exports = {
             email: userMailId
           }, {
             isSEKAddress: true,
-            newaddress: address,
+
             userSEKAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -1319,6 +1336,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });
@@ -1370,7 +1388,7 @@ module.exports = {
             email: userMailId
           }, {
             isAUDAddress: true,
-            newaddress: address,
+
             userAUDAddress: address
           }).exec(function afterwards(err, updated) {
 
@@ -1383,6 +1401,7 @@ module.exports = {
             }
             return res.json({
               message: "Address created successfully.",
+              newaddress: address,
               statusCode: 200
             });
           });

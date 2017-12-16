@@ -1,6 +1,6 @@
 /**
  * TrademarketBCHCADController
- *
+ *CAD
  * @description :: Server-side logic for managing trademarketbchcads
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
@@ -1822,15 +1822,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH updatedFreezedCADbalanceAsker:: " + updatedFreezedCADbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails asdfasd .askAmountBCH updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedCADbalanceAsker " + updatedFreezedCADbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingCAD " + totoalBidRemainingCAD);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBCH " + totoalBidRemainingBCH);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1846,10 +1842,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerCAD
@@ -1887,12 +1879,13 @@ module.exports = {
               // updatedCADbalanceBidder = updatedCADbalanceBidder.minus(txFeesBidderCAD);
 
               var BCHAmountSucess = new BigNumber(userBidAmountBCH);
-              BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
+              //              BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-
               var txFeesBidderCAD = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountBCH ::: " + userBidAmountBCH);
+              console.log("BCHAmountSucess ::: " + BCHAmountSucess);
               console.log("txFeesBidderCAD :: " + txFeesBidderCAD);
               //updatedCADbalanceBidder = (parseFloat(updatedCADbalanceBidder) - parseFloat(txFeesBidderCAD));
               updatedCADbalanceBidder = updatedCADbalanceBidder.minus(txFeesBidderCAD);
@@ -2458,4 +2451,5 @@ module.exports = {
         }
       });
   },
+
 };

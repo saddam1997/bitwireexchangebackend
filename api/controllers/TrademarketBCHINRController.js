@@ -21,6 +21,7 @@ const txFeeWithdrawSuccessBCH = sails.config.common.txFeeWithdrawSuccessBCH;
 const BCHMARKETID = sails.config.common.BCHMARKETID;
 
 module.exports = {
+
   addAskINRMarket: async function(req, res) {
     console.log("Enter into ask api addAskINRMarket : : " + JSON.stringify(req.body));
     var userAskAmountBCH = new BigNumber(req.body.askAmountBCH);
@@ -1822,15 +1823,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails asdfasd .askAmountBCH updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingINR " + totoalBidRemainingINR);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBCH " + totoalBidRemainingBCH);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1846,10 +1843,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerINR
@@ -1887,12 +1880,13 @@ module.exports = {
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
               var BCHAmountSucess = new BigNumber(userBidAmountBCH);
-              BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
+              //              BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-
               var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountBCH ::: " + userBidAmountBCH);
+              console.log("BCHAmountSucess ::: " + BCHAmountSucess);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
@@ -2458,4 +2452,5 @@ module.exports = {
         }
       });
   },
+
 };

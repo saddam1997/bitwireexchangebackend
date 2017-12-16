@@ -1,6 +1,6 @@
 /**
  * TrademarketBCHMXNController
- *
+ *MXN
  * @description :: Server-side logic for managing trademarketbchmxns
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
@@ -1822,15 +1822,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH updatedFreezedMXNbalanceAsker:: " + updatedFreezedMXNbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails asdfasd .askAmountBCH updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedMXNbalanceAsker " + updatedFreezedMXNbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingMXN " + totoalBidRemainingMXN);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBCH " + totoalBidRemainingBCH);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1846,10 +1842,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerMXN
@@ -1887,12 +1879,13 @@ module.exports = {
               // updatedMXNbalanceBidder = updatedMXNbalanceBidder.minus(txFeesBidderMXN);
 
               var BCHAmountSucess = new BigNumber(userBidAmountBCH);
-              BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
+              //              BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-
               var txFeesBidderMXN = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountBCH ::: " + userBidAmountBCH);
+              console.log("BCHAmountSucess ::: " + BCHAmountSucess);
               console.log("txFeesBidderMXN :: " + txFeesBidderMXN);
               //updatedMXNbalanceBidder = (parseFloat(updatedMXNbalanceBidder) - parseFloat(txFeesBidderMXN));
               updatedMXNbalanceBidder = updatedMXNbalanceBidder.minus(txFeesBidderMXN);
@@ -2458,4 +2451,5 @@ module.exports = {
         }
       });
   },
+
 };

@@ -21,21 +21,21 @@ const txFeeWithdrawSuccessBCH = sails.config.common.txFeeWithdrawSuccessBCH;
 const BCHMARKETID = sails.config.common.BCHMARKETID;
 module.exports = {
 
-  addAskINRMarket: async function(req, res) {
-    console.log("Enter into ask api addAskINRMarket : : " + JSON.stringify(req.body));
+  addAskCZKMarket: async function(req, res) {
+    console.log("Enter into ask api addAskCZKMarket : : " + JSON.stringify(req.body));
     var userAskAmountBCH = new BigNumber(req.body.askAmountBCH);
-    var userAskAmountINR = new BigNumber(req.body.askAmountINR);
+    var userAskAmountCZK = new BigNumber(req.body.askAmountCZK);
     var userAskRate = new BigNumber(req.body.askRate);
     var userAskownerId = req.body.askownerId;
 
-    if (!userAskAmountINR || !userAskAmountBCH || !userAskRate || !userAskownerId) {
+    if (!userAskAmountCZK || !userAskAmountBCH || !userAskRate || !userAskownerId) {
       console.log("Can't be empty!!!!!!");
       return res.json({
         "message": "Invalid Paramter!!!!",
         statusCode: 400
       });
     }
-    if (userAskAmountINR < 0 || userAskAmountBCH < 0 || userAskRate < 0) {
+    if (userAskAmountCZK < 0 || userAskAmountBCH < 0 || userAskRate < 0) {
       console.log("Negative Paramter");
       return res.json({
         "message": "Negative Paramter!!!!",
@@ -60,25 +60,25 @@ module.exports = {
       });
     }
     console.log("User details find successfully :::: " + JSON.stringify(userAsker));
-    var userINRBalanceInDb = new BigNumber(userAsker.INRbalance);
-    var userFreezedINRBalanceInDb = new BigNumber(userAsker.FreezedINRbalance);
+    var userCZKBalanceInDb = new BigNumber(userAsker.CZKbalance);
+    var userFreezedCZKBalanceInDb = new BigNumber(userAsker.FreezedCZKbalance);
 
-    userINRBalanceInDb = parseFloat(userINRBalanceInDb);
-    userFreezedINRBalanceInDb = parseFloat(userFreezedINRBalanceInDb);
+    userCZKBalanceInDb = parseFloat(userCZKBalanceInDb);
+    userFreezedCZKBalanceInDb = parseFloat(userFreezedCZKBalanceInDb);
     console.log("asdf");
     var userIdInDb = userAsker.id;
-    if (userAskAmountINR.greaterThanOrEqualTo(userINRBalanceInDb)) {
+    if (userAskAmountCZK.greaterThanOrEqualTo(userCZKBalanceInDb)) {
       return res.json({
-        "message": "You have insufficient INR Balance",
+        "message": "You have insufficient CZK Balance",
         statusCode: 401
       });
     }
     console.log("qweqwe");
-    console.log("userAskAmountINR :: " + userAskAmountINR);
-    console.log("userINRBalanceInDb :: " + userINRBalanceInDb);
-    // if (userAskAmountINR >= userINRBalanceInDb) {
+    console.log("userAskAmountCZK :: " + userAskAmountCZK);
+    console.log("userCZKBalanceInDb :: " + userCZKBalanceInDb);
+    // if (userAskAmountCZK >= userCZKBalanceInDb) {
     //   return res.json({
-    //     "message": "You have insufficient INR Balance",
+    //     "message": "You have insufficient CZK Balance",
     //     statusCode: 401
     //   });
     // }
@@ -86,19 +86,19 @@ module.exports = {
 
 
     userAskAmountBCH = parseFloat(userAskAmountBCH);
-    userAskAmountINR = parseFloat(userAskAmountINR);
+    userAskAmountCZK = parseFloat(userAskAmountCZK);
     userAskRate = parseFloat(userAskRate);
     try {
-      var askDetails = await AskINR.create({
+      var askDetails = await AskCZK.create({
         askAmountBCH: userAskAmountBCH,
-        askAmountINR: userAskAmountINR,
+        askAmountCZK: userAskAmountCZK,
         totalaskAmountBCH: userAskAmountBCH,
-        totalaskAmountINR: userAskAmountINR,
+        totalaskAmountCZK: userAskAmountCZK,
         askRate: userAskRate,
         status: statusTwo,
         statusName: statusTwoPending,
         marketId: BCHMARKETID,
-        askownerINR: userIdInDb
+        askownerCZK: userIdInDb
       });
     } catch (e) {
       return res.json({
@@ -108,24 +108,24 @@ module.exports = {
       });
     }
     //blasting the bid creation event
-    sails.sockets.blast(constants.INR_ASK_ADDED, askDetails);
-    // var updateUserINRBalance = (parseFloat(userINRBalanceInDb) - parseFloat(userAskAmountINR));
-    // var updateFreezedINRBalance = (parseFloat(userFreezedINRBalanceInDb) + parseFloat(userAskAmountINR));
+    sails.sockets.blast(constants.CZK_ASK_ADDED, askDetails);
+    // var updateUserCZKBalance = (parseFloat(userCZKBalanceInDb) - parseFloat(userAskAmountCZK));
+    // var updateFreezedCZKBalance = (parseFloat(userFreezedCZKBalanceInDb) + parseFloat(userAskAmountCZK));
 
     // x = new BigNumber(0.3)   x.plus(y)
     // x.minus(0.1)
-    userINRBalanceInDb = new BigNumber(userINRBalanceInDb);
-    var updateUserINRBalance = userINRBalanceInDb.minus(userAskAmountINR);
-    updateUserINRBalance = parseFloat(updateUserINRBalance);
-    userFreezedINRBalanceInDb = new BigNumber(userFreezedINRBalanceInDb);
-    var updateFreezedINRBalance = userFreezedINRBalanceInDb.plus(userAskAmountINR);
-    updateFreezedINRBalance = parseFloat(updateFreezedINRBalance);
+    userCZKBalanceInDb = new BigNumber(userCZKBalanceInDb);
+    var updateUserCZKBalance = userCZKBalanceInDb.minus(userAskAmountCZK);
+    updateUserCZKBalance = parseFloat(updateUserCZKBalance);
+    userFreezedCZKBalanceInDb = new BigNumber(userFreezedCZKBalanceInDb);
+    var updateFreezedCZKBalance = userFreezedCZKBalanceInDb.plus(userAskAmountCZK);
+    updateFreezedCZKBalance = parseFloat(updateFreezedCZKBalance);
     try {
       var userUpdateAsk = await User.update({
         id: userIdInDb
       }, {
-        FreezedINRbalance: updateFreezedINRBalance,
-        INRbalance: updateUserINRBalance
+        FreezedCZKbalance: updateFreezedCZKBalance,
+        CZKbalance: updateUserCZKBalance
       });
     } catch (e) {
       return res.json({
@@ -135,7 +135,7 @@ module.exports = {
       });
     }
     try {
-      var allBidsFromdb = await BidINR.find({
+      var allBidsFromdb = await BidCZK.find({
         bidRate: {
           'like': parseFloat(userAskRate)
         },
@@ -149,7 +149,7 @@ module.exports = {
     } catch (e) {
       return res.json({
         error: e,
-        message: 'Failed to find INR bid like user ask rate',
+        message: 'Failed to find CZK bid like user ask rate',
         statusCode: 401
       });
     }
@@ -157,37 +157,37 @@ module.exports = {
     var total_bid = 0;
     if (allBidsFromdb.length >= 1) {
       //Find exact bid if available in db
-      var totoalAskRemainingINR = new BigNumber(userAskAmountINR);
+      var totoalAskRemainingCZK = new BigNumber(userAskAmountCZK);
       var totoalAskRemainingBCH = new BigNumber(userAskAmountBCH);
-      //this loop for sum of all Bids amount of INR
+      //this loop for sum of all Bids amount of CZK
       for (var i = 0; i < allBidsFromdb.length; i++) {
-        total_bid = total_bid + allBidsFromdb[i].bidAmountINR;
+        total_bid = total_bid + allBidsFromdb[i].bidAmountCZK;
       }
-      if (total_bid <= totoalAskRemainingINR) {
-        console.log("Inside of total_bid <= totoalAskRemainingINR");
+      if (total_bid <= totoalAskRemainingCZK) {
+        console.log("Inside of total_bid <= totoalAskRemainingCZK");
         for (var i = 0; i < allBidsFromdb.length; i++) {
-          console.log("Inside of For Loop total_bid <= totoalAskRemainingINR");
+          console.log("Inside of For Loop total_bid <= totoalAskRemainingCZK");
           currentBidDetails = allBidsFromdb[i];
-          console.log(currentBidDetails.id + " Before totoalAskRemainingINR :: " + totoalAskRemainingINR);
+          console.log(currentBidDetails.id + " Before totoalAskRemainingCZK :: " + totoalAskRemainingCZK);
           console.log(currentBidDetails.id + " Before totoalAskRemainingBCH :: " + totoalAskRemainingBCH);
-          // totoalAskRemainingINR = (parseFloat(totoalAskRemainingINR) - parseFloat(currentBidDetails.bidAmountINR));
+          // totoalAskRemainingCZK = (parseFloat(totoalAskRemainingCZK) - parseFloat(currentBidDetails.bidAmountCZK));
           // totoalAskRemainingBCH = (parseFloat(totoalAskRemainingBCH) - parseFloat(currentBidDetails.bidAmountBCH));
-          totoalAskRemainingINR = totoalAskRemainingINR.minus(currentBidDetails.bidAmountINR);
+          totoalAskRemainingCZK = totoalAskRemainingCZK.minus(currentBidDetails.bidAmountCZK);
           totoalAskRemainingBCH = totoalAskRemainingBCH.minus(currentBidDetails.bidAmountBCH);
 
 
-          console.log(currentBidDetails.id + " After totoalAskRemainingINR :: " + totoalAskRemainingINR);
+          console.log(currentBidDetails.id + " After totoalAskRemainingCZK :: " + totoalAskRemainingCZK);
           console.log(currentBidDetails.id + " After totoalAskRemainingBCH :: " + totoalAskRemainingBCH);
 
-          if (totoalAskRemainingINR == 0) {
+          if (totoalAskRemainingCZK == 0) {
             //destroy bid and ask and update bidder and asker balances and break
-            console.log("Enter into totoalAskRemainingINR == 0");
+            console.log("Enter into totoalAskRemainingCZK == 0");
             try {
               var userAllDetailsInDBBidder = await User.findOne({
-                id: currentBidDetails.bidownerINR
+                id: currentBidDetails.bidownerCZK
               });
               var userAllDetailsInDBAsker = await User.findOne({
-                id: askDetails.askownerINR
+                id: askDetails.askownerCZK
               });
             } catch (e) {
               return res.json({
@@ -197,50 +197,50 @@ module.exports = {
               });
             }
             // var updatedFreezedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBCHbalance) - parseFloat(currentBidDetails.bidAmountBCH));
-            // var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
+            // var updatedCZKbalanceBidder = (parseFloat(userAllDetailsInDBBidder.CZKbalance) + parseFloat(currentBidDetails.bidAmountCZK));
 
             var updatedFreezedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBCHbalance);
             updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(currentBidDetails.bidAmountBCH);
             //updatedFreezedBCHbalanceBidder =  parseFloat(updatedFreezedBCHbalanceBidder);
-            var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
-            updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
+            var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBidder.CZKbalance);
+            updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(currentBidDetails.bidAmountCZK);
 
             //Deduct Transation Fee Bidder
-            console.log("Before deduct TX Fees12312 of INR Update user " + updatedINRbalanceBidder);
-            //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
-            // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
+            console.log("Before deduct TX Fees12312 of CZK Update user " + updatedCZKbalanceBidder);
+            //var txFeesBidderCZK = (parseFloat(currentBidDetails.bidAmountCZK) * parseFloat(txFeeWithdrawSuccessCZK));
+            // var txFeesBidderCZK = new BigNumber(currentBidDetails.bidAmountCZK);
             //
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR)
-            // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-            // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-            // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+            // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK)
+            // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+            // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+            // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
             var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
             txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-            var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
-            console.log("txFeesBidderINR :: " + txFeesBidderINR);
-            updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+            var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
+            console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+            updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
 
-            //updatedINRbalanceBidder =  parseFloat(updatedINRbalanceBidder);
+            //updatedCZKbalanceBidder =  parseFloat(updatedCZKbalanceBidder);
 
-            console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+            console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
             console.log("Before Update :: asdf111 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
             console.log("Before Update :: asdf111 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-            console.log("Before Update :: asdf111 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-            console.log("Before Update :: asdf111 totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Before Update :: asdf111 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+            console.log("Before Update :: asdf111 totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("Before Update :: asdf111 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             try {
               var userUpdateBidder = await User.update({
-                id: currentBidDetails.bidownerINR
+                id: currentBidDetails.bidownerCZK
               }, {
                 FreezedBCHbalance: updatedFreezedBCHbalanceBidder,
-                INRbalance: updatedINRbalanceBidder
+                CZKbalance: updatedCZKbalanceBidder
               });
             } catch (e) {
               return res.json({
                 error: e,
-                message: 'Failed to update users freezed and INR balance',
+                message: 'Failed to update users freezed and CZK balance',
                 statusCode: 401
               });
             }
@@ -250,13 +250,13 @@ module.exports = {
             var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(userAskAmountBCH);
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(totoalAskRemainingBCH);
-            //var updatedFreezedINRbalanceAsker = parseFloat(totoalAskRemainingINR);
-            //var updatedFreezedINRbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR)) + parseFloat(totoalAskRemainingINR));
-            var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-            updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(userAskAmountINR);
-            updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.plus(totoalAskRemainingINR);
+            //var updatedFreezedCZKbalanceAsker = parseFloat(totoalAskRemainingCZK);
+            //var updatedFreezedCZKbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(userAskAmountCZK)) + parseFloat(totoalAskRemainingCZK));
+            var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+            updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(userAskAmountCZK);
+            updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.plus(totoalAskRemainingCZK);
 
-            //updatedFreezedINRbalanceAsker =  parseFloat(updatedFreezedINRbalanceAsker);
+            //updatedFreezedCZKbalanceAsker =  parseFloat(updatedFreezedCZKbalanceAsker);
             //Deduct Transation Fee Asker
             //var BCHAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
             var BCHAmountSucess = new BigNumber(userAskAmountBCH);
@@ -270,32 +270,32 @@ module.exports = {
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
             updatedBCHbalanceAsker = parseFloat(updatedBCHbalanceAsker);
-            console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+            console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
 
             console.log("Before Update :: asdf112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-            console.log("Before Update :: asdf112 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+            console.log("Before Update :: asdf112 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
             console.log("Before Update :: asdf112 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            console.log("Before Update :: asdf112 totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Before Update :: asdf112 totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("Before Update :: asdf112 totoalAskRemainingBCH " + totoalAskRemainingBCH);
 
 
             try {
               var updatedUser = await User.update({
-                id: askDetails.askownerINR
+                id: askDetails.askownerCZK
               }, {
                 BCHbalance: updatedBCHbalanceAsker,
-                FreezedINRbalance: updatedFreezedINRbalanceAsker
+                FreezedCZKbalance: updatedFreezedCZKbalanceAsker
               });
             } catch (e) {
               return res.json({
                 error: e,
-                message: 'Failed to update users BCHBalance and Freezed INRBalance',
+                message: 'Failed to update users BCHBalance and Freezed CZKBalance',
                 statusCode: 401
               });
             }
-            console.log(currentBidDetails.id + " Updating success Of bidINR:: ");
+            console.log(currentBidDetails.id + " Updating success Of bidCZK:: ");
             try {
-              var bidDestroy = await BidINR.update({
+              var bidDestroy = await BidCZK.update({
                 id: currentBidDetails.id
               }, {
                 status: statusOne,
@@ -308,11 +308,11 @@ module.exports = {
                 statusCode: 200
               });
             }
-            sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
-            console.log(currentBidDetails.id + " AskINR.destroy askDetails.id::: " + askDetails.id);
+            sails.sockets.blast(constants.CZK_BID_DESTROYED, bidDestroy);
+            console.log(currentBidDetails.id + " AskCZK.destroy askDetails.id::: " + askDetails.id);
 
             try {
-              var askDestroy = await AskINR.update({
+              var askDestroy = await AskCZK.update({
                 id: askDetails.id
               }, {
                 status: statusOne,
@@ -321,12 +321,12 @@ module.exports = {
             } catch (e) {
               return res.json({
                 error: e,
-                message: 'Failed to update AskINR',
+                message: 'Failed to update AskCZK',
                 statusCode: 401
               });
             }
-            //emitting event of destruction of INR_ask
-            sails.sockets.blast(constants.INR_ASK_DESTROYED, askDestroy);
+            //emitting event of destruction of CZK_ask
+            sails.sockets.blast(constants.CZK_ASK_DESTROYED, askDestroy);
             console.log("Ask Executed successfully and Return!!!");
             return res.json({
               "message": "Ask Executed successfully",
@@ -334,53 +334,53 @@ module.exports = {
             });
           } else {
             //destroy bid
-            console.log(currentBidDetails.id + " enter into else of totoalAskRemainingINR == 0");
-            console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerINR " + currentBidDetails.bidownerINR);
+            console.log(currentBidDetails.id + " enter into else of totoalAskRemainingCZK == 0");
+            console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerCZK " + currentBidDetails.bidownerCZK);
             var userAllDetailsInDBBidder = await User.findOne({
-              id: currentBidDetails.bidownerINR
+              id: currentBidDetails.bidownerCZK
             });
             console.log(currentBidDetails.id + " Find all details of  userAllDetailsInDBBidder:: " + userAllDetailsInDBBidder.email);
             // var updatedFreezedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBCHbalance) - parseFloat(currentBidDetails.bidAmountBCH));
-            // var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
+            // var updatedCZKbalanceBidder = (parseFloat(userAllDetailsInDBBidder.CZKbalance) + parseFloat(currentBidDetails.bidAmountCZK));
 
             var updatedFreezedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBCHbalance);
             updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(currentBidDetails.bidAmountBCH);
-            var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
-            updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
+            var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBidder.CZKbalance);
+            updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(currentBidDetails.bidAmountCZK);
 
             //Deduct Transation Fee Bidder
-            console.log("Before deduct TX Fees of INR 089089Update user " + updatedINRbalanceBidder);
-            // var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
-            // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
-            // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-            // // updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-            // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+            console.log("Before deduct TX Fees of CZK 089089Update user " + updatedCZKbalanceBidder);
+            // var txFeesBidderCZK = (parseFloat(currentBidDetails.bidAmountCZK) * parseFloat(txFeeWithdrawSuccessCZK));
+            // var txFeesBidderCZK = new BigNumber(currentBidDetails.bidAmountCZK);
+            // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
+            // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+            // // updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+            // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
             var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
             txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-            var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
-            console.log("txFeesBidderINR :: " + txFeesBidderINR);
-            updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+            var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
+            console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+            updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
 
-            console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+            console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
             //updatedFreezedBCHbalanceBidder =  parseFloat(updatedFreezedBCHbalanceBidder);
             console.log(currentBidDetails.id + " updatedFreezedBCHbalanceBidder:: " + updatedFreezedBCHbalanceBidder);
-            console.log(currentBidDetails.id + " updatedINRbalanceBidder:: " + updatedINRbalanceBidder);
+            console.log(currentBidDetails.id + " updatedCZKbalanceBidder:: " + updatedCZKbalanceBidder);
 
 
             console.log("Before Update :: asdf113 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBBidder));
             console.log("Before Update :: asdf113 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-            console.log("Before Update :: asdf113 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-            console.log("Before Update :: asdf113 totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Before Update :: asdf113 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+            console.log("Before Update :: asdf113 totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("Before Update :: asdf113 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             try {
               var userAllDetailsInDBBidderUpdate = await User.update({
-                id: currentBidDetails.bidownerINR
+                id: currentBidDetails.bidownerCZK
               }, {
                 FreezedBCHbalance: updatedFreezedBCHbalanceBidder,
-                INRbalance: updatedINRbalanceBidder
+                CZKbalance: updatedCZKbalanceBidder
               });
             } catch (e) {
               return res.json({
@@ -392,7 +392,7 @@ module.exports = {
             console.log(currentBidDetails.id + " userAllDetailsInDBBidderUpdate ::" + userAllDetailsInDBBidderUpdate);
 
             try {
-              var desctroyCurrentBid = await BidINR.update({
+              var desctroyCurrentBid = await BidCZK.update({
                 id: currentBidDetails.id
               }, {
                 status: statusOne,
@@ -405,7 +405,7 @@ module.exports = {
                 statusCode: 200
               });
             }
-            sails.sockets.blast(constants.INR_BID_DESTROYED, desctroyCurrentBid);
+            sails.sockets.blast(constants.CZK_BID_DESTROYED, desctroyCurrentBid);
             console.log(currentBidDetails.id + "Bid destroy successfully desctroyCurrentBid ::");
           }
           console.log(currentBidDetails.id + "index index == allBidsFromdb.length - 1 ");
@@ -414,7 +414,7 @@ module.exports = {
             console.log(currentBidDetails.id + " enter into i == allBidsFromdb.length - 1");
             try {
               var userAllDetailsInDBAsker = await User.findOne({
-                id: askDetails.askownerINR
+                id: askDetails.askownerCZK
               });
             } catch (e) {
               return res.json({
@@ -423,23 +423,23 @@ module.exports = {
                 statusCode: 401
               });
             }
-            console.log(currentBidDetails.id + " enter 234 into userAskAmountBCH i == allBidsFromdb.length - 1 askDetails.askownerINR");
+            console.log(currentBidDetails.id + " enter 234 into userAskAmountBCH i == allBidsFromdb.length - 1 askDetails.askownerCZK");
             //var updatedBCHbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(userAskAmountBCH)) - parseFloat(totoalAskRemainingBCH));
             var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(userAskAmountBCH);
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(totoalAskRemainingBCH);
 
-            //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(totoalAskRemainingINR));
-            //var updatedFreezedINRbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR)) + parseFloat(totoalAskRemainingINR));
-            var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-            updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(userAskAmountINR);
-            updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.plus(totoalAskRemainingINR);
+            //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(totoalAskRemainingCZK));
+            //var updatedFreezedCZKbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(userAskAmountCZK)) + parseFloat(totoalAskRemainingCZK));
+            var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+            updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(userAskAmountCZK);
+            updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.plus(totoalAskRemainingCZK);
             //Deduct Transation Fee Asker
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Total Ask RemainCZK totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("userAllDetailsInDBAsker.BCHbalance :: " + userAllDetailsInDBAsker.BCHbalance);
-            console.log("Total Ask RemainINR userAllDetailsInDBAsker.FreezedINRbalance " + userAllDetailsInDBAsker.FreezedINRbalance);
-            console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+            console.log("Total Ask RemainCZK userAllDetailsInDBAsker.FreezedCZKbalance " + userAllDetailsInDBAsker.FreezedCZKbalance);
+            console.log("Total Ask RemainCZK updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
             console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
             //var BCHAmountSucess = (parseFloat(userAskAmountBCH) - parseFloat(totoalAskRemainingBCH));
@@ -453,23 +453,23 @@ module.exports = {
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
             //Workding.................asdfasdf2323
-            console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+            console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
             //updatedBCHbalanceAsker =  parseFloat(updatedBCHbalanceAsker);
             console.log(currentBidDetails.id + " updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
-            console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker ::: " + updatedFreezedINRbalanceAsker);
+            console.log(currentBidDetails.id + " updatedFreezedCZKbalanceAsker ::: " + updatedFreezedCZKbalanceAsker);
 
 
             console.log("Before Update :: asdf114 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
             console.log("Before Update :: asdf114 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            console.log("Before Update :: asdf114 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
-            console.log("Before Update :: asdf114 totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Before Update :: asdf114 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
+            console.log("Before Update :: asdf114 totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("Before Update :: asdf114 totoalAskRemainingBCH " + totoalAskRemainingBCH);
             try {
               var updatedUser = await User.update({
-                id: askDetails.askownerINR
+                id: askDetails.askownerCZK
               }, {
                 BCHbalance: updatedBCHbalanceAsker,
-                FreezedINRbalance: updatedFreezedINRbalanceAsker
+                FreezedCZKbalance: updatedFreezedCZKbalanceAsker
               });
             } catch (e) {
               return res.json({
@@ -479,14 +479,14 @@ module.exports = {
               });
             }
             console.log(currentBidDetails.id + " Update In last Ask askAmountBCH totoalAskRemainingBCH " + totoalAskRemainingBCH);
-            console.log(currentBidDetails.id + " Update In last Ask askAmountINR totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log(currentBidDetails.id + " Update In last Ask askAmountCZK totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log(currentBidDetails.id + " askDetails.id ::: " + askDetails.id);
             try {
-              var updatedaskDetails = await AskINR.update({
+              var updatedaskDetails = await AskCZK.update({
                 id: askDetails.id
               }, {
                 askAmountBCH: parseFloat(totoalAskRemainingBCH),
-                askAmountINR: parseFloat(totoalAskRemainingINR),
+                askAmountCZK: parseFloat(totoalAskRemainingCZK),
                 status: statusTwo,
                 statusName: statusTwoPending,
               });
@@ -497,30 +497,30 @@ module.exports = {
                 statusCode: 401
               });
             }
-            sails.sockets.blast(constants.INR_ASK_DESTROYED, updatedaskDetails);
+            sails.sockets.blast(constants.CZK_ASK_DESTROYED, updatedaskDetails);
           }
         }
       } else {
         for (var i = 0; i < allBidsFromdb.length; i++) {
           currentBidDetails = allBidsFromdb[i];
-          console.log(currentBidDetails.id + " totoalAskRemainingINR :: " + totoalAskRemainingINR);
+          console.log(currentBidDetails.id + " totoalAskRemainingCZK :: " + totoalAskRemainingCZK);
           console.log(currentBidDetails.id + " totoalAskRemainingBCH :: " + totoalAskRemainingBCH);
           console.log("currentBidDetails ::: " + JSON.stringify(currentBidDetails)); //.6 <=.5
           console.log("currentBidDetails ::: " + JSON.stringify(currentBidDetails));
-          //totoalAskRemainingINR = totoalAskRemainingINR - allBidsFromdb[i].bidAmountINR;
-          if (totoalAskRemainingINR >= currentBidDetails.bidAmountINR) {
-            //totoalAskRemainingINR = (parseFloat(totoalAskRemainingINR) - parseFloat(currentBidDetails.bidAmountINR));
-            totoalAskRemainingINR = totoalAskRemainingINR.minus(currentBidDetails.bidAmountINR);
+          //totoalAskRemainingCZK = totoalAskRemainingCZK - allBidsFromdb[i].bidAmountCZK;
+          if (totoalAskRemainingCZK >= currentBidDetails.bidAmountCZK) {
+            //totoalAskRemainingCZK = (parseFloat(totoalAskRemainingCZK) - parseFloat(currentBidDetails.bidAmountCZK));
+            totoalAskRemainingCZK = totoalAskRemainingCZK.minus(currentBidDetails.bidAmountCZK);
             //totoalAskRemainingBCH = (parseFloat(totoalAskRemainingBCH) - parseFloat(currentBidDetails.bidAmountBCH));
             totoalAskRemainingBCH = totoalAskRemainingBCH.minus(currentBidDetails.bidAmountBCH);
-            console.log("start from here totoalAskRemainingINR == 0::: " + totoalAskRemainingINR);
+            console.log("start from here totoalAskRemainingCZK == 0::: " + totoalAskRemainingCZK);
 
-            if (totoalAskRemainingINR == 0) {
+            if (totoalAskRemainingCZK == 0) {
               //destroy bid and ask and update bidder and asker balances and break
-              console.log("Enter into totoalAskRemainingINR == 0");
+              console.log("Enter into totoalAskRemainingCZK == 0");
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
-                  id: currentBidDetails.bidownerINR
+                  id: currentBidDetails.bidownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -531,7 +531,7 @@ module.exports = {
               }
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: askDetails.askownerINR
+                  id: askDetails.askownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -540,45 +540,45 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log("userAll askDetails.askownerINR :: ");
+              console.log("userAll askDetails.askownerCZK :: ");
               console.log("Update value of Bidder and asker");
               //var updatedFreezedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBCHbalance) - parseFloat(currentBidDetails.bidAmountBCH));
               var updatedFreezedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBCHbalance);
               updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(currentBidDetails.bidAmountBCH);
-              //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
-              var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
+              //var updatedCZKbalanceBidder = (parseFloat(userAllDetailsInDBBidder.CZKbalance) + parseFloat(currentBidDetails.bidAmountCZK));
+              var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBidder.CZKbalance);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(currentBidDetails.bidAmountCZK);
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of42342312 INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
+              console.log("Before deduct TX Fees of42342312 CZK Update user " + updatedCZKbalanceBidder);
+              //var txFeesBidderCZK = (parseFloat(currentBidDetails.bidAmountCZK) * parseFloat(txFeeWithdrawSuccessCZK));
 
-              // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
-              // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
-              // console.log("After deduct TX Fees of INR Update user rtert updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
+              // var txFeesBidderCZK = new BigNumber(currentBidDetails.bidAmountCZK);
+              // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
+              // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
+              // console.log("After deduct TX Fees of CZK Update user rtert updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
 
               var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-              var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
-              console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
+              console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
 
               console.log("Before Update :: asdf115 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBBidder));
               console.log("Before Update :: asdf115 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-              console.log("Before Update :: asdf115 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-              console.log("Before Update :: asdf115 totoalAskRemainingINR " + totoalAskRemainingINR);
+              console.log("Before Update :: asdf115 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+              console.log("Before Update :: asdf115 totoalAskRemainingCZK " + totoalAskRemainingCZK);
               console.log("Before Update :: asdf115 totoalAskRemainingBCH " + totoalAskRemainingBCH);
 
 
               try {
                 var userUpdateBidder = await User.update({
-                  id: currentBidDetails.bidownerINR
+                  id: currentBidDetails.bidownerCZK
                 }, {
                   FreezedBCHbalance: updatedFreezedBCHbalanceBidder,
-                  INRbalance: updatedINRbalanceBidder
+                  CZKbalance: updatedCZKbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -591,18 +591,18 @@ module.exports = {
               var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(userAskAmountBCH);
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(totoalAskRemainingBCH);
-              //var updatedFreezedINRbalanceAsker = parseFloat(totoalAskRemainingINR);
-              //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(totoalAskRemainingINR));
-              //var updatedFreezedINRbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR)) + parseFloat(totoalAskRemainingINR));
-              var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-              updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(userAskAmountINR);
-              updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.plus(totoalAskRemainingINR);
+              //var updatedFreezedCZKbalanceAsker = parseFloat(totoalAskRemainingCZK);
+              //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(totoalAskRemainingCZK));
+              //var updatedFreezedCZKbalanceAsker = ((parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(userAskAmountCZK)) + parseFloat(totoalAskRemainingCZK));
+              var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+              updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(userAskAmountCZK);
+              updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.plus(totoalAskRemainingCZK);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalAskRemainingINR);
+              console.log("Total Ask RemainCZK totoalAskRemainingCZK " + totoalAskRemainingCZK);
               console.log("userAllDetailsInDBAsker.BCHbalance " + userAllDetailsInDBAsker.BCHbalance);
-              console.log("Total Ask RemainINR userAllDetailsInDBAsker.FreezedINRbalance " + userAllDetailsInDBAsker.FreezedINRbalance);
-              console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+              console.log("Total Ask RemainCZK userAllDetailsInDBAsker.FreezedCZKbalance " + userAllDetailsInDBAsker.FreezedCZKbalance);
+              console.log("Total Ask RemainCZK updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
               //Deduct Transation Fee Asker
               console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
@@ -617,26 +617,26 @@ module.exports = {
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
 
-              console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+              console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
 
               console.log(currentBidDetails.id + " asdfasdfupdatedBCHbalanceAsker updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
-              console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker ::: " + updatedFreezedINRbalanceAsker);
+              console.log(currentBidDetails.id + " updatedFreezedCZKbalanceAsker ::: " + updatedFreezedCZKbalanceAsker);
 
 
 
               console.log("Before Update :: asdf116 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: asdf116 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+              console.log("Before Update :: asdf116 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
               console.log("Before Update :: asdf116 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              console.log("Before Update :: asdf116 totoalAskRemainingINR " + totoalAskRemainingINR);
+              console.log("Before Update :: asdf116 totoalAskRemainingCZK " + totoalAskRemainingCZK);
               console.log("Before Update :: asdf116 totoalAskRemainingBCH " + totoalAskRemainingBCH);
 
 
               try {
                 var updatedUser = await User.update({
-                  id: askDetails.askownerINR
+                  id: askDetails.askownerCZK
                 }, {
                   BCHbalance: updatedBCHbalanceAsker,
-                  FreezedINRbalance: updatedFreezedINRbalanceAsker
+                  FreezedCZKbalance: updatedFreezedCZKbalanceAsker
                 });
               } catch (e) {
                 return res.json({
@@ -645,12 +645,12 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentBidDetails.id + " BidINR.destroy currentBidDetails.id::: " + currentBidDetails.id);
-              // var bidDestroy = await BidINR.destroy({
+              console.log(currentBidDetails.id + " BidCZK.destroy currentBidDetails.id::: " + currentBidDetails.id);
+              // var bidDestroy = await BidCZK.destroy({
               //   id: currentBidDetails.id
               // });
               try {
-                var bidDestroy = await BidINR.update({
+                var bidDestroy = await BidCZK.update({
                   id: currentBidDetails.id
                 }, {
                   status: statusOne,
@@ -663,13 +663,13 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
-              console.log(currentBidDetails.id + " AskINR.destroy askDetails.id::: " + askDetails.id);
-              // var askDestroy = await AskINR.destroy({
+              sails.sockets.blast(constants.CZK_BID_DESTROYED, bidDestroy);
+              console.log(currentBidDetails.id + " AskCZK.destroy askDetails.id::: " + askDetails.id);
+              // var askDestroy = await AskCZK.destroy({
               //   id: askDetails.id
               // });
               try {
-                var askDestroy = await AskINR.update({
+                var askDestroy = await AskCZK.update({
                   id: askDetails.id
                 }, {
                   status: statusOne,
@@ -682,18 +682,18 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, askDestroy);
+              sails.sockets.blast(constants.CZK_ASK_DESTROYED, askDestroy);
               return res.json({
                 "message": "Ask Executed successfully",
                 statusCode: 200
               });
             } else {
               //destroy bid
-              console.log(currentBidDetails.id + " enter into else of totoalAskRemainingINR == 0");
-              console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerINR " + currentBidDetails.bidownerINR);
+              console.log(currentBidDetails.id + " enter into else of totoalAskRemainingCZK == 0");
+              console.log(currentBidDetails.id + " start User.findOne currentBidDetails.bidownerCZK " + currentBidDetails.bidownerCZK);
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
-                  id: currentBidDetails.bidownerINR
+                  id: currentBidDetails.bidownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -707,41 +707,41 @@ module.exports = {
               var updatedFreezedBCHbalanceBidder = new BigNumber(userAllDetailsInDBBidder.FreezedBCHbalance);
               updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(currentBidDetails.bidAmountBCH);
 
-              //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(currentBidDetails.bidAmountINR));
-              var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.plus(currentBidDetails.bidAmountINR);
+              //var updatedCZKbalanceBidder = (parseFloat(userAllDetailsInDBBidder.CZKbalance) + parseFloat(currentBidDetails.bidAmountCZK));
+              var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBidder.CZKbalance);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(currentBidDetails.bidAmountCZK);
               //Deduct Transation Fee Bidder
-              console.log("Before deducta7567 TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(currentBidDetails.bidAmountINR) * parseFloat(txFeeWithdrawSuccessINR));
-              // var txFeesBidderINR = new BigNumber(currentBidDetails.bidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
-              // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
-              // console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+              console.log("Before deducta7567 TX Fees of CZK Update user " + updatedCZKbalanceBidder);
+              //var txFeesBidderCZK = (parseFloat(currentBidDetails.bidAmountCZK) * parseFloat(txFeeWithdrawSuccessCZK));
+              // var txFeesBidderCZK = new BigNumber(currentBidDetails.bidAmountCZK);
+              // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
+              // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
+              // console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
 
               var txFeesBidderBCH = new BigNumber(currentBidDetails.bidAmountBCH);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-              var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
-              console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
+              console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
               console.log(currentBidDetails.id + " updatedFreezedBCHbalanceBidder:: " + updatedFreezedBCHbalanceBidder);
-              console.log(currentBidDetails.id + " updatedINRbalanceBidder:: sadfsdf updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
+              console.log(currentBidDetails.id + " updatedCZKbalanceBidder:: sadfsdf updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
 
 
               console.log("Before Update :: asdf117 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
               console.log("Before Update :: asdf117 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-              console.log("Before Update :: asdf117 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-              console.log("Before Update :: asdf117 totoalAskRemainingINR " + totoalAskRemainingINR);
+              console.log("Before Update :: asdf117 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+              console.log("Before Update :: asdf117 totoalAskRemainingCZK " + totoalAskRemainingCZK);
               console.log("Before Update :: asdf117 totoalAskRemainingBCH " + totoalAskRemainingBCH);
 
               try {
                 var userAllDetailsInDBBidderUpdate = await User.update({
-                  id: currentBidDetails.bidownerINR
+                  id: currentBidDetails.bidownerCZK
                 }, {
                   FreezedBCHbalance: updatedFreezedBCHbalanceBidder,
-                  INRbalance: updatedINRbalanceBidder
+                  CZKbalance: updatedCZKbalanceBidder
                 });
               } catch (e) {
                 return res.json({
@@ -751,16 +751,16 @@ module.exports = {
                 })
               }
               console.log(currentBidDetails.id + " userAllDetailsInDBBidderUpdate ::" + userAllDetailsInDBBidderUpdate);
-              // var desctroyCurrentBid = await BidINR.destroy({
+              // var desctroyCurrentBid = await BidCZK.destroy({
               //   id: currentBidDetails.id
               // });
-              var desctroyCurrentBid = await BidINR.update({
+              var desctroyCurrentBid = await BidCZK.update({
                 id: currentBidDetails.id
               }, {
                 status: statusOne,
                 statusName: statusOneSuccessfull
               });
-              sails.sockets.blast(constants.INR_BID_DESTROYED, desctroyCurrentBid);
+              sails.sockets.blast(constants.CZK_BID_DESTROYED, desctroyCurrentBid);
               console.log(currentBidDetails.id + "Bid destroy successfully desctroyCurrentBid ::" + JSON.stringify(desctroyCurrentBid));
             }
           } else {
@@ -771,7 +771,7 @@ module.exports = {
 
             try {
               var userAllDetailsInDBAsker = await User.findOne({
-                id: askDetails.askownerINR
+                id: askDetails.askownerCZK
               });
             } catch (e) {
               return res.json({
@@ -784,16 +784,16 @@ module.exports = {
             //var updatedBidAmountBCH = (parseFloat(currentBidDetails.bidAmountBCH) - parseFloat(totoalAskRemainingBCH));
             var updatedBidAmountBCH = new BigNumber(currentBidDetails.bidAmountBCH);
             updatedBidAmountBCH = updatedBidAmountBCH.minus(totoalAskRemainingBCH);
-            //var updatedBidAmountINR = (parseFloat(currentBidDetails.bidAmountINR) - parseFloat(totoalAskRemainingINR));
-            var updatedBidAmountINR = new BigNumber(currentBidDetails.bidAmountINR);
-            updatedBidAmountINR = updatedBidAmountINR.minus(totoalAskRemainingINR);
+            //var updatedBidAmountCZK = (parseFloat(currentBidDetails.bidAmountCZK) - parseFloat(totoalAskRemainingCZK));
+            var updatedBidAmountCZK = new BigNumber(currentBidDetails.bidAmountCZK);
+            updatedBidAmountCZK = updatedBidAmountCZK.minus(totoalAskRemainingCZK);
 
             try {
-              var updatedaskDetails = await BidINR.update({
+              var updatedaskDetails = await BidCZK.update({
                 id: currentBidDetails.id
               }, {
                 bidAmountBCH: updatedBidAmountBCH,
-                bidAmountINR: updatedBidAmountINR,
+                bidAmountCZK: updatedBidAmountCZK,
                 status: statusTwo,
                 statusName: statusTwoPending,
               });
@@ -805,11 +805,11 @@ module.exports = {
               });
             }
             //Update socket.io
-            sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
+            sails.sockets.blast(constants.CZK_BID_DESTROYED, bidDestroy);
             //Update Bidder===========================================
             try {
               var userAllDetailsInDBBiddder = await User.findOne({
-                id: currentBidDetails.bidownerINR
+                id: currentBidDetails.bidownerCZK
               });
             } catch (e) {
               return res.json({
@@ -823,51 +823,51 @@ module.exports = {
             updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(totoalAskRemainingBCH);
 
 
-            //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.INRbalance) + parseFloat(totoalAskRemainingINR));
+            //var updatedCZKbalanceBidder = (parseFloat(userAllDetailsInDBBiddder.CZKbalance) + parseFloat(totoalAskRemainingCZK));
 
-            var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBiddder.INRbalance);
-            updatedINRbalanceBidder = updatedINRbalanceBidder.plus(totoalAskRemainingINR);
+            var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBiddder.CZKbalance);
+            updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(totoalAskRemainingCZK);
 
             //Deduct Transation Fee Bidder
-            console.log("Before deduct8768678 TX Fees of INR Update user " + updatedINRbalanceBidder);
-            //var INRAmountSucess = parseFloat(totoalAskRemainingINR);
-            //var INRAmountSucess = new BigNumber(totoalAskRemainingINR);
-            //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
-            //var txFeesBidderINR = (parseFloat(totoalAskRemainingINR) * parseFloat(txFeeWithdrawSuccessINR));
+            console.log("Before deduct8768678 TX Fees of CZK Update user " + updatedCZKbalanceBidder);
+            //var CZKAmountSucess = parseFloat(totoalAskRemainingCZK);
+            //var CZKAmountSucess = new BigNumber(totoalAskRemainingCZK);
+            //var txFeesBidderCZK = (parseFloat(CZKAmountSucess) * parseFloat(txFeeWithdrawSuccessCZK));
+            //var txFeesBidderCZK = (parseFloat(totoalAskRemainingCZK) * parseFloat(txFeeWithdrawSuccessCZK));
 
 
 
-            // var txFeesBidderINR = new BigNumber(totoalAskRemainingINR);
-            // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
+            // var txFeesBidderCZK = new BigNumber(totoalAskRemainingCZK);
+            // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
             //
-            // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-            // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+            // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+            // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
             //Need to change here ...111...............askDetails
             var txFeesBidderBCH = new BigNumber(totoalAskRemainingBCH);
             txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-            var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
-            updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+            var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentBidDetails.bidRate);
+            updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
-            console.log("txFeesBidderINR :: " + txFeesBidderINR);
-            console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+            console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+            console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
 
             console.log(currentBidDetails.id + " updatedFreezedBCHbalanceBidder:: " + updatedFreezedBCHbalanceBidder);
-            console.log(currentBidDetails.id + " updatedINRbalanceBidder:asdfasdf:updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
+            console.log(currentBidDetails.id + " updatedCZKbalanceBidder:asdfasdf:updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
 
 
             console.log("Before Update :: asdf118 userAllDetailsInDBBiddder " + JSON.stringify(userAllDetailsInDBBiddder));
             console.log("Before Update :: asdf118 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-            console.log("Before Update :: asdf118 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-            console.log("Before Update :: asdf118 totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Before Update :: asdf118 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+            console.log("Before Update :: asdf118 totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("Before Update :: asdf118 totoalAskRemainingBCH " + totoalAskRemainingBCH);
 
             try {
               var userAllDetailsInDBBidderUpdate = await User.update({
-                id: currentBidDetails.bidownerINR
+                id: currentBidDetails.bidownerCZK
               }, {
                 FreezedBCHbalance: updatedFreezedBCHbalanceBidder,
-                INRbalance: updatedINRbalanceBidder
+                CZKbalance: updatedCZKbalanceBidder
               });
             } catch (e) {
               return res.json({
@@ -878,14 +878,14 @@ module.exports = {
             }
             //Update asker ===========================================
 
-            console.log(currentBidDetails.id + " enter into asdf userAskAmountBCH i == allBidsFromdb.length - 1 askDetails.askownerINR");
+            console.log(currentBidDetails.id + " enter into asdf userAskAmountBCH i == allBidsFromdb.length - 1 askDetails.askownerCZK");
             //var updatedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(userAskAmountBCH));
             var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(userAskAmountBCH);
 
-            //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(userAskAmountINR));
-            var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-            updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(userAskAmountINR);
+            //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(userAskAmountCZK));
+            var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+            updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(userAskAmountCZK);
 
             //Deduct Transation Fee Asker
             console.log("Before deduct TX Fees of updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
@@ -898,24 +898,24 @@ module.exports = {
             //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
             updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
 
-            console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+            console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
 
             console.log(currentBidDetails.id + " updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
-            console.log(currentBidDetails.id + " updatedFreezedINRbalanceAsker safsdfsdfupdatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
+            console.log(currentBidDetails.id + " updatedFreezedCZKbalanceAsker safsdfsdfupdatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
 
 
             console.log("Before Update :: asdf119 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-            console.log("Before Update :: asdf119 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+            console.log("Before Update :: asdf119 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
             console.log("Before Update :: asdf119 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-            console.log("Before Update :: asdf119 totoalAskRemainingINR " + totoalAskRemainingINR);
+            console.log("Before Update :: asdf119 totoalAskRemainingCZK " + totoalAskRemainingCZK);
             console.log("Before Update :: asdf119 totoalAskRemainingBCH " + totoalAskRemainingBCH);
 
             try {
               var updatedUser = await User.update({
-                id: askDetails.askownerINR
+                id: askDetails.askownerCZK
               }, {
                 BCHbalance: updatedBCHbalanceAsker,
-                FreezedINRbalance: updatedFreezedINRbalanceAsker
+                FreezedCZKbalance: updatedFreezedCZKbalanceAsker
               });
             } catch (e) {
               return res.json({
@@ -925,12 +925,12 @@ module.exports = {
               });
             }
             //Destroy Ask===========================================
-            console.log(currentBidDetails.id + " AskINR.destroy askDetails.id::: " + askDetails.id);
-            // var askDestroy = await AskINR.destroy({
+            console.log(currentBidDetails.id + " AskCZK.destroy askDetails.id::: " + askDetails.id);
+            // var askDestroy = await AskCZK.destroy({
             //   id: askDetails.id
             // });
             try {
-              var askDestroy = await AskINR.update({
+              var askDestroy = await AskCZK.update({
                 id: askDetails.id
               }, {
                 status: statusOne,
@@ -943,8 +943,8 @@ module.exports = {
                 statusCode: 401
               });
             }
-            //emitting event for INR_ask destruction
-            sails.sockets.blast(constants.INR_ASK_DESTROYED, askDestroy);
+            //emitting event for CZK_ask destruction
+            sails.sockets.blast(constants.CZK_ASK_DESTROYED, askDestroy);
             console.log(currentBidDetails.id + "Bid destroy successfully desctroyCurrentBid ::");
             return res.json({
               "message": "Ask Executed successfully",
@@ -960,19 +960,19 @@ module.exports = {
       statusCode: 200
     });
   },
-  addBidINRMarket: async function(req, res) {
-    console.log("Enter into ask api addBidINRMarket :: " + JSON.stringify(req.body));
+  addBidCZKMarket: async function(req, res) {
+    console.log("Enter into ask api addBidCZKMarket :: " + JSON.stringify(req.body));
     var userBidAmountBCH = new BigNumber(req.body.bidAmountBCH);
-    var userBidAmountINR = new BigNumber(req.body.bidAmountINR);
+    var userBidAmountCZK = new BigNumber(req.body.bidAmountCZK);
     var userBidRate = new BigNumber(req.body.bidRate);
     var userBid1ownerId = req.body.bidownerId;
 
     userBidAmountBCH = parseFloat(userBidAmountBCH);
-    userBidAmountINR = parseFloat(userBidAmountINR);
+    userBidAmountCZK = parseFloat(userBidAmountCZK);
     userBidRate = parseFloat(userBidRate);
 
 
-    if (!userBidAmountINR || !userBidAmountBCH ||
+    if (!userBidAmountCZK || !userBidAmountBCH ||
       !userBidRate || !userBid1ownerId) {
       console.log("User Entered invalid parameter !!!");
       return res.json({
@@ -1011,16 +1011,16 @@ module.exports = {
     }
     userBidAmountBCH = parseFloat(userBidAmountBCH);
     try {
-      var bidDetails = await BidINR.create({
+      var bidDetails = await BidCZK.create({
         bidAmountBCH: userBidAmountBCH,
-        bidAmountINR: userBidAmountINR,
+        bidAmountCZK: userBidAmountCZK,
         totalbidAmountBCH: userBidAmountBCH,
-        totalbidAmountINR: userBidAmountINR,
+        totalbidAmountCZK: userBidAmountCZK,
         bidRate: userBidRate,
         status: statusTwo,
         statusName: statusTwoPending,
         marketId: BCHMARKETID,
-        bidownerINR: userIdInDb
+        bidownerCZK: userIdInDb
       });
     } catch (e) {
       return res.json({
@@ -1031,7 +1031,7 @@ module.exports = {
     }
 
     //emitting event for bid creation
-    sails.sockets.blast(constants.INR_BID_ADDED, bidDetails);
+    sails.sockets.blast(constants.CZK_BID_ADDED, bidDetails);
 
     console.log("Bid created .........");
     //var updateUserBCHBalance = (parseFloat(userBCHBalanceInDb) - parseFloat(userBidAmountBCH));
@@ -1059,7 +1059,7 @@ module.exports = {
       });
     }
     try {
-      var allAsksFromdb = await AskINR.find({
+      var allAsksFromdb = await AskCZK.find({
         askRate: {
           'like': parseFloat(userBidRate)
         },
@@ -1082,32 +1082,32 @@ module.exports = {
       if (allAsksFromdb.length >= 1) {
         //Find exact bid if available in db
         var total_ask = 0;
-        var totoalBidRemainingINR = new BigNumber(userBidAmountINR);
+        var totoalBidRemainingCZK = new BigNumber(userBidAmountCZK);
         var totoalBidRemainingBCH = new BigNumber(userBidAmountBCH);
-        //this loop for sum of all Bids amount of INR
+        //this loop for sum of all Bids amount of CZK
         for (var i = 0; i < allAsksFromdb.length; i++) {
-          total_ask = total_ask + allAsksFromdb[i].askAmountINR;
+          total_ask = total_ask + allAsksFromdb[i].askAmountCZK;
         }
-        if (total_ask <= totoalBidRemainingINR) {
+        if (total_ask <= totoalBidRemainingCZK) {
           for (var i = 0; i < allAsksFromdb.length; i++) {
             currentAskDetails = allAsksFromdb[i];
-            console.log(currentAskDetails.id + " totoalBidRemainingINR :: " + totoalBidRemainingINR);
+            console.log(currentAskDetails.id + " totoalBidRemainingCZK :: " + totoalBidRemainingCZK);
             console.log(currentAskDetails.id + " totoalBidRemainingBCH :: " + totoalBidRemainingBCH);
             console.log("currentAskDetails ::: " + JSON.stringify(currentAskDetails)); //.6 <=.5
 
-            //totoalBidRemainingINR = totoalBidRemainingINR - allAsksFromdb[i].bidAmountINR;
-            //totoalBidRemainingINR = (parseFloat(totoalBidRemainingINR) - parseFloat(currentAskDetails.askAmountINR));
-            totoalBidRemainingINR = totoalBidRemainingINR.minus(currentAskDetails.askAmountINR);
+            //totoalBidRemainingCZK = totoalBidRemainingCZK - allAsksFromdb[i].bidAmountCZK;
+            //totoalBidRemainingCZK = (parseFloat(totoalBidRemainingCZK) - parseFloat(currentAskDetails.askAmountCZK));
+            totoalBidRemainingCZK = totoalBidRemainingCZK.minus(currentAskDetails.askAmountCZK);
 
             //totoalBidRemainingBCH = (parseFloat(totoalBidRemainingBCH) - parseFloat(currentAskDetails.askAmountBCH));
             totoalBidRemainingBCH = totoalBidRemainingBCH.minus(currentAskDetails.askAmountBCH);
-            console.log("start from here totoalBidRemainingINR == 0::: " + totoalBidRemainingINR);
-            if (totoalBidRemainingINR == 0) {
+            console.log("start from here totoalBidRemainingCZK == 0::: " + totoalBidRemainingCZK);
+            if (totoalBidRemainingCZK == 0) {
               //destroy bid and ask and update bidder and asker balances and break
-              console.log("Enter into totoalBidRemainingINR == 0");
+              console.log("Enter into totoalBidRemainingCZK == 0");
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: currentAskDetails.askownerINR
+                  id: currentAskDetails.askownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -1117,11 +1117,11 @@ module.exports = {
                 });
               }
 
-              console.log("userAll bidDetails.askownerINR totoalBidRemainingINR == 0:: ");
+              console.log("userAll bidDetails.askownerCZK totoalBidRemainingCZK == 0:: ");
               console.log("Update value of Bidder and asker");
-              //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(currentAskDetails.askAmountINR));
-              var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-              updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
+              //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(currentAskDetails.askAmountCZK));
+              var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+              updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(currentAskDetails.askAmountCZK);
               //var updatedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(currentAskDetails.askAmountBCH));
               var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(currentAskDetails.askAmountBCH);
@@ -1134,21 +1134,21 @@ module.exports = {
               console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
-              console.log("After deduct TX Fees of INR Update user d gsdfgdf  " + updatedBCHbalanceAsker);
+              console.log("After deduct TX Fees of CZK Update user d gsdfgdf  " + updatedBCHbalanceAsker);
 
               //current ask details of Asker  updated
-              //Ask FreezedINRbalance balance of asker deducted and BCH to give asker
+              //Ask FreezedCZKbalance balance of asker deducted and BCH to give asker
 
               console.log("Before Update :: qweqwer11110 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: qweqwer11110 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+              console.log("Before Update :: qweqwer11110 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
               console.log("Before Update :: qweqwer11110 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              console.log("Before Update :: qweqwer11110 totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log("Before Update :: qweqwer11110 totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log("Before Update :: qweqwer11110 totoalBidRemainingBCH " + totoalBidRemainingBCH);
               try {
                 var userUpdateAsker = await User.update({
-                  id: currentAskDetails.askownerINR
+                  id: currentAskDetails.askownerCZK
                 }, {
-                  FreezedINRbalance: updatedFreezedINRbalanceAsker,
+                  FreezedCZKbalance: updatedFreezedCZKbalanceAsker,
                   BCHbalance: updatedBCHbalanceAsker
                 });
               } catch (e) {
@@ -1161,7 +1161,7 @@ module.exports = {
 
               try {
                 var BidderuserAllDetailsInDBBidder = await User.findOne({
-                  id: bidDetails.bidownerINR
+                  id: bidDetails.bidownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -1171,12 +1171,12 @@ module.exports = {
                 });
               }
               //current bid details Bidder updated
-              //Bid FreezedBCHbalance of bidder deduct and INR  give to bidder
-              //var updatedINRbalanceBidder = (parseFloat(BidderuserAllDetailsInDBBidder.INRbalance) + parseFloat(totoalBidRemainingINR)) - parseFloat(totoalBidRemainingBCH);
-              //var updatedINRbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.INRbalance) + parseFloat(userBidAmountINR)) - parseFloat(totoalBidRemainingINR));
-              var updatedINRbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.INRbalance);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(totoalBidRemainingINR);
+              //Bid FreezedBCHbalance of bidder deduct and CZK  give to bidder
+              //var updatedCZKbalanceBidder = (parseFloat(BidderuserAllDetailsInDBBidder.CZKbalance) + parseFloat(totoalBidRemainingCZK)) - parseFloat(totoalBidRemainingBCH);
+              //var updatedCZKbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.CZKbalance) + parseFloat(userBidAmountCZK)) - parseFloat(totoalBidRemainingCZK));
+              var updatedCZKbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.CZKbalance);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(userBidAmountCZK);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(totoalBidRemainingCZK);
               //var updatedFreezedBCHbalanceBidder = parseFloat(totoalBidRemainingBCH);
               //var updatedFreezedBCHbalanceBidder = ((parseFloat(BidderuserAllDetailsInDBBidder.FreezedBCHbalance) - parseFloat(userBidAmountBCH)) + parseFloat(totoalBidRemainingBCH));
               var updatedFreezedBCHbalanceBidder = new BigNumber(BidderuserAllDetailsInDBBidder.FreezedBCHbalance);
@@ -1184,54 +1184,54 @@ module.exports = {
               updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(userBidAmountBCH);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalBidRemainingBCH " + totoalBidRemainingBCH);
-              console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedBCHbalance " + BidderuserAllDetailsInDBBidder.FreezedBCHbalance);
-              console.log("Total Ask RemainINR updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
+              console.log("Total Ask RemainCZK totoalBidRemainingBCH " + totoalBidRemainingBCH);
+              console.log("Total Ask RemainCZK BidderuserAllDetailsInDBBidder.FreezedBCHbalance " + BidderuserAllDetailsInDBBidder.FreezedBCHbalance);
+              console.log("Total Ask RemainCZK updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var INRAmountSucess = (parseFloat(userBidAmountINR) - parseFloat(totoalBidRemainingINR));
-              // var INRAmountSucess = new BigNumber(userBidAmountINR);
-              // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
+              console.log("Before deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
+              //var CZKAmountSucess = (parseFloat(userBidAmountCZK) - parseFloat(totoalBidRemainingCZK));
+              // var CZKAmountSucess = new BigNumber(userBidAmountCZK);
+              // CZKAmountSucess = CZKAmountSucess.minus(totoalBidRemainingCZK);
               //
-              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
-              // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
+              // //var txFeesBidderCZK = (parseFloat(CZKAmountSucess) * parseFloat(txFeeWithdrawSuccessCZK));
+              // var txFeesBidderCZK = new BigNumber(CZKAmountSucess);
+              // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
               //
-              // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
               var BCHAmountSucess = new BigNumber(userBidAmountBCH);
               BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-              var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
-              console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+              console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
-              console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+              console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
 
-              console.log(currentAskDetails.id + " asdftotoalBidRemainingINR == 0updatedINRbalanceBidder ::: " + updatedINRbalanceBidder);
-              console.log(currentAskDetails.id + " asdftotoalBidRemainingINR asdf== updatedFreezedBCHbalanceBidder updatedFreezedBCHbalanceBidder::: " + updatedFreezedBCHbalanceBidder);
+              console.log(currentAskDetails.id + " asdftotoalBidRemainingCZK == 0updatedCZKbalanceBidder ::: " + updatedCZKbalanceBidder);
+              console.log(currentAskDetails.id + " asdftotoalBidRemainingCZK asdf== updatedFreezedBCHbalanceBidder updatedFreezedBCHbalanceBidder::: " + updatedFreezedBCHbalanceBidder);
 
 
               console.log("Before Update :: qweqwer11111 BidderuserAllDetailsInDBBidder " + JSON.stringify(BidderuserAllDetailsInDBBidder));
               console.log("Before Update :: qweqwer11111 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-              console.log("Before Update :: qweqwer11111 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-              console.log("Before Update :: qweqwer11111 totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log("Before Update :: qweqwer11111 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+              console.log("Before Update :: qweqwer11111 totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log("Before Update :: qweqwer11111 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
 
               try {
                 var updatedUser = await User.update({
-                  id: bidDetails.bidownerINR
+                  id: bidDetails.bidownerCZK
                 }, {
-                  INRbalance: updatedINRbalanceBidder,
+                  CZKbalance: updatedCZKbalanceBidder,
                   FreezedBCHbalance: updatedFreezedBCHbalanceBidder
                 });
               } catch (e) {
@@ -1241,12 +1241,12 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + "asdf totoalBidRemainingINR == 0BidINR.destroy currentAskDetails.id::: " + currentAskDetails.id);
-              // var bidDestroy = await BidINR.destroy({
-              //   id: bidDetails.bidownerINR
+              console.log(currentAskDetails.id + "asdf totoalBidRemainingCZK == 0BidCZK.destroy currentAskDetails.id::: " + currentAskDetails.id);
+              // var bidDestroy = await BidCZK.destroy({
+              //   id: bidDetails.bidownerCZK
               // });
               try {
-                var bidDestroy = await BidINR.update({
+                var bidDestroy = await BidCZK.update({
                   id: bidDetails.id
                 }, {
                   status: statusOne,
@@ -1259,13 +1259,13 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
-              console.log(currentAskDetails.id + " totoalBidRemainingINR == 0AskINR.destroy bidDetails.id::: " + bidDetails.id);
-              // var askDestroy = await AskINR.destroy({
-              //   id: currentAskDetails.askownerINR
+              sails.sockets.blast(constants.CZK_BID_DESTROYED, bidDestroy);
+              console.log(currentAskDetails.id + " totoalBidRemainingCZK == 0AskCZK.destroy bidDetails.id::: " + bidDetails.id);
+              // var askDestroy = await AskCZK.destroy({
+              //   id: currentAskDetails.askownerCZK
               // });
               try {
-                var askDestroy = await AskINR.update({
+                var askDestroy = await AskCZK.update({
                   id: currentAskDetails.id
                 }, {
                   status: statusOne,
@@ -1278,18 +1278,18 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, askDestroy);
+              sails.sockets.blast(constants.CZK_ASK_DESTROYED, askDestroy);
               return res.json({
                 "message": "Bid Executed successfully",
                 statusCode: 200
               });
             } else {
               //destroy bid
-              console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0  enter into else of totoalBidRemainingINR == 0");
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0start User.findOne currentAskDetails.bidownerINR ");
+              console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0  enter into else of totoalBidRemainingCZK == 0");
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingCZK == 0start User.findOne currentAskDetails.bidownerCZK ");
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: currentAskDetails.askownerINR
+                  id: currentAskDetails.askownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -1298,10 +1298,10 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0 Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
-              //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(currentAskDetails.askAmountINR));
-              var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-              updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingCZK == 0 Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
+              //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(currentAskDetails.askAmountCZK));
+              var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+              updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(currentAskDetails.askAmountCZK);
               //var updatedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(currentAskDetails.askAmountBCH));
               var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(currentAskDetails.askAmountBCH);
@@ -1315,24 +1315,24 @@ module.exports = {
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
 
-              console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+              console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
 
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == :: ");
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0updaasdfsdftedBCHbalanceBidder updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingCZK == :: ");
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingCZK == 0updaasdfsdftedBCHbalanceBidder updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
 
 
               console.log("Before Update :: qweqwer11112 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: qweqwer11112 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+              console.log("Before Update :: qweqwer11112 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
               console.log("Before Update :: qweqwer11112 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              console.log("Before Update :: qweqwer11112 totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log("Before Update :: qweqwer11112 totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log("Before Update :: qweqwer11112 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
-                  id: currentAskDetails.askownerINR
+                  id: currentAskDetails.askownerCZK
                 }, {
-                  FreezedINRbalance: updatedFreezedINRbalanceAsker,
+                  FreezedCZKbalance: updatedFreezedCZKbalanceAsker,
                   BCHbalance: updatedBCHbalanceAsker
                 });
               } catch (e) {
@@ -1342,12 +1342,12 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
-              // var destroyCurrentAsk = await AskINR.destroy({
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingCZK == 0userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
+              // var destroyCurrentAsk = await AskCZK.destroy({
               //   id: currentAskDetails.id
               // });
               try {
-                var destroyCurrentAsk = await AskINR.update({
+                var destroyCurrentAsk = await AskCZK.update({
                   id: currentAskDetails.id
                 }, {
                   status: statusOne,
@@ -1361,12 +1361,12 @@ module.exports = {
                 });
               }
 
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, destroyCurrentAsk);
+              sails.sockets.blast(constants.CZK_ASK_DESTROYED, destroyCurrentAsk);
 
-              console.log(currentAskDetails.id + "  else of totoalBidRemainingINR == 0Bid destroy successfully destroyCurrentAsk ::" + JSON.stringify(destroyCurrentAsk));
+              console.log(currentAskDetails.id + "  else of totoalBidRemainingCZK == 0Bid destroy successfully destroyCurrentAsk ::" + JSON.stringify(destroyCurrentAsk));
 
             }
-            console.log(currentAskDetails.id + "   else of totoalBidRemainingINR == 0 index index == allAsksFromdb.length - 1 ");
+            console.log(currentAskDetails.id + "   else of totoalBidRemainingCZK == 0 index index == allAsksFromdb.length - 1 ");
             if (i == allAsksFromdb.length - 1) {
 
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1userAll Details :: ");
@@ -1374,7 +1374,7 @@ module.exports = {
 
               try {
                 var userAllDetailsInDBBid = await User.findOne({
-                  id: bidDetails.bidownerINR
+                  id: bidDetails.bidownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -1383,11 +1383,11 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1 asdf enter into userAskAmountBCH i == allBidsFromdb.length - 1 bidDetails.askownerINR");
-              //var updatedINRbalanceBidder = ((parseFloat(userAllDetailsInDBBid.INRbalance) + parseFloat(userBidAmountINR)) - parseFloat(totoalBidRemainingINR));
-              var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBid.INRbalance);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(totoalBidRemainingINR);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1 asdf enter into userAskAmountBCH i == allBidsFromdb.length - 1 bidDetails.askownerCZK");
+              //var updatedCZKbalanceBidder = ((parseFloat(userAllDetailsInDBBid.CZKbalance) + parseFloat(userBidAmountCZK)) - parseFloat(totoalBidRemainingCZK));
+              var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBid.CZKbalance);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(userBidAmountCZK);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(totoalBidRemainingCZK);
 
               //var updatedFreezedBCHbalanceBidder = parseFloat(totoalBidRemainingBCH);
               //var updatedFreezedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBid.FreezedBCHbalance) - parseFloat(totoalBidRemainingBCH));
@@ -1397,25 +1397,25 @@ module.exports = {
               updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(userBidAmountBCH);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalBidRemainingBCH " + totoalBidRemainingBCH);
-              console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedBCHbalance " + userAllDetailsInDBBid.FreezedBCHbalance);
-              console.log("Total Ask RemainINR updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
+              console.log("Total Ask RemainCZK totoalBidRemainingBCH " + totoalBidRemainingBCH);
+              console.log("Total Ask RemainCZK BidderuserAllDetailsInDBBidder.FreezedBCHbalance " + userAllDetailsInDBBid.FreezedBCHbalance);
+              console.log("Total Ask RemainCZK updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var INRAmountSucess = (parseFloat(userBidAmountINR) - parseFloat(totoalBidRemainingINR));
-              // var INRAmountSucess = new BigNumber(userBidAmountINR);
-              // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
+              console.log("Before deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
+              //var CZKAmountSucess = (parseFloat(userBidAmountCZK) - parseFloat(totoalBidRemainingCZK));
+              // var CZKAmountSucess = new BigNumber(userBidAmountCZK);
+              // CZKAmountSucess = CZKAmountSucess.minus(totoalBidRemainingCZK);
               //
-              // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
-              // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
+              // //var txFeesBidderCZK = (parseFloat(CZKAmountSucess) * parseFloat(txFeeWithdrawSuccessCZK));
+              // var txFeesBidderCZK = new BigNumber(CZKAmountSucess);
+              // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
               //
-              // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
-              // console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+              // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
+              // console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
 
 
 
@@ -1424,25 +1424,25 @@ module.exports = {
 
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-              var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
-              console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+              console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updateasdfdFreezedINRbalanceAsker updatedFreezedBCHbalanceBidder::: " + updatedFreezedBCHbalanceBidder);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1updateasdfdFreezedCZKbalanceAsker updatedFreezedBCHbalanceBidder::: " + updatedFreezedBCHbalanceBidder);
 
 
               console.log("Before Update :: qweqwer11113 userAllDetailsInDBBid " + JSON.stringify(userAllDetailsInDBBid));
               console.log("Before Update :: qweqwer11113 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-              console.log("Before Update :: qweqwer11113 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-              console.log("Before Update :: qweqwer11113 totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log("Before Update :: qweqwer11113 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+              console.log("Before Update :: qweqwer11113 totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log("Before Update :: qweqwer11113 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
               try {
                 var updatedUser = await User.update({
-                  id: bidDetails.bidownerINR
+                  id: bidDetails.bidownerCZK
                 }, {
-                  INRbalance: updatedINRbalanceBidder,
+                  CZKbalance: updatedCZKbalanceBidder,
                   FreezedBCHbalance: updatedFreezedBCHbalanceBidder
                 });
               } catch (e) {
@@ -1453,14 +1453,14 @@ module.exports = {
                 });
               }
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountBCH totoalBidRemainingBCH " + totoalBidRemainingBCH);
-              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountINR totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1Update In last Ask askAmountCZK totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log(currentAskDetails.id + " i == allAsksFromdb.length - 1bidDetails.id ::: " + bidDetails.id);
               try {
-                var updatedbidDetails = await BidINR.update({
+                var updatedbidDetails = await BidCZK.update({
                   id: bidDetails.id
                 }, {
                   bidAmountBCH: totoalBidRemainingBCH,
-                  bidAmountINR: totoalBidRemainingINR,
+                  bidAmountCZK: totoalBidRemainingCZK,
                   status: statusTwo,
                   statusName: statusTwoPending
                 });
@@ -1471,7 +1471,7 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              sails.sockets.blast(constants.INR_BID_DESTROYED, updatedbidDetails);
+              sails.sockets.blast(constants.CZK_BID_DESTROYED, updatedbidDetails);
 
             }
 
@@ -1479,21 +1479,21 @@ module.exports = {
         } else {
           for (var i = 0; i < allAsksFromdb.length; i++) {
             currentAskDetails = allAsksFromdb[i];
-            console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1totoalBidRemainingINR :: " + totoalBidRemainingINR);
+            console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1totoalBidRemainingCZK :: " + totoalBidRemainingCZK);
             console.log(currentAskDetails.id + " else of i == allAsksFromdb.length - 1 totoalBidRemainingBCH :: " + totoalBidRemainingBCH);
             console.log(" else of i == allAsksFromdb.length - 1currentAskDetails ::: " + JSON.stringify(currentAskDetails)); //.6 <=.5
-            //totoalBidRemainingINR = totoalBidRemainingINR - allAsksFromdb[i].bidAmountINR;
+            //totoalBidRemainingCZK = totoalBidRemainingCZK - allAsksFromdb[i].bidAmountCZK;
             if (totoalBidRemainingBCH >= currentAskDetails.askAmountBCH) {
-              totoalBidRemainingINR = totoalBidRemainingINR.minus(currentAskDetails.askAmountINR);
+              totoalBidRemainingCZK = totoalBidRemainingCZK.minus(currentAskDetails.askAmountCZK);
               totoalBidRemainingBCH = totoalBidRemainingBCH.minus(currentAskDetails.askAmountBCH);
-              console.log(" else of i == allAsksFromdb.length - 1start from here totoalBidRemainingINR == 0::: " + totoalBidRemainingINR);
+              console.log(" else of i == allAsksFromdb.length - 1start from here totoalBidRemainingCZK == 0::: " + totoalBidRemainingCZK);
 
-              if (totoalBidRemainingINR == 0) {
+              if (totoalBidRemainingCZK == 0) {
                 //destroy bid and ask and update bidder and asker balances and break
-                console.log(" totoalBidRemainingINR == 0Enter into totoalBidRemainingINR == 0");
+                console.log(" totoalBidRemainingCZK == 0Enter into totoalBidRemainingCZK == 0");
                 try {
                   var userAllDetailsInDBAsker = await User.findOne({
-                    id: currentAskDetails.askownerINR
+                    id: currentAskDetails.askownerCZK
                   });
                 } catch (e) {
                   return res.json({
@@ -1504,7 +1504,7 @@ module.exports = {
                 }
                 try {
                   var userAllDetailsInDBBidder = await User.findOne({
-                    id: bidDetails.bidownerINR
+                    id: bidDetails.bidownerCZK
                   });
                 } catch (e) {
                   return res.json({
@@ -1513,11 +1513,11 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(" totoalBidRemainingINR == 0userAll bidDetails.askownerINR :: ");
-                console.log(" totoalBidRemainingINR == 0Update value of Bidder and asker");
-                //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(currentAskDetails.askAmountINR));
-                var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-                updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
+                console.log(" totoalBidRemainingCZK == 0userAll bidDetails.askownerCZK :: ");
+                console.log(" totoalBidRemainingCZK == 0Update value of Bidder and asker");
+                //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(currentAskDetails.askAmountCZK));
+                var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+                updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(currentAskDetails.askAmountCZK);
 
                 //var updatedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(currentAskDetails.askAmountBCH));
                 var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
@@ -1533,27 +1533,27 @@ module.exports = {
                 //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
                 updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
 
-                console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+                console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
                 console.log("--------------------------------------------------------------------------------");
-                console.log(" totoalBidRemainingINR == 0userAllDetailsInDBAsker ::: " + JSON.stringify(userAllDetailsInDBAsker));
-                console.log(" totoalBidRemainingINR == 0updatedFreezedINRbalanceAsker ::: " + updatedFreezedINRbalanceAsker);
-                console.log(" totoalBidRemainingINR == 0updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
+                console.log(" totoalBidRemainingCZK == 0userAllDetailsInDBAsker ::: " + JSON.stringify(userAllDetailsInDBAsker));
+                console.log(" totoalBidRemainingCZK == 0updatedFreezedCZKbalanceAsker ::: " + updatedFreezedCZKbalanceAsker);
+                console.log(" totoalBidRemainingCZK == 0updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
                 console.log("----------------------------------------------------------------------------------updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
 
 
 
                 console.log("Before Update :: qweqwer11114 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-                console.log("Before Update :: qweqwer11114 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+                console.log("Before Update :: qweqwer11114 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
                 console.log("Before Update :: qweqwer11114 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-                console.log("Before Update :: qweqwer11114 totoalBidRemainingINR " + totoalBidRemainingINR);
+                console.log("Before Update :: qweqwer11114 totoalBidRemainingCZK " + totoalBidRemainingCZK);
                 console.log("Before Update :: qweqwer11114 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
 
                 try {
                   var userUpdateAsker = await User.update({
-                    id: currentAskDetails.askownerINR
+                    id: currentAskDetails.askownerCZK
                   }, {
-                    FreezedINRbalance: updatedFreezedINRbalanceAsker,
+                    FreezedCZKbalance: updatedFreezedCZKbalanceAsker,
                     BCHbalance: updatedBCHbalanceAsker
                   });
                 } catch (e) {
@@ -1563,11 +1563,11 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                //var updatedINRbalanceBidder = ((parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(userBidAmountINR)) - parseFloat(totoalBidRemainingINR));
+                //var updatedCZKbalanceBidder = ((parseFloat(userAllDetailsInDBBidder.CZKbalance) + parseFloat(userBidAmountCZK)) - parseFloat(totoalBidRemainingCZK));
 
-                var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
-                updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
-                updatedINRbalanceBidder = updatedINRbalanceBidder.minus(totoalBidRemainingINR);
+                var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBidder.CZKbalance);
+                updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(userBidAmountCZK);
+                updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(totoalBidRemainingCZK);
 
                 //var updatedFreezedBCHbalanceBidder = parseFloat(totoalBidRemainingBCH);
                 //var updatedFreezedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBCHbalance) - parseFloat(totoalBidRemainingBCH));
@@ -1577,55 +1577,55 @@ module.exports = {
                 updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(userBidAmountBCH);
 
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                console.log("Total Ask RemainINR totoalAskRemainingINR " + totoalBidRemainingBCH);
-                console.log("Total Ask RemainINR BidderuserAllDetailsInDBBidder.FreezedBCHbalance " + userAllDetailsInDBBidder.FreezedBCHbalance);
-                console.log("Total Ask RemainINR updatedFreezedINRbalanceAsker " + updatedFreezedBCHbalanceBidder);
+                console.log("Total Ask RemainCZK totoalAskRemainingCZK " + totoalBidRemainingBCH);
+                console.log("Total Ask RemainCZK BidderuserAllDetailsInDBBidder.FreezedBCHbalance " + userAllDetailsInDBBidder.FreezedBCHbalance);
+                console.log("Total Ask RemainCZK updatedFreezedCZKbalanceAsker " + updatedFreezedBCHbalanceBidder);
                 console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
                 //Deduct Transation Fee Bidder
-                console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-                //var INRAmountSucess = (parseFloat(userBidAmountINR) - parseFloat(totoalBidRemainingINR));
-                // var INRAmountSucess = new BigNumber(userBidAmountINR);
-                // INRAmountSucess = INRAmountSucess.minus(totoalBidRemainingINR);
+                console.log("Before deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
+                //var CZKAmountSucess = (parseFloat(userBidAmountCZK) - parseFloat(totoalBidRemainingCZK));
+                // var CZKAmountSucess = new BigNumber(userBidAmountCZK);
+                // CZKAmountSucess = CZKAmountSucess.minus(totoalBidRemainingCZK);
                 //
                 //
-                // //var txFeesBidderINR = (parseFloat(INRAmountSucess) * parseFloat(txFeeWithdrawSuccessINR));
-                // var txFeesBidderINR = new BigNumber(INRAmountSucess);
-                // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
-                // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-                // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-                // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+                // //var txFeesBidderCZK = (parseFloat(CZKAmountSucess) * parseFloat(txFeeWithdrawSuccessCZK));
+                // var txFeesBidderCZK = new BigNumber(CZKAmountSucess);
+                // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
+                // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+                // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+                // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
                 var BCHAmountSucess = new BigNumber(userBidAmountBCH);
                 BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
 
                 var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
                 txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
-                var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
-                console.log("txFeesBidderINR :: " + txFeesBidderINR);
-                //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-                updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+                var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+                console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+                //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+                updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
 
 
-                console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+                console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
 
-                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
-                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 updatedFreezedINRbalaasdf updatedFreezedBCHbalanceBidder ::: " + updatedFreezedBCHbalanceBidder);
+                console.log(currentAskDetails.id + " totoalBidRemainingCZK == 0 updatedBCHbalanceAsker ::: " + updatedBCHbalanceAsker);
+                console.log(currentAskDetails.id + " totoalBidRemainingCZK == 0 updatedFreezedCZKbalaasdf updatedFreezedBCHbalanceBidder ::: " + updatedFreezedBCHbalanceBidder);
 
 
                 console.log("Before Update :: qweqwer11115 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
                 console.log("Before Update :: qweqwer11115 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-                console.log("Before Update :: qweqwer11115 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-                console.log("Before Update :: qweqwer11115 totoalBidRemainingINR " + totoalBidRemainingINR);
+                console.log("Before Update :: qweqwer11115 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+                console.log("Before Update :: qweqwer11115 totoalBidRemainingCZK " + totoalBidRemainingCZK);
                 console.log("Before Update :: qweqwer11115 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
 
                 try {
                   var updatedUser = await User.update({
-                    id: bidDetails.bidownerINR
+                    id: bidDetails.bidownerCZK
                   }, {
-                    INRbalance: updatedINRbalanceBidder,
+                    CZKbalance: updatedCZKbalanceBidder,
                     FreezedBCHbalance: updatedFreezedBCHbalanceBidder
                   });
                 } catch (e) {
@@ -1635,12 +1635,12 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 BidINR.destroy currentAskDetails.id::: " + currentAskDetails.id);
-                // var askDestroy = await AskINR.destroy({
+                console.log(currentAskDetails.id + " totoalBidRemainingCZK == 0 BidCZK.destroy currentAskDetails.id::: " + currentAskDetails.id);
+                // var askDestroy = await AskCZK.destroy({
                 //   id: currentAskDetails.id
                 // });
                 try {
-                  var askDestroy = await AskINR.update({
+                  var askDestroy = await AskCZK.update({
                     id: currentAskDetails.id
                   }, {
                     status: statusOne,
@@ -1653,29 +1653,29 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                sails.sockets.blast(constants.INR_ASK_DESTROYED, askDestroy);
-                console.log(currentAskDetails.id + " totoalBidRemainingINR == 0 AskINR.destroy bidDetails.id::: " + bidDetails.id);
-                // var bidDestroy = await BidINR.destroy({
+                sails.sockets.blast(constants.CZK_ASK_DESTROYED, askDestroy);
+                console.log(currentAskDetails.id + " totoalBidRemainingCZK == 0 AskCZK.destroy bidDetails.id::: " + bidDetails.id);
+                // var bidDestroy = await BidCZK.destroy({
                 //   id: bidDetails.id
                 // });
-                var bidDestroy = await BidINR.update({
+                var bidDestroy = await BidCZK.update({
                   id: bidDetails.id
                 }, {
                   status: statusOne,
                   statusName: statusOneSuccessfull
                 });
-                sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
+                sails.sockets.blast(constants.CZK_BID_DESTROYED, bidDestroy);
                 return res.json({
                   "message": "Bid Executed successfully",
                   statusCode: 200
                 });
               } else {
                 //destroy bid
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 enter into else of totoalBidRemainingINR == 0");
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0totoalBidRemainingINR == 0 start User.findOne currentAskDetails.bidownerINR " + currentAskDetails.bidownerINR);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0 enter into else of totoalBidRemainingCZK == 0");
+                console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0totoalBidRemainingCZK == 0 start User.findOne currentAskDetails.bidownerCZK " + currentAskDetails.bidownerCZK);
                 try {
                   var userAllDetailsInDBAsker = await User.findOne({
-                    id: currentAskDetails.askownerINR
+                    id: currentAskDetails.askownerCZK
                   });
                 } catch (e) {
                   return res.json({
@@ -1684,11 +1684,11 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
-                //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(currentAskDetails.askAmountINR));
+                console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0Find all details of  userAllDetailsInDBAsker:: " + JSON.stringify(userAllDetailsInDBAsker));
+                //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(currentAskDetails.askAmountCZK));
 
-                var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-                updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(currentAskDetails.askAmountINR);
+                var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+                updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(currentAskDetails.askAmountCZK);
 
                 //var updatedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(currentAskDetails.askAmountBCH));
                 var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
@@ -1703,24 +1703,24 @@ module.exports = {
                 console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
                 //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
                 updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
-                console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+                console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
 
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 updatedBCHbalance asd asd updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0 updatedFreezedCZKbalanceAsker:: " + updatedFreezedCZKbalanceAsker);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0 updatedBCHbalance asd asd updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
 
 
                 console.log("Before Update :: qweqwer11116 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-                console.log("Before Update :: qweqwer11116 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+                console.log("Before Update :: qweqwer11116 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
                 console.log("Before Update :: qweqwer11116 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-                console.log("Before Update :: qweqwer11116 totoalBidRemainingINR " + totoalBidRemainingINR);
+                console.log("Before Update :: qweqwer11116 totoalBidRemainingCZK " + totoalBidRemainingCZK);
                 console.log("Before Update :: qweqwer11116 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
 
                 try {
                   var userAllDetailsInDBAskerUpdate = await User.update({
-                    id: currentAskDetails.askownerINR
+                    id: currentAskDetails.askownerCZK
                   }, {
-                    FreezedINRbalance: updatedFreezedINRbalanceAsker,
+                    FreezedCZKbalance: updatedFreezedCZKbalanceAsker,
                     BCHbalance: updatedBCHbalanceAsker
                   });
                 } catch (e) {
@@ -1730,12 +1730,12 @@ module.exports = {
                     statusCode: 401
                   });
                 }
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
-                // var destroyCurrentAsk = await AskINR.destroy({
+                console.log(currentAskDetails.id + " else of totoalBidRemainingCZK == 0 userAllDetailsInDBAskerUpdate ::" + userAllDetailsInDBAskerUpdate);
+                // var destroyCurrentAsk = await AskCZK.destroy({
                 //   id: currentAskDetails.id
                 // });
                 try {
-                  var destroyCurrentAsk = await AskINR.update({
+                  var destroyCurrentAsk = await AskCZK.update({
                     id: currentAskDetails.id
                   }, {
                     status: statusOne,
@@ -1748,7 +1748,7 @@ module.exports = {
                     statusCode: 200
                   });
                 }
-                sails.sockets.blast(constants.INR_ASK_DESTROYED, destroyCurrentAsk);
+                sails.sockets.blast(constants.CZK_ASK_DESTROYED, destroyCurrentAsk);
                 console.log(currentAskDetails.id + "Bid destroy successfully destroyCurrentAsk ::" + JSON.stringify(destroyCurrentAsk));
               }
             } else {
@@ -1757,20 +1757,20 @@ module.exports = {
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH  enter into i == allBidsFromdb.length - 1");
 
               //Update Ask
-              //  var updatedAskAmountINR = (parseFloat(currentAskDetails.askAmountINR) - parseFloat(totoalBidRemainingINR));
+              //  var updatedAskAmountCZK = (parseFloat(currentAskDetails.askAmountCZK) - parseFloat(totoalBidRemainingCZK));
 
-              var updatedAskAmountINR = new BigNumber(currentAskDetails.askAmountINR);
-              updatedAskAmountINR = updatedAskAmountINR.minus(totoalBidRemainingINR);
+              var updatedAskAmountCZK = new BigNumber(currentAskDetails.askAmountCZK);
+              updatedAskAmountCZK = updatedAskAmountCZK.minus(totoalBidRemainingCZK);
 
               //var updatedAskAmountBCH = (parseFloat(currentAskDetails.askAmountBCH) - parseFloat(totoalBidRemainingBCH));
               var updatedAskAmountBCH = new BigNumber(currentAskDetails.askAmountBCH);
               updatedAskAmountBCH = updatedAskAmountBCH.minus(totoalBidRemainingBCH);
               try {
-                var updatedaskDetails = await AskINR.update({
+                var updatedaskDetails = await AskCZK.update({
                   id: currentAskDetails.id
                 }, {
                   askAmountBCH: updatedAskAmountBCH,
-                  askAmountINR: updatedAskAmountINR,
+                  askAmountCZK: updatedAskAmountCZK,
                   status: statusTwo,
                   statusName: statusTwoPending,
                 });
@@ -1781,11 +1781,11 @@ module.exports = {
                   statusCode: 401
                 });
               }
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, updatedaskDetails);
+              sails.sockets.blast(constants.CZK_ASK_DESTROYED, updatedaskDetails);
               //Update Asker===========================================11
               try {
                 var userAllDetailsInDBAsker = await User.findOne({
-                  id: currentAskDetails.askownerINR
+                  id: currentAskDetails.askownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -1795,18 +1795,18 @@ module.exports = {
                 });
               }
 
-              //var updatedFreezedINRbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedINRbalance) - parseFloat(totoalBidRemainingINR));
-              var updatedFreezedINRbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedINRbalance);
-              updatedFreezedINRbalanceAsker = updatedFreezedINRbalanceAsker.minus(totoalBidRemainingINR);
+              //var updatedFreezedCZKbalanceAsker = (parseFloat(userAllDetailsInDBAsker.FreezedCZKbalance) - parseFloat(totoalBidRemainingCZK));
+              var updatedFreezedCZKbalanceAsker = new BigNumber(userAllDetailsInDBAsker.FreezedCZKbalance);
+              updatedFreezedCZKbalanceAsker = updatedFreezedCZKbalanceAsker.minus(totoalBidRemainingCZK);
 
               //var updatedBCHbalanceAsker = (parseFloat(userAllDetailsInDBAsker.BCHbalance) + parseFloat(totoalBidRemainingBCH));
               var updatedBCHbalanceAsker = new BigNumber(userAllDetailsInDBAsker.BCHbalance);
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.plus(totoalBidRemainingBCH);
 
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-              console.log("Total Ask RemainINR totoalBidRemainingBCH " + totoalBidRemainingBCH);
-              console.log("Total Ask RemainINR userAllDetailsInDBAsker.FreezedINRbalance " + userAllDetailsInDBAsker.FreezedINRbalance);
-              console.log("Total Ask RemainINR updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
+              console.log("Total Ask RemainCZK totoalBidRemainingBCH " + totoalBidRemainingBCH);
+              console.log("Total Ask RemainCZK userAllDetailsInDBAsker.FreezedCZKbalance " + userAllDetailsInDBAsker.FreezedCZKbalance);
+              console.log("Total Ask RemainCZK updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
               console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
               //Deduct Transation Fee Asker
@@ -1818,25 +1818,25 @@ module.exports = {
               console.log("txFeesAskerBCH ::: " + txFeesAskerBCH);
               //updatedBCHbalanceAsker = (parseFloat(updatedBCHbalanceAsker) - parseFloat(txFeesAskerBCH));
               updatedBCHbalanceAsker = updatedBCHbalanceAsker.minus(txFeesAskerBCH);
-              console.log("After deduct TX Fees of INR Update user " + updatedBCHbalanceAsker);
+              console.log("After deduct TX Fees of CZK Update user " + updatedBCHbalanceAsker);
 
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH updatedFreezedCZKbalanceAsker:: " + updatedFreezedCZKbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails asdfasd .askAmountBCH updatedBCHbalanceAsker:: " + updatedBCHbalanceAsker);
 
 
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
-              console.log("Before Update :: qweqwer11117 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
+              console.log("Before Update :: qweqwer11117 updatedFreezedCZKbalanceAsker " + updatedFreezedCZKbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBCHbalanceAsker " + updatedBCHbalanceAsker);
-              console.log("Before Update :: qweqwer11117 totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log("Before Update :: qweqwer11117 totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
 
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
-                  id: currentAskDetails.askownerINR
+                  id: currentAskDetails.askownerCZK
                 }, {
-                  FreezedINRbalance: updatedFreezedINRbalanceAsker,
+                  FreezedCZKbalance: updatedFreezedCZKbalanceAsker,
                   BCHbalance: updatedBCHbalanceAsker
                 });
               } catch (e) {
@@ -1852,7 +1852,7 @@ module.exports = {
 
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
-                  id: bidDetails.bidownerINR
+                  id: bidDetails.bidownerCZK
                 });
               } catch (e) {
                 return res.json({
@@ -1863,13 +1863,13 @@ module.exports = {
               }
 
               //Update bidder =========================================== 11
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH enter into userAskAmountBCH i == allBidsFromdb.length - 1 bidDetails.askownerINR");
-              //var updatedINRbalanceBidder = (parseFloat(userAllDetailsInDBBidder.INRbalance) + parseFloat(userBidAmountINR));
-              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBCH >= currentAskDetails.askAmountBCH userBidAmountINR " + userBidAmountINR);
-              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBCH >= currentAskDetails.askAmountBCH userAllDetailsInDBBidder.INRbalance " + userAllDetailsInDBBidder.INRbalance);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH enter into userAskAmountBCH i == allBidsFromdb.length - 1 bidDetails.askownerCZK");
+              //var updatedCZKbalanceBidder = (parseFloat(userAllDetailsInDBBidder.CZKbalance) + parseFloat(userBidAmountCZK));
+              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBCH >= currentAskDetails.askAmountBCH userBidAmountCZK " + userBidAmountCZK);
+              console.log(currentAskDetails.id + " else asdffdsfdof totoalBidRemainingBCH >= currentAskDetails.askAmountBCH userAllDetailsInDBBidder.CZKbalance " + userAllDetailsInDBBidder.CZKbalance);
 
-              var updatedINRbalanceBidder = new BigNumber(userAllDetailsInDBBidder.INRbalance);
-              updatedINRbalanceBidder = updatedINRbalanceBidder.plus(userBidAmountINR);
+              var updatedCZKbalanceBidder = new BigNumber(userAllDetailsInDBBidder.CZKbalance);
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.plus(userBidAmountCZK);
 
 
               //var updatedFreezedBCHbalanceBidder = (parseFloat(userAllDetailsInDBBidder.FreezedBCHbalance) - parseFloat(userBidAmountBCH));
@@ -1877,14 +1877,14 @@ module.exports = {
               updatedFreezedBCHbalanceBidder = updatedFreezedBCHbalanceBidder.minus(userBidAmountBCH);
 
               //Deduct Transation Fee Bidder
-              console.log("Before deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
-              //var txFeesBidderINR = (parseFloat(updatedINRbalanceBidder) * parseFloat(txFeeWithdrawSuccessINR));
-              // var txFeesBidderINR = new BigNumber(userBidAmountINR);
-              // txFeesBidderINR = txFeesBidderINR.times(txFeeWithdrawSuccessINR);
+              console.log("Before deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
+              //var txFeesBidderCZK = (parseFloat(updatedCZKbalanceBidder) * parseFloat(txFeeWithdrawSuccessCZK));
+              // var txFeesBidderCZK = new BigNumber(userBidAmountCZK);
+              // txFeesBidderCZK = txFeesBidderCZK.times(txFeeWithdrawSuccessCZK);
               //
-              // console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              // //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              // console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              // //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              // updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
               var BCHAmountSucess = new BigNumber(userBidAmountBCH);
               BCHAmountSucess = BCHAmountSucess.minus(totoalBidRemainingBCH);
@@ -1892,29 +1892,29 @@ module.exports = {
               var txFeesBidderBCH = new BigNumber(BCHAmountSucess);
               txFeesBidderBCH = txFeesBidderBCH.times(txFeeWithdrawSuccessBCH);
 
-              var txFeesBidderINR = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
-              console.log("txFeesBidderINR :: " + txFeesBidderINR);
-              //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
-              updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
+              var txFeesBidderCZK = txFeesBidderBCH.dividedBy(currentAskDetails.askRate);
+              console.log("txFeesBidderCZK :: " + txFeesBidderCZK);
+              //updatedCZKbalanceBidder = (parseFloat(updatedCZKbalanceBidder) - parseFloat(txFeesBidderCZK));
+              updatedCZKbalanceBidder = updatedCZKbalanceBidder.minus(txFeesBidderCZK);
 
-              console.log("After deduct TX Fees of INR Update user " + updatedINRbalanceBidder);
+              console.log("After deduct TX Fees of CZK Update user " + updatedCZKbalanceBidder);
 
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH asdf updatedINRbalanceBidder ::: " + updatedINRbalanceBidder);
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH asdf updatedCZKbalanceBidder ::: " + updatedCZKbalanceBidder);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAsk asdfasd fDetails.askAmountBCH asdf updatedFreezedBCHbalanceBidder ::: " + updatedFreezedBCHbalanceBidder);
 
 
 
               console.log("Before Update :: qweqwer11118 userAllDetailsInDBBidder " + JSON.stringify(userAllDetailsInDBBidder));
               console.log("Before Update :: qweqwer11118 updatedFreezedBCHbalanceBidder " + updatedFreezedBCHbalanceBidder);
-              console.log("Before Update :: qweqwer11118 updatedINRbalanceBidder " + updatedINRbalanceBidder);
-              console.log("Before Update :: qweqwer11118 totoalBidRemainingINR " + totoalBidRemainingINR);
+              console.log("Before Update :: qweqwer11118 updatedCZKbalanceBidder " + updatedCZKbalanceBidder);
+              console.log("Before Update :: qweqwer11118 totoalBidRemainingCZK " + totoalBidRemainingCZK);
               console.log("Before Update :: qweqwer11118 totoalBidRemainingBCH " + totoalBidRemainingBCH);
 
               try {
                 var updatedUser = await User.update({
-                  id: bidDetails.bidownerINR
+                  id: bidDetails.bidownerCZK
                 }, {
-                  INRbalance: updatedINRbalanceBidder,
+                  CZKbalance: updatedCZKbalanceBidder,
                   FreezedBCHbalance: updatedFreezedBCHbalanceBidder
                 });
               } catch (e) {
@@ -1926,12 +1926,12 @@ module.exports = {
               }
 
               //Destroy Bid===========================================Working
-              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH BidINR.destroy bidDetails.id::: " + bidDetails.id);
-              // var bidDestroy = await BidINR.destroy({
+              console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH BidCZK.destroy bidDetails.id::: " + bidDetails.id);
+              // var bidDestroy = await BidCZK.destroy({
               //   id: bidDetails.id
               // });
               try {
-                var bidDestroy = await BidINR.update({
+                var bidDestroy = await BidCZK.update({
                   id: bidDetails.id
                 }, {
                   status: statusOne,
@@ -1944,7 +1944,7 @@ module.exports = {
                   statusCode: 200
                 });
               }
-              sails.sockets.blast(constants.INR_BID_DESTROYED, bidDestroy);
+              sails.sockets.blast(constants.CZK_BID_DESTROYED, bidDestroy);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBCH >= currentAskDetails.askAmountBCH Bid destroy successfully desctroyCurrentBid ::");
               return res.json({
                 "message": "Bid Executed successfully",
@@ -1966,9 +1966,9 @@ module.exports = {
       });
     }
   },
-  removeBidINRMarket: function(req, res) {
+  removeBidCZKMarket: function(req, res) {
     console.log("Enter into bid api removeBid :: ");
-    var userBidId = req.body.bidIdINR;
+    var userBidId = req.body.bidIdCZK;
     var bidownerId = req.body.bidownerId;
     if (!userBidId || !bidownerId) {
       console.log("User Entered invalid parameter !!!");
@@ -1977,8 +1977,8 @@ module.exports = {
         statusCode: 400
       });
     }
-    BidINR.findOne({
-      bidownerINR: bidownerId,
+    BidCZK.findOne({
+      bidownerCZK: bidownerId,
       id: userBidId,
       marketId: {
         'like': BCHMARKETID
@@ -2041,7 +2041,7 @@ module.exports = {
               });
             }
             console.log("Removing bid !!!");
-            BidINR.update({
+            BidCZK.update({
               id: userBidId
             }, {
               status: statusThree,
@@ -2053,7 +2053,7 @@ module.exports = {
                   statusCode: 400
                 });
               }
-              sails.sockets.blast(constants.INR_BID_DESTROYED, bid);
+              sails.sockets.blast(constants.CZK_BID_DESTROYED, bid);
               return res.json({
                 "message": "Bid removed successfully!!!",
                 statusCode: 200
@@ -2064,9 +2064,9 @@ module.exports = {
       });
     });
   },
-  removeAskINRMarket: function(req, res) {
+  removeAskCZKMarket: function(req, res) {
     console.log("Enter into ask api removeAsk :: ");
-    var userAskId = req.body.askIdINR;
+    var userAskId = req.body.askIdCZK;
     var askownerId = req.body.askownerId;
     if (!userAskId || !askownerId) {
       console.log("User Entered invalid parameter !!!");
@@ -2075,8 +2075,8 @@ module.exports = {
         statusCode: 400
       });
     }
-    AskINR.findOne({
-      askownerINR: askownerId,
+    AskCZK.findOne({
+      askownerCZK: askownerId,
       id: userAskId,
       status: {
         '!': [statusOne, statusThree]
@@ -2113,19 +2113,19 @@ module.exports = {
             statusCode: 401
           });
         }
-        var userINRBalanceInDb = parseFloat(user.INRbalance);
-        var askAmountOfINRInAskTableDB = parseFloat(askDetails.askAmountINR);
-        var userFreezedINRbalanceInDB = parseFloat(user.FreezedINRbalance);
-        console.log("userINRBalanceInDb :" + userINRBalanceInDb);
-        console.log("askAmountOfINRInAskTableDB :" + askAmountOfINRInAskTableDB);
-        console.log("userFreezedINRbalanceInDB :" + userFreezedINRbalanceInDB);
-        var updateFreezedINRBalance = (parseFloat(userFreezedINRbalanceInDB) - parseFloat(askAmountOfINRInAskTableDB));
-        var updateUserINRBalance = (parseFloat(userINRBalanceInDb) + parseFloat(askAmountOfINRInAskTableDB));
+        var userCZKBalanceInDb = parseFloat(user.CZKbalance);
+        var askAmountOfCZKInAskTableDB = parseFloat(askDetails.askAmountCZK);
+        var userFreezedCZKbalanceInDB = parseFloat(user.FreezedCZKbalance);
+        console.log("userCZKBalanceInDb :" + userCZKBalanceInDb);
+        console.log("askAmountOfCZKInAskTableDB :" + askAmountOfCZKInAskTableDB);
+        console.log("userFreezedCZKbalanceInDB :" + userFreezedCZKbalanceInDB);
+        var updateFreezedCZKBalance = (parseFloat(userFreezedCZKbalanceInDB) - parseFloat(askAmountOfCZKInAskTableDB));
+        var updateUserCZKBalance = (parseFloat(userCZKBalanceInDb) + parseFloat(askAmountOfCZKInAskTableDB));
         User.update({
             id: askownerId
           }, {
-            INRbalance: parseFloat(updateUserINRBalance),
-            FreezedINRbalance: parseFloat(updateFreezedINRBalance)
+            CZKbalance: parseFloat(updateUserCZKBalance),
+            FreezedCZKbalance: parseFloat(updateFreezedCZKBalance)
           })
           .exec(function(err, updatedUser) {
             if (err) {
@@ -2136,7 +2136,7 @@ module.exports = {
               });
             }
             console.log("Removing ask !!!");
-            AskINR.update({
+            AskCZK.update({
               id: userAskId
             }, {
               status: statusThree,
@@ -2148,7 +2148,7 @@ module.exports = {
                   statusCode: 400
                 });
               }
-              sails.sockets.blast(constants.INR_ASK_DESTROYED, bid);
+              sails.sockets.blast(constants.CZK_ASK_DESTROYED, bid);
               return res.json({
                 "message": "Ask removed successfully!!",
                 statusCode: 200
@@ -2158,9 +2158,9 @@ module.exports = {
       });
     });
   },
-  getAllBidINR: function(req, res) {
-    console.log("Enter into ask api getAllBidINR :: ");
-    BidINR.find({
+  getAllBidCZK: function(req, res) {
+    console.log("Enter into ask api getAllBidCZK :: ");
+    BidCZK.find({
         status: {
           '!': [statusOne, statusThree]
         },
@@ -2184,7 +2184,7 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            BidINR.find({
+            BidCZK.find({
                 status: {
                   '!': [statusOne, statusThree]
                 },
@@ -2192,15 +2192,15 @@ module.exports = {
                   'like': BCHMARKETID
                 }
               })
-              .sum('bidAmountINR')
-              .exec(function(err, bidAmountINRSum) {
+              .sum('bidAmountCZK')
+              .exec(function(err, bidAmountCZKSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of bidAmountINRSum",
+                    "message": "Error to sum Of bidAmountCZKSum",
                     statusCode: 401
                   });
                 }
-                BidINR.find({
+                BidCZK.find({
                     status: {
                       '!': [statusOne, statusThree]
                     },
@@ -2212,13 +2212,13 @@ module.exports = {
                   .exec(function(err, bidAmountBCHSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of bidAmountINRSum",
+                        "message": "Error to sum Of bidAmountCZKSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      bidsINR: allAskDetailsToExecute,
-                      bidAmountINRSum: bidAmountINRSum[0].bidAmountINR,
+                      bidsCZK: allAskDetailsToExecute,
+                      bidAmountCZKSum: bidAmountCZKSum[0].bidAmountCZK,
                       bidAmountBCHSum: bidAmountBCHSum[0].bidAmountBCH,
                       statusCode: 200
                     });
@@ -2233,9 +2233,9 @@ module.exports = {
         }
       });
   },
-  getAllAskINR: function(req, res) {
-    console.log("Enter into ask api getAllAskINR :: ");
-    AskINR.find({
+  getAllAskCZK: function(req, res) {
+    console.log("Enter into ask api getAllAskCZK :: ");
+    AskCZK.find({
         status: {
           '!': [statusOne, statusThree]
         },
@@ -2259,7 +2259,7 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            AskINR.find({
+            AskCZK.find({
                 status: {
                   '!': [statusOne, statusThree]
                 },
@@ -2267,15 +2267,15 @@ module.exports = {
                   'like': BCHMARKETID
                 }
               })
-              .sum('askAmountINR')
-              .exec(function(err, askAmountINRSum) {
+              .sum('askAmountCZK')
+              .exec(function(err, askAmountCZKSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of askAmountINRSum",
+                    "message": "Error to sum Of askAmountCZKSum",
                     statusCode: 401
                   });
                 }
-                AskINR.find({
+                AskCZK.find({
                     status: {
                       '!': [statusOne, statusThree]
                     },
@@ -2287,13 +2287,13 @@ module.exports = {
                   .exec(function(err, askAmountBCHSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of askAmountINRSum",
+                        "message": "Error to sum Of askAmountCZKSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      asksINR: allAskDetailsToExecute,
-                      askAmountINRSum: askAmountINRSum[0].askAmountINR,
+                      asksCZK: allAskDetailsToExecute,
+                      askAmountCZKSum: askAmountCZKSum[0].askAmountCZK,
                       askAmountBCHSum: askAmountBCHSum[0].askAmountBCH,
                       statusCode: 200
                     });
@@ -2301,16 +2301,16 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskINR Found!!",
+              "message": "No AskCZK Found!!",
               statusCode: 401
             });
           }
         }
       });
   },
-  getBidsINRSuccess: function(req, res) {
-    console.log("Enter into ask api getBidsINRSuccess :: ");
-    BidINR.find({
+  getBidsCZKSuccess: function(req, res) {
+    console.log("Enter into ask api getBidsCZKSuccess :: ");
+    BidCZK.find({
         status: {
           'like': statusOne
         },
@@ -2334,7 +2334,7 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            BidINR.find({
+            BidCZK.find({
                 status: {
                   'like': statusOne
                 },
@@ -2342,15 +2342,15 @@ module.exports = {
                   'like': BCHMARKETID
                 }
               })
-              .sum('bidAmountINR')
-              .exec(function(err, bidAmountINRSum) {
+              .sum('bidAmountCZK')
+              .exec(function(err, bidAmountCZKSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of bidAmountINRSum",
+                    "message": "Error to sum Of bidAmountCZKSum",
                     statusCode: 401
                   });
                 }
-                BidINR.find({
+                BidCZK.find({
                     status: {
                       'like': statusOne
                     },
@@ -2362,13 +2362,13 @@ module.exports = {
                   .exec(function(err, bidAmountBCHSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of bidAmountINRSum",
+                        "message": "Error to sum Of bidAmountCZKSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      bidsINR: allAskDetailsToExecute,
-                      bidAmountINRSum: bidAmountINRSum[0].bidAmountINR,
+                      bidsCZK: allAskDetailsToExecute,
+                      bidAmountCZKSum: bidAmountCZKSum[0].bidAmountCZK,
                       bidAmountBCHSum: bidAmountBCHSum[0].bidAmountBCH,
                       statusCode: 200
                     });
@@ -2383,9 +2383,9 @@ module.exports = {
         }
       });
   },
-  getAsksINRSuccess: function(req, res) {
-    console.log("Enter into ask api getAsksINRSuccess :: ");
-    AskINR.find({
+  getAsksCZKSuccess: function(req, res) {
+    console.log("Enter into ask api getAsksCZKSuccess :: ");
+    AskCZK.find({
         status: {
           'like': statusOne
         },
@@ -2409,7 +2409,7 @@ module.exports = {
         }
         if (allAskDetailsToExecute) {
           if (allAskDetailsToExecute.length >= 1) {
-            AskINR.find({
+            AskCZK.find({
                 status: {
                   'like': statusOne
                 },
@@ -2417,15 +2417,15 @@ module.exports = {
                   'like': BCHMARKETID
                 }
               })
-              .sum('askAmountINR')
-              .exec(function(err, askAmountINRSum) {
+              .sum('askAmountCZK')
+              .exec(function(err, askAmountCZKSum) {
                 if (err) {
                   return res.json({
-                    "message": "Error to sum Of askAmountINRSum",
+                    "message": "Error to sum Of askAmountCZKSum",
                     statusCode: 401
                   });
                 }
-                AskINR.find({
+                AskCZK.find({
                     status: {
                       'like': statusOne
                     },
@@ -2437,13 +2437,13 @@ module.exports = {
                   .exec(function(err, askAmountBCHSum) {
                     if (err) {
                       return res.json({
-                        "message": "Error to sum Of askAmountINRSum",
+                        "message": "Error to sum Of askAmountCZKSum",
                         statusCode: 401
                       });
                     }
                     return res.json({
-                      asksINR: allAskDetailsToExecute,
-                      askAmountINRSum: askAmountINRSum[0].askAmountINR,
+                      asksCZK: allAskDetailsToExecute,
+                      askAmountCZKSum: askAmountCZKSum[0].askAmountCZK,
                       askAmountBCHSum: askAmountBCHSum[0].askAmountBCH,
                       statusCode: 200
                     });
@@ -2451,7 +2451,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskINR Found!!",
+              "message": "No AskCZK Found!!",
               statusCode: 401
             });
           }

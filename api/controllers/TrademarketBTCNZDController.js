@@ -23,7 +23,6 @@ const txFeeWithdrawSuccessBTC = sails.config.common.txFeeWithdrawSuccessBTC;
 const BTCMARKETID = sails.config.common.BTCMARKETID;
 module.exports = {
 
-
   addAskNZDMarket: async function(req, res) {
     console.log("Enter into ask api addAskNZDMarket : : " + JSON.stringify(req.body));
     var userAskAmountBTC = new BigNumber(req.body.askAmountBTC);
@@ -1825,15 +1824,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC updatedFreezedNZDbalanceAsker:: " + updatedFreezedNZDbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails asdfasd .askAmountBTC updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedNZDbalanceAsker " + updatedFreezedNZDbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingNZD " + totoalBidRemainingNZD);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBTC " + totoalBidRemainingBTC);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1849,10 +1844,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerNZD
@@ -1890,12 +1881,13 @@ module.exports = {
               // updatedNZDbalanceBidder = updatedNZDbalanceBidder.minus(txFeesBidderNZD);
 
               var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+              //              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeWithdrawSuccessBTC);
-
               var txFeesBidderNZD = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountBTC ::: " + userBidAmountBTC);
+              console.log("BTCAmountSucess ::: " + BTCAmountSucess);
               console.log("txFeesBidderNZD :: " + txFeesBidderNZD);
               //updatedNZDbalanceBidder = (parseFloat(updatedNZDbalanceBidder) - parseFloat(txFeesBidderNZD));
               updatedNZDbalanceBidder = updatedNZDbalanceBidder.minus(txFeesBidderNZD);
@@ -2461,6 +2453,5 @@ module.exports = {
         }
       });
   },
-
 
 };

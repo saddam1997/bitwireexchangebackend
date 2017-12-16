@@ -23,7 +23,6 @@ const txFeeWithdrawSuccessBTC = sails.config.common.txFeeWithdrawSuccessBTC;
 const BTCMARKETID = sails.config.common.BTCMARKETID;
 module.exports = {
 
-
   addAskSEKMarket: async function(req, res) {
     console.log("Enter into ask api addAskSEKMarket : : " + JSON.stringify(req.body));
     var userAskAmountBTC = new BigNumber(req.body.askAmountBTC);
@@ -1825,15 +1824,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails.askAmountBTC updatedFreezedSEKbalanceAsker:: " + updatedFreezedSEKbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingBTC >= currentAskDetails asdfasd .askAmountBTC updatedBTCbalanceAsker:: " + updatedBTCbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedSEKbalanceAsker " + updatedFreezedSEKbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedBTCbalanceAsker " + updatedBTCbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingSEK " + totoalBidRemainingSEK);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingBTC " + totoalBidRemainingBTC);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1849,10 +1844,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerSEK
@@ -1890,12 +1881,13 @@ module.exports = {
               // updatedSEKbalanceBidder = updatedSEKbalanceBidder.minus(txFeesBidderSEK);
 
               var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+              //              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeWithdrawSuccessBTC);
-
               var txFeesBidderSEK = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountBTC ::: " + userBidAmountBTC);
+              console.log("BTCAmountSucess ::: " + BTCAmountSucess);
               console.log("txFeesBidderSEK :: " + txFeesBidderSEK);
               //updatedSEKbalanceBidder = (parseFloat(updatedSEKbalanceBidder) - parseFloat(txFeesBidderSEK));
               updatedSEKbalanceBidder = updatedSEKbalanceBidder.minus(txFeesBidderSEK);
@@ -2461,6 +2453,5 @@ module.exports = {
         }
       });
   },
-
 
 };

@@ -1882,13 +1882,13 @@ module.exports = {
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
               var BTCAmountSucess = new BigNumber(userBidAmountBTC);
-//              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
+              //              BTCAmountSucess = BTCAmountSucess.minus(totoalBidRemainingBTC);
 
               var txFeesBidderBTC = new BigNumber(BTCAmountSucess);
               txFeesBidderBTC = txFeesBidderBTC.times(txFeeWithdrawSuccessBTC);
               var txFeesBidderINR = txFeesBidderBTC.dividedBy(currentAskDetails.askRate);
-              console.log("userBidAmountBTC ::: "+userBidAmountBTC);
-              console.log("BTCAmountSucess ::: "+BTCAmountSucess);
+              console.log("userBidAmountBTC ::: " + userBidAmountBTC);
+              console.log("BTCAmountSucess ::: " + BTCAmountSucess);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);

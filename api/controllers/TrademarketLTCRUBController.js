@@ -1,6 +1,6 @@
 /**
  * TrademarketLTCRUBController
- *
+ *RUB
  * @description :: Server-side logic for managing trademarketltcrubs
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
@@ -20,7 +20,6 @@ var constants = require('./../../config/constants');
 const txFeeWithdrawSuccessLTC = sails.config.common.txFeeWithdrawSuccessLTC;
 const LTCMARKETID = sails.config.common.LTCMARKETID;
 module.exports = {
-
 
   addAskRUBMarket: async function(req, res) {
     console.log("Enter into ask api addAskRUBMarket : : " + JSON.stringify(req.body));
@@ -1823,15 +1822,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC updatedFreezedRUBbalanceAsker:: " + updatedFreezedRUBbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails asdfasd .askAmountLTC updatedLTCbalanceAsker:: " + updatedLTCbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedRUBbalanceAsker " + updatedFreezedRUBbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingRUB " + totoalBidRemainingRUB);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingLTC " + totoalBidRemainingLTC);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1847,10 +1842,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerRUB
@@ -1888,12 +1879,13 @@ module.exports = {
               // updatedRUBbalanceBidder = updatedRUBbalanceBidder.minus(txFeesBidderRUB);
 
               var LTCAmountSucess = new BigNumber(userBidAmountLTC);
-              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
+              //              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
               var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
               txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
-
               var txFeesBidderRUB = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountLTC ::: " + userBidAmountLTC);
+              console.log("LTCAmountSucess ::: " + LTCAmountSucess);
               console.log("txFeesBidderRUB :: " + txFeesBidderRUB);
               //updatedRUBbalanceBidder = (parseFloat(updatedRUBbalanceBidder) - parseFloat(txFeesBidderRUB));
               updatedRUBbalanceBidder = updatedRUBbalanceBidder.minus(txFeesBidderRUB);
@@ -2459,6 +2451,5 @@ module.exports = {
         }
       });
   },
-
 
 };

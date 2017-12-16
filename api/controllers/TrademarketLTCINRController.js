@@ -1,6 +1,6 @@
 /**
  * TrademarketLTCINRController
- *
+ *INR
  * @description :: Server-side logic for managing trademarketltcinrs
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
@@ -1823,15 +1823,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC updatedFreezedINRbalanceAsker:: " + updatedFreezedINRbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails asdfasd .askAmountLTC updatedLTCbalanceAsker:: " + updatedLTCbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedINRbalanceAsker " + updatedFreezedINRbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingINR " + totoalBidRemainingINR);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingLTC " + totoalBidRemainingLTC);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1847,10 +1843,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerINR
@@ -1888,12 +1880,13 @@ module.exports = {
               // updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);
 
               var LTCAmountSucess = new BigNumber(userBidAmountLTC);
-              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
+              //              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
               var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
               txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
-
               var txFeesBidderINR = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountLTC ::: " + userBidAmountLTC);
+              console.log("LTCAmountSucess ::: " + LTCAmountSucess);
               console.log("txFeesBidderINR :: " + txFeesBidderINR);
               //updatedINRbalanceBidder = (parseFloat(updatedINRbalanceBidder) - parseFloat(txFeesBidderINR));
               updatedINRbalanceBidder = updatedINRbalanceBidder.minus(txFeesBidderINR);

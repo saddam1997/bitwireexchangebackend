@@ -21,7 +21,6 @@ const txFeeWithdrawSuccessLTC = sails.config.common.txFeeWithdrawSuccessLTC;
 const LTCMARKETID = sails.config.common.LTCMARKETID;
 module.exports = {
 
-
   addAskTRYMarket: async function(req, res) {
     console.log("Enter into ask api addAskTRYMarket : : " + JSON.stringify(req.body));
     var userAskAmountLTC = new BigNumber(req.body.askAmountLTC);
@@ -1823,15 +1822,11 @@ module.exports = {
 
               console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails.askAmountLTC updatedFreezedTRYbalanceAsker:: " + updatedFreezedTRYbalanceAsker);
               console.log(currentAskDetails.id + " else of totoalBidRemainingLTC >= currentAskDetails asdfasd .askAmountLTC updatedLTCbalanceAsker:: " + updatedLTCbalanceAsker);
-
-
               console.log("Before Update :: qweqwer11117 userAllDetailsInDBAsker " + JSON.stringify(userAllDetailsInDBAsker));
               console.log("Before Update :: qweqwer11117 updatedFreezedTRYbalanceAsker " + updatedFreezedTRYbalanceAsker);
               console.log("Before Update :: qweqwer11117 updatedLTCbalanceAsker " + updatedLTCbalanceAsker);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingTRY " + totoalBidRemainingTRY);
               console.log("Before Update :: qweqwer11117 totoalBidRemainingLTC " + totoalBidRemainingLTC);
-
-
 
               try {
                 var userAllDetailsInDBAskerUpdate = await User.update({
@@ -1847,10 +1842,6 @@ module.exports = {
                   statusCode: 401
                 });
               }
-
-
-
-
               try {
                 var userAllDetailsInDBBidder = await User.findOne({
                   id: bidDetails.bidownerTRY
@@ -1888,12 +1879,13 @@ module.exports = {
               // updatedTRYbalanceBidder = updatedTRYbalanceBidder.minus(txFeesBidderTRY);
 
               var LTCAmountSucess = new BigNumber(userBidAmountLTC);
-              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
+              //              LTCAmountSucess = LTCAmountSucess.minus(totoalBidRemainingLTC);
 
               var txFeesBidderLTC = new BigNumber(LTCAmountSucess);
               txFeesBidderLTC = txFeesBidderLTC.times(txFeeWithdrawSuccessLTC);
-
               var txFeesBidderTRY = txFeesBidderLTC.dividedBy(currentAskDetails.askRate);
+              console.log("userBidAmountLTC ::: " + userBidAmountLTC);
+              console.log("LTCAmountSucess ::: " + LTCAmountSucess);
               console.log("txFeesBidderTRY :: " + txFeesBidderTRY);
               //updatedTRYbalanceBidder = (parseFloat(updatedTRYbalanceBidder) - parseFloat(txFeesBidderTRY));
               updatedTRYbalanceBidder = updatedTRYbalanceBidder.minus(txFeesBidderTRY);
@@ -2459,6 +2451,5 @@ module.exports = {
         }
       });
   },
-
 
 };

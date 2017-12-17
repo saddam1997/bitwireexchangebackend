@@ -824,4 +824,2209 @@ module.exports = {
       }
     });
   },
+  sendUSD: function(req, res, next) {
+    console.log("Enter into sendUSD");
+    var userEmailAddress = req.body.userMailId;
+    var userUSDAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverUSDAddress = req.body.recieverUSDCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniUSDAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userUSDAmountToSend || !userReceiverUSDAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniUSDAmountSentByUser.greaterThanOrEqualTo(userUSDAmountToSend)) {
+      console.log("Sending amount is not less then " + miniUSDAmountSentByUser);
+      return res.json({
+        "message": "Sending amount USD is not less then " + miniUSDAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var USDBalanceInDB = new BigNumber(userDetails.USDbalance);
+
+              console.log("Enter Before If ");
+
+              if (userUSDAmountToSend.greaterThan(USDBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeUSD);
+                var transactionFeeOfUSD = new BigNumber(transactionFeeUSD);
+                var netamountToSend = userUSDAmountToSend.minus(transactionFeeOfUSD);
+                console.log("clientUSD netamountToSend :: " + netamountToSend);
+                clientUSD.cmd('sendfrom', COMPANYACCOUNTUSD, userReceiverUSDAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXUSD, userReceiverUSDAddress, userReceiverUSDAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromUSDAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "USD Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid USD Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in USD server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in USD Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateUSDAmountInDB = USDBalanceInDB.minus(userUSDAmountToSend);
+                    console.log("updateUSDAmountInDB ::: " + updateUSDAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      USDbalance: updateUSDAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendEUR: function(req, res, next) {
+    console.log("Enter into sendEUR");
+    var userEmailAddress = req.body.userMailId;
+    var userEURAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverEURAddress = req.body.recieverEURCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniEURAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userEURAmountToSend || !userReceiverEURAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniEURAmountSentByUser.greaterThanOrEqualTo(userEURAmountToSend)) {
+      console.log("Sending amount is not less then " + miniEURAmountSentByUser);
+      return res.json({
+        "message": "Sending amount EUR is not less then " + miniEURAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var EURBalanceInDB = new BigNumber(userDetails.EURbalance);
+
+              console.log("Enter Before If ");
+
+              if (userEURAmountToSend.greaterThan(EURBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeEUR);
+                var transactionFeeOfEUR = new BigNumber(transactionFeeEUR);
+                var netamountToSend = userEURAmountToSend.minus(transactionFeeOfEUR);
+                console.log("clientEUR netamountToSend :: " + netamountToSend);
+                clientEUR.cmd('sendfrom', COMPANYACCOUNTEUR, userReceiverEURAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXEUR, userReceiverEURAddress, userReceiverEURAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromEURAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "EUR Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid EUR Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in EUR server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in EUR Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateEURAmountInDB = EURBalanceInDB.minus(userEURAmountToSend);
+                    console.log("updateEURAmountInDB ::: " + updateEURAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      EURbalance: updateEURAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendGBP: function(req, res, next) {
+    console.log("Enter into sendGBP");
+    var userEmailAddress = req.body.userMailId;
+    var userGBPAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverGBPAddress = req.body.recieverGBPCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniGBPAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userGBPAmountToSend || !userReceiverGBPAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniGBPAmountSentByUser.greaterThanOrEqualTo(userGBPAmountToSend)) {
+      console.log("Sending amount is not less then " + miniGBPAmountSentByUser);
+      return res.json({
+        "message": "Sending amount GBP is not less then " + miniGBPAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var GBPBalanceInDB = new BigNumber(userDetails.GBPbalance);
+
+              console.log("Enter Before If ");
+
+              if (userGBPAmountToSend.greaterThan(GBPBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeGBP);
+                var transactionFeeOfGBP = new BigNumber(transactionFeeGBP);
+                var netamountToSend = userGBPAmountToSend.minus(transactionFeeOfGBP);
+                console.log("clientGBP netamountToSend :: " + netamountToSend);
+                clientGBP.cmd('sendfrom', COMPANYACCOUNTGBP, userReceiverGBPAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXGBP, userReceiverGBPAddress, userReceiverGBPAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromGBPAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "GBP Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid GBP Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in GBP server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in GBP Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateGBPAmountInDB = GBPBalanceInDB.minus(userGBPAmountToSend);
+                    console.log("updateGBPAmountInDB ::: " + updateGBPAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      GBPbalance: updateGBPAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendBRL: function(req, res, next) {
+    console.log("Enter into sendBRL");
+    var userEmailAddress = req.body.userMailId;
+    var userBRLAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverBRLAddress = req.body.recieverBRLCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniBRLAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userBRLAmountToSend || !userReceiverBRLAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniBRLAmountSentByUser.greaterThanOrEqualTo(userBRLAmountToSend)) {
+      console.log("Sending amount is not less then " + miniBRLAmountSentByUser);
+      return res.json({
+        "message": "Sending amount BRL is not less then " + miniBRLAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var BRLBalanceInDB = new BigNumber(userDetails.BRLbalance);
+
+              console.log("Enter Before If ");
+
+              if (userBRLAmountToSend.greaterThan(BRLBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeBRL);
+                var transactionFeeOfBRL = new BigNumber(transactionFeeBRL);
+                var netamountToSend = userBRLAmountToSend.minus(transactionFeeOfBRL);
+                console.log("clientBRL netamountToSend :: " + netamountToSend);
+                clientBRL.cmd('sendfrom', COMPANYACCOUNTBRL, userReceiverBRLAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXBRL, userReceiverBRLAddress, userReceiverBRLAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromBRLAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "BRL Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid BRL Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in BRL server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in BRL Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateBRLAmountInDB = BRLBalanceInDB.minus(userBRLAmountToSend);
+                    console.log("updateBRLAmountInDB ::: " + updateBRLAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      BRLbalance: updateBRLAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendPLN: function(req, res, next) {
+    console.log("Enter into sendPLN");
+    var userEmailAddress = req.body.userMailId;
+    var userPLNAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverPLNAddress = req.body.recieverPLNCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniPLNAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userPLNAmountToSend || !userReceiverPLNAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniPLNAmountSentByUser.greaterThanOrEqualTo(userPLNAmountToSend)) {
+      console.log("Sending amount is not less then " + miniPLNAmountSentByUser);
+      return res.json({
+        "message": "Sending amount PLN is not less then " + miniPLNAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var PLNBalanceInDB = new BigNumber(userDetails.PLNbalance);
+
+              console.log("Enter Before If ");
+
+              if (userPLNAmountToSend.greaterThan(PLNBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeePLN);
+                var transactionFeeOfPLN = new BigNumber(transactionFeePLN);
+                var netamountToSend = userPLNAmountToSend.minus(transactionFeeOfPLN);
+                console.log("clientPLN netamountToSend :: " + netamountToSend);
+                clientPLN.cmd('sendfrom', COMPANYACCOUNTPLN, userReceiverPLNAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXPLN, userReceiverPLNAddress, userReceiverPLNAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromPLNAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "PLN Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid PLN Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in PLN server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in PLN Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updatePLNAmountInDB = PLNBalanceInDB.minus(userPLNAmountToSend);
+                    console.log("updatePLNAmountInDB ::: " + updatePLNAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      PLNbalance: updatePLNAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendCAD: function(req, res, next) {
+    console.log("Enter into sendCAD");
+    var userEmailAddress = req.body.userMailId;
+    var userCADAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverCADAddress = req.body.recieverCADCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniCADAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userCADAmountToSend || !userReceiverCADAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniCADAmountSentByUser.greaterThanOrEqualTo(userCADAmountToSend)) {
+      console.log("Sending amount is not less then " + miniCADAmountSentByUser);
+      return res.json({
+        "message": "Sending amount CAD is not less then " + miniCADAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var CADBalanceInDB = new BigNumber(userDetails.CADbalance);
+
+              console.log("Enter Before If ");
+
+              if (userCADAmountToSend.greaterThan(CADBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeCAD);
+                var transactionFeeOfCAD = new BigNumber(transactionFeeCAD);
+                var netamountToSend = userCADAmountToSend.minus(transactionFeeOfCAD);
+                console.log("clientCAD netamountToSend :: " + netamountToSend);
+                clientCAD.cmd('sendfrom', COMPANYACCOUNTCAD, userReceiverCADAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXCAD, userReceiverCADAddress, userReceiverCADAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromCADAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "CAD Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid CAD Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in CAD server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in CAD Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateCADAmountInDB = CADBalanceInDB.minus(userCADAmountToSend);
+                    console.log("updateCADAmountInDB ::: " + updateCADAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      CADbalance: updateCADAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendTRY: function(req, res, next) {
+    console.log("Enter into sendTRY");
+    var userEmailAddress = req.body.userMailId;
+    var userTRYAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverTRYAddress = req.body.recieverTRYCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniTRYAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userTRYAmountToSend || !userReceiverTRYAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniTRYAmountSentByUser.greaterThanOrEqualTo(userTRYAmountToSend)) {
+      console.log("Sending amount is not less then " + miniTRYAmountSentByUser);
+      return res.json({
+        "message": "Sending amount TRY is not less then " + miniTRYAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var TRYBalanceInDB = new BigNumber(userDetails.TRYbalance);
+
+              console.log("Enter Before If ");
+
+              if (userTRYAmountToSend.greaterThan(TRYBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeTRY);
+                var transactionFeeOfTRY = new BigNumber(transactionFeeTRY);
+                var netamountToSend = userTRYAmountToSend.minus(transactionFeeOfTRY);
+                console.log("clientTRY netamountToSend :: " + netamountToSend);
+                clientTRY.cmd('sendfrom', COMPANYACCOUNTTRY, userReceiverTRYAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXTRY, userReceiverTRYAddress, userReceiverTRYAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromTRYAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "TRY Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid TRY Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in TRY server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in TRY Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateTRYAmountInDB = TRYBalanceInDB.minus(userTRYAmountToSend);
+                    console.log("updateTRYAmountInDB ::: " + updateTRYAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      TRYbalance: updateTRYAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendRUB: function(req, res, next) {
+    console.log("Enter into sendRUB");
+    var userEmailAddress = req.body.userMailId;
+    var userRUBAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverRUBAddress = req.body.recieverRUBCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniRUBAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userRUBAmountToSend || !userReceiverRUBAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniRUBAmountSentByUser.greaterThanOrEqualTo(userRUBAmountToSend)) {
+      console.log("Sending amount is not less then " + miniRUBAmountSentByUser);
+      return res.json({
+        "message": "Sending amount RUB is not less then " + miniRUBAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var RUBBalanceInDB = new BigNumber(userDetails.RUBbalance);
+
+              console.log("Enter Before If ");
+
+              if (userRUBAmountToSend.greaterThan(RUBBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeRUB);
+                var transactionFeeOfRUB = new BigNumber(transactionFeeRUB);
+                var netamountToSend = userRUBAmountToSend.minus(transactionFeeOfRUB);
+                console.log("clientRUB netamountToSend :: " + netamountToSend);
+                clientRUB.cmd('sendfrom', COMPANYACCOUNTRUB, userReceiverRUBAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXRUB, userReceiverRUBAddress, userReceiverRUBAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromRUBAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "RUB Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid RUB Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in RUB server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in RUB Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateRUBAmountInDB = RUBBalanceInDB.minus(userRUBAmountToSend);
+                    console.log("updateRUBAmountInDB ::: " + updateRUBAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      RUBbalance: updateRUBAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendMXN: function(req, res, next) {
+    console.log("Enter into sendMXN");
+    var userEmailAddress = req.body.userMailId;
+    var userMXNAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverMXNAddress = req.body.recieverMXNCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniMXNAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userMXNAmountToSend || !userReceiverMXNAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniMXNAmountSentByUser.greaterThanOrEqualTo(userMXNAmountToSend)) {
+      console.log("Sending amount is not less then " + miniMXNAmountSentByUser);
+      return res.json({
+        "message": "Sending amount MXN is not less then " + miniMXNAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var MXNBalanceInDB = new BigNumber(userDetails.MXNbalance);
+
+              console.log("Enter Before If ");
+
+              if (userMXNAmountToSend.greaterThan(MXNBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeMXN);
+                var transactionFeeOfMXN = new BigNumber(transactionFeeMXN);
+                var netamountToSend = userMXNAmountToSend.minus(transactionFeeOfMXN);
+                console.log("clientMXN netamountToSend :: " + netamountToSend);
+                clientMXN.cmd('sendfrom', COMPANYACCOUNTMXN, userReceiverMXNAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXMXN, userReceiverMXNAddress, userReceiverMXNAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromMXNAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "MXN Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid MXN Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in MXN server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in MXN Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateMXNAmountInDB = MXNBalanceInDB.minus(userMXNAmountToSend);
+                    console.log("updateMXNAmountInDB ::: " + updateMXNAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      MXNbalance: updateMXNAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendCZK: function(req, res, next) {
+    console.log("Enter into sendCZK");
+    var userEmailAddress = req.body.userMailId;
+    var userCZKAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverCZKAddress = req.body.recieverCZKCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniCZKAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userCZKAmountToSend || !userReceiverCZKAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniCZKAmountSentByUser.greaterThanOrEqualTo(userCZKAmountToSend)) {
+      console.log("Sending amount is not less then " + miniCZKAmountSentByUser);
+      return res.json({
+        "message": "Sending amount CZK is not less then " + miniCZKAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var CZKBalanceInDB = new BigNumber(userDetails.CZKbalance);
+
+              console.log("Enter Before If ");
+
+              if (userCZKAmountToSend.greaterThan(CZKBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeCZK);
+                var transactionFeeOfCZK = new BigNumber(transactionFeeCZK);
+                var netamountToSend = userCZKAmountToSend.minus(transactionFeeOfCZK);
+                console.log("clientCZK netamountToSend :: " + netamountToSend);
+                clientCZK.cmd('sendfrom', COMPANYACCOUNTCZK, userReceiverCZKAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXCZK, userReceiverCZKAddress, userReceiverCZKAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromCZKAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "CZK Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid CZK Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in CZK server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in CZK Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateCZKAmountInDB = CZKBalanceInDB.minus(userCZKAmountToSend);
+                    console.log("updateCZKAmountInDB ::: " + updateCZKAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      CZKbalance: updateCZKAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendILS: function(req, res, next) {
+    console.log("Enter into sendILS");
+    var userEmailAddress = req.body.userMailId;
+    var userILSAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverILSAddress = req.body.recieverILSCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniILSAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userILSAmountToSend || !userReceiverILSAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniILSAmountSentByUser.greaterThanOrEqualTo(userILSAmountToSend)) {
+      console.log("Sending amount is not less then " + miniILSAmountSentByUser);
+      return res.json({
+        "message": "Sending amount ILS is not less then " + miniILSAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var ILSBalanceInDB = new BigNumber(userDetails.ILSbalance);
+
+              console.log("Enter Before If ");
+
+              if (userILSAmountToSend.greaterThan(ILSBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeILS);
+                var transactionFeeOfILS = new BigNumber(transactionFeeILS);
+                var netamountToSend = userILSAmountToSend.minus(transactionFeeOfILS);
+                console.log("clientILS netamountToSend :: " + netamountToSend);
+                clientILS.cmd('sendfrom', COMPANYACCOUNTILS, userReceiverILSAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXILS, userReceiverILSAddress, userReceiverILSAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromILSAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "ILS Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid ILS Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in ILS server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in ILS Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateILSAmountInDB = ILSBalanceInDB.minus(userILSAmountToSend);
+                    console.log("updateILSAmountInDB ::: " + updateILSAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      ILSbalance: updateILSAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendNZD: function(req, res, next) {
+    console.log("Enter into sendNZD");
+    var userEmailAddress = req.body.userMailId;
+    var userNZDAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverNZDAddress = req.body.recieverNZDCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniNZDAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userNZDAmountToSend || !userReceiverNZDAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniNZDAmountSentByUser.greaterThanOrEqualTo(userNZDAmountToSend)) {
+      console.log("Sending amount is not less then " + miniNZDAmountSentByUser);
+      return res.json({
+        "message": "Sending amount NZD is not less then " + miniNZDAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var NZDBalanceInDB = new BigNumber(userDetails.NZDbalance);
+
+              console.log("Enter Before If ");
+
+              if (userNZDAmountToSend.greaterThan(NZDBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeNZD);
+                var transactionFeeOfNZD = new BigNumber(transactionFeeNZD);
+                var netamountToSend = userNZDAmountToSend.minus(transactionFeeOfNZD);
+                console.log("clientNZD netamountToSend :: " + netamountToSend);
+                clientNZD.cmd('sendfrom', COMPANYACCOUNTNZD, userReceiverNZDAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXNZD, userReceiverNZDAddress, userReceiverNZDAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromNZDAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "NZD Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid NZD Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in NZD server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in NZD Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateNZDAmountInDB = NZDBalanceInDB.minus(userNZDAmountToSend);
+                    console.log("updateNZDAmountInDB ::: " + updateNZDAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      NZDbalance: updateNZDAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendJPY: function(req, res, next) {
+    console.log("Enter into sendJPY");
+    var userEmailAddress = req.body.userMailId;
+    var userJPYAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverJPYAddress = req.body.recieverJPYCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniJPYAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userJPYAmountToSend || !userReceiverJPYAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniJPYAmountSentByUser.greaterThanOrEqualTo(userJPYAmountToSend)) {
+      console.log("Sending amount is not less then " + miniJPYAmountSentByUser);
+      return res.json({
+        "message": "Sending amount JPY is not less then " + miniJPYAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var JPYBalanceInDB = new BigNumber(userDetails.JPYbalance);
+
+              console.log("Enter Before If ");
+
+              if (userJPYAmountToSend.greaterThan(JPYBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeJPY);
+                var transactionFeeOfJPY = new BigNumber(transactionFeeJPY);
+                var netamountToSend = userJPYAmountToSend.minus(transactionFeeOfJPY);
+                console.log("clientJPY netamountToSend :: " + netamountToSend);
+                clientJPY.cmd('sendfrom', COMPANYACCOUNTJPY, userReceiverJPYAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXJPY, userReceiverJPYAddress, userReceiverJPYAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromJPYAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "JPY Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid JPY Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in JPY server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in JPY Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateJPYAmountInDB = JPYBalanceInDB.minus(userJPYAmountToSend);
+                    console.log("updateJPYAmountInDB ::: " + updateJPYAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      JPYbalance: updateJPYAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendSEK: function(req, res, next) {
+    console.log("Enter into sendSEK");
+    var userEmailAddress = req.body.userMailId;
+    var userSEKAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverSEKAddress = req.body.recieverSEKCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniSEKAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userSEKAmountToSend || !userReceiverSEKAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniSEKAmountSentByUser.greaterThanOrEqualTo(userSEKAmountToSend)) {
+      console.log("Sending amount is not less then " + miniSEKAmountSentByUser);
+      return res.json({
+        "message": "Sending amount SEK is not less then " + miniSEKAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var SEKBalanceInDB = new BigNumber(userDetails.SEKbalance);
+
+              console.log("Enter Before If ");
+
+              if (userSEKAmountToSend.greaterThan(SEKBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeSEK);
+                var transactionFeeOfSEK = new BigNumber(transactionFeeSEK);
+                var netamountToSend = userSEKAmountToSend.minus(transactionFeeOfSEK);
+                console.log("clientSEK netamountToSend :: " + netamountToSend);
+                clientSEK.cmd('sendfrom', COMPANYACCOUNTSEK, userReceiverSEKAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXSEK, userReceiverSEKAddress, userReceiverSEKAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromSEKAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "SEK Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid SEK Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in SEK server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in SEK Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateSEKAmountInDB = SEKBalanceInDB.minus(userSEKAmountToSend);
+                    console.log("updateSEKAmountInDB ::: " + updateSEKAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      SEKbalance: updateSEKAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
+  sendAUD: function(req, res, next) {
+    console.log("Enter into sendAUD");
+    var userEmailAddress = req.body.userMailId;
+    var userAUDAmountToSend = new BigNumber(req.body.amount);
+    var userReceiverAUDAddress = req.body.recieverAUDCoinAddress;
+    var userSpendingPassword = req.body.spendingPassword;
+    var miniAUDAmountSentByUser = new BigNumber(0.001);
+    if (!userEmailAddress || !userAUDAmountToSend || !userReceiverAUDAddress ||
+      !userSpendingPassword) {
+      console.log("Can't be empty!!! by user ");
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    if (miniAUDAmountSentByUser.greaterThanOrEqualTo(userAUDAmountToSend)) {
+      console.log("Sending amount is not less then " + miniAUDAmountSentByUser);
+      return res.json({
+        "message": "Sending amount AUD is not less then " + miniAUDAmountSentByUser,
+        statusCode: 400
+      });
+    }
+    User.findOne({
+      email: userEmailAddress
+    }).exec(function(err, userDetails) {
+      if (err) {
+        return res.json({
+          "message": "Error to find user",
+          statusCode: 401
+        });
+      }
+      if (!userDetails) {
+        return res.json({
+          "message": "Invalid email!",
+          statusCode: 401
+        });
+      } else {
+        console.log(JSON.stringify(userDetails));
+        User.compareSpendingpassword(userSpendingPassword, userDetails,
+          function(err, valid) {
+            if (err) {
+              console.log("Eror To compare password !!!");
+              return res.json({
+                "message": err,
+                statusCode: 401
+              });
+            }
+            if (!valid) {
+              console.log("Invalid spendingpassword !!!");
+              return res.json({
+                "message": 'Enter valid spending password',
+                statusCode: 401
+              });
+            } else {
+              console.log("Valid spending password !!!");
+              var AUDBalanceInDB = new BigNumber(userDetails.AUDbalance);
+
+              console.log("Enter Before If ");
+
+              if (userAUDAmountToSend.greaterThan(AUDBalanceInDB)) {
+                return res.json({
+                  "message": "Insufficient balance!!",
+                  statusCode: 400
+                });
+              } else {
+                console.log("Enter info else " + transactionFeeAUD);
+                var transactionFeeOfAUD = new BigNumber(transactionFeeAUD);
+                var netamountToSend = userAUDAmountToSend.minus(transactionFeeOfAUD);
+                console.log("clientAUD netamountToSend :: " + netamountToSend);
+                clientAUD.cmd('sendfrom', COMPANYACCOUNTAUD, userReceiverAUDAddress, parseFloat(netamountToSend),
+                  CONFIRMATIONOFTXAUD, userReceiverAUDAddress, userReceiverAUDAddress,
+                  function(err, TransactionDetails, resHeaders) {
+                    if (err) {
+                      console.log("Error from sendFromAUDAccount:: " + err);
+                      if (err.code && err.code == "ECONNREFUSED") {
+                        return res.json({
+                          "message": "AUD Server Refuse to connect App",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -5) {
+                        return res.json({
+                          "message": "Invalid AUD Address",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code == -6) {
+                        return res.json({
+                          "message": "Account has Insufficient funds",
+                          statusCode: 400
+                        });
+                      }
+                      if (err.code && err.code < 0) {
+                        return res.json({
+                          "message": "Problem in AUD server",
+                          statusCode: 400
+                        });
+                      }
+                      return res.json({
+                        "message": "Error in AUD Server send",
+                        statusCode: 400
+                      });
+                    }
+                    console.log('TransactionDetails :', TransactionDetails);
+                    var updateAUDAmountInDB = AUDBalanceInDB.minus(userAUDAmountToSend);
+                    console.log("updateAUDAmountInDB ::: " + updateAUDAmountInDB);
+                    User.update({
+                      email: userEmailAddress
+                    }, {
+                      AUDbalance: updateAUDAmountInDB
+                    }).exec(function afterwards(err, updated) {
+                      if (err) {
+                        return res.json({
+                          "message": "Error to update in DB",
+                          statusCode: 400
+                        });
+                      }
+                      User.findOne({
+                          email: userEmailAddress
+                        }).populateAll()
+                        .exec(function(err, user) {
+                          if (err) {
+                            return res.json({
+                              "message": "Error to find user",
+                              statusCode: 401
+                            });
+                          }
+                          if (!user) {
+                            return res.json({
+                              "message": "Invalid email!",
+                              statusCode: 401
+                            });
+                          }
+                          console.log("Return user details after sending amount!!");
+                          res.json({
+                            user: user,
+                            statusCode: 200
+                          });
+                        });
+                    });
+                  });
+              }
+            }
+          });
+      }
+    });
+  },
 };

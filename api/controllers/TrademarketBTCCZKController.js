@@ -2167,13 +2167,13 @@ module.exports = {
       .exec(function(err, allAskDetailsToExecute) {
         if (err) {
           return res.json({
-            "message": "Error found to get AskEBT !!",
+            "message": "Error found to get Ask !!",
             statusCode: 401
           });
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No AskEBT Found!!",
+            "message": "No Ask Found!!",
             statusCode: 401
           });
         }
@@ -2221,7 +2221,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskEBT Found!!",
+              "message": "No Ask Found!!",
               statusCode: 401
             });
           }
@@ -2242,13 +2242,13 @@ module.exports = {
       .exec(function(err, allAskDetailsToExecute) {
         if (err) {
           return res.json({
-            "message": "Error found to get AskEBT !!",
+            "message": "Error found to get Ask !!",
             statusCode: 401
           });
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No AskEBT Found!!",
+            "message": "No Ask Found!!",
             statusCode: 401
           });
         }
@@ -2317,13 +2317,13 @@ module.exports = {
       .exec(function(err, allAskDetailsToExecute) {
         if (err) {
           return res.json({
-            "message": "Error found to get AskEBT !!",
+            "message": "Error found to get Ask !!",
             statusCode: 401
           });
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No AskEBT Found!!",
+            "message": "No Ask Found!!",
             statusCode: 401
           });
         }
@@ -2371,7 +2371,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskEBT Found!!",
+              "message": "No Ask Found!!",
               statusCode: 401
             });
           }
@@ -2392,13 +2392,13 @@ module.exports = {
       .exec(function(err, allAskDetailsToExecute) {
         if (err) {
           return res.json({
-            "message": "Error found to get AskEBT !!",
+            "message": "Error found to get Ask !!",
             statusCode: 401
           });
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No AskEBT Found!!",
+            "message": "No Ask Found!!",
             statusCode: 401
           });
         }

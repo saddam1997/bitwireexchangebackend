@@ -5,7 +5,14 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 var BigNumber = require('bignumber.js');
+const BCHMARKETID = sails.config.common.BCHMARKETID;
+const BTCMARKETID = sails.config.common.BTCMARKETID;
+const LTCMARKETID = sails.config.common.LTCMARKETID;
 
+var statusZero = sails.config.common.statusZero;
+var statusOne = sails.config.common.statusOne;
+var statusTwo = sails.config.common.statusTwo;
+var statusThree = sails.config.common.statusThree;
 //BTC Wallet Details
 var bitcoinBTC = require('bitcoin');
 var clientBTC = new bitcoinBTC.Client({
@@ -2628,5 +2635,1142 @@ module.exports = {
         });
     });
   },
+  getRatesAllBidAskBTC: async function(req, res, next) {
+    console.log("Enter into getRateAllBidAsk::: ");
 
+
+    try {
+      var askBTCINR = await AskINR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCINR = await BidINR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCUSD = await AskUSD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCUSD = await BidUSD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCEUR = await AskEUR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCEUR = await BidEUR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCGBP = await AskGBP.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCGBP = await BidGBP.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCBRL = await AskBRL.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCBRL = await BidBRL.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCPLN = await AskPLN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCPLN = await BidPLN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+      var askBTCCAD = await AskCAD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCCAD = await BidCAD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCTRY = await AskTRY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCTRY = await BidTRY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCRUB = await AskRUB.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCRUB = await BidRUB.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCMXN = await AskMXN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCMXN = await BidMXN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCCZK = await AskCZK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCCZK = await BidCZK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCILS = await AskILS.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCILS = await BidILS.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCNZD = await AskNZD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCNZD = await BidNZD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCJPY = await AskJPY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCJPY = await BidJPY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCSEK = await AskSEK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCSEK = await BidSEK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBTCAUD = await AskAUD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).min('askRate');
+      var bidBTCAUD = await BidAUD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BTCMARKETID
+        }
+      }).max('bidRate');
+    } catch (ex) {
+      return res.json({
+        message: "Unable to get rates!",
+        statusCode: 200
+      })
+    }
+
+
+    return res.json({
+      askBTCINR: askBTCINR[0].askRate,
+      bidBTCINR: bidBTCINR[0].bidRate,
+
+      askBTCUSD: askBTCUSD[0].askRate,
+      bidBTCUSD: bidBTCUSD[0].bidRate,
+
+      askBTCEUR: askBTCEUR[0].askRate,
+      bidBTCEUR: bidBTCEUR[0].bidRate,
+
+      askBTCGBP: askBTCGBP[0].askRate,
+      bidBTCGBP: bidBTCGBP[0].bidRate,
+
+      askBTCBRL: askBTCBRL[0].askRate,
+      bidBTCBRL: bidBTCBRL[0].bidRate,
+
+      askBTCPLN: askBTCPLN[0].askRate,
+      bidBTCPLN: bidBTCPLN[0].bidRate,
+
+      askBTCCAD: askBTCCAD[0].askRate,
+      bidBTCCAD: bidBTCCAD[0].bidRate,
+
+      askBTCTRY: askBTCTRY[0].askRate,
+      bidBTCTRY: bidBTCTRY[0].bidRate,
+
+      askBTCRUB: askBTCRUB[0].askRate,
+      bidBTCRUB: bidBTCRUB[0].bidRate,
+
+      askBTCMXN: askBTCMXN[0].askRate,
+      bidBTCMXN: bidBTCMXN[0].bidRate,
+
+      askBTCCZK: askBTCCZK[0].askRate,
+      bidBTCCZK: bidBTCCZK[0].bidRate,
+
+      askBTCILS: askBTCILS[0].askRate,
+      bidBTCILS: bidBTCILS[0].bidRate,
+
+      askBTCNZD: askBTCNZD[0].askRate,
+      bidBTCNZD: bidBTCNZD[0].bidRate,
+
+      askBTCJPY: askBTCJPY[0].askRate,
+      bidBTCJPY: bidBTCJPY[0].bidRate,
+
+      askBTCSEK: askBTCSEK[0].askRate,
+      bidBTCSEK: bidBTCSEK[0].bidRate,
+
+      askBTCAUD: askBTCAUD[0].askRate,
+      bidBTCAUD: bidBTCAUD[0].bidRate,
+
+      statusCode: 200
+    });
+  },
+  getRatesAllBidAskBCH: async function(req, res, next) {
+    console.log("Enter into getRateAllBidAsk::: ");
+    try {
+      var askBCHINR = await AskINR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHINR = await BidINR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHUSD = await AskUSD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHUSD = await BidUSD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHEUR = await AskEUR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHEUR = await BidEUR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHGBP = await AskGBP.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHGBP = await BidGBP.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHBRL = await AskBRL.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHBRL = await BidBRL.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHPLN = await AskPLN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHPLN = await BidPLN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+      var askBCHCAD = await AskCAD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHCAD = await BidCAD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHTRY = await AskTRY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHTRY = await BidTRY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHRUB = await AskRUB.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHRUB = await BidRUB.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHMXN = await AskMXN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHMXN = await BidMXN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHCZK = await AskCZK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHCZK = await BidCZK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHILS = await AskILS.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHILS = await BidILS.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHNZD = await AskNZD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHNZD = await BidNZD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHJPY = await AskJPY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHJPY = await BidJPY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHSEK = await AskSEK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHSEK = await BidSEK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askBCHAUD = await AskAUD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).min('askRate');
+      var bidBCHAUD = await BidAUD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': BCHMARKETID
+        }
+      }).max('bidRate');
+    } catch (ex) {
+      return res.json({
+        message: "Unable to get rates!",
+        statusCode: 200
+      })
+    }
+
+
+    return res.json({
+      askBCHINR: askBCHINR[0].askRate,
+      bidBCHINR: bidBCHINR[0].bidRate,
+
+      askBCHUSD: askBCHUSD[0].askRate,
+      bidBCHUSD: bidBCHUSD[0].bidRate,
+
+      askBCHEUR: askBCHEUR[0].askRate,
+      bidBCHEUR: bidBCHEUR[0].bidRate,
+
+      askBCHGBP: askBCHGBP[0].askRate,
+      bidBCHGBP: bidBCHGBP[0].bidRate,
+
+      askBCHBRL: askBCHBRL[0].askRate,
+      bidBCHBRL: bidBCHBRL[0].bidRate,
+
+      askBCHPLN: askBCHPLN[0].askRate,
+      bidBCHPLN: bidBCHPLN[0].bidRate,
+
+      askBCHCAD: askBCHCAD[0].askRate,
+      bidBCHCAD: bidBCHCAD[0].bidRate,
+
+      askBCHTRY: askBCHTRY[0].askRate,
+      bidBCHTRY: bidBCHTRY[0].bidRate,
+
+      askBCHRUB: askBCHRUB[0].askRate,
+      bidBCHRUB: bidBCHRUB[0].bidRate,
+
+      askBCHMXN: askBCHMXN[0].askRate,
+      bidBCHMXN: bidBCHMXN[0].bidRate,
+
+      askBCHCZK: askBCHCZK[0].askRate,
+      bidBCHCZK: bidBCHCZK[0].bidRate,
+
+      askBCHILS: askBCHILS[0].askRate,
+      bidBCHILS: bidBCHILS[0].bidRate,
+
+      askBCHNZD: askBCHNZD[0].askRate,
+      bidBCHNZD: bidBCHNZD[0].bidRate,
+
+      askBCHJPY: askBCHJPY[0].askRate,
+      bidBCHJPY: bidBCHJPY[0].bidRate,
+
+      askBCHSEK: askBCHSEK[0].askRate,
+      bidBCHSEK: bidBCHSEK[0].bidRate,
+
+      askBCHAUD: askBCHAUD[0].askRate,
+      bidBCHAUD: bidBCHAUD[0].bidRate,
+
+      statusCode: 200
+    });
+  },
+  getRatesAllBidAskLTC: async function(req, res, next) {
+    console.log("Enter into getRateAllBidAsk::: ");
+
+
+    try {
+      var askLTCINR = await AskINR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCINR = await BidINR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCUSD = await AskUSD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCUSD = await BidUSD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCEUR = await AskEUR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCEUR = await BidEUR.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCGBP = await AskGBP.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCGBP = await BidGBP.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCBRL = await AskBRL.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCBRL = await BidBRL.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCPLN = await AskPLN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCPLN = await BidPLN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+      var askLTCCAD = await AskCAD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCCAD = await BidCAD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCTRY = await AskTRY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCTRY = await BidTRY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCRUB = await AskRUB.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCRUB = await BidRUB.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCMXN = await AskMXN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCMXN = await BidMXN.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCCZK = await AskCZK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCCZK = await BidCZK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCILS = await AskILS.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCILS = await BidILS.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCNZD = await AskNZD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCNZD = await BidNZD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCJPY = await AskJPY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCJPY = await BidJPY.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCSEK = await AskSEK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCSEK = await BidSEK.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+
+
+
+
+      var askLTCAUD = await AskAUD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).min('askRate');
+      var bidLTCAUD = await BidAUD.find({
+        status: {
+          'like': statusOne
+        },
+        marketId: {
+          'like': LTCMARKETID
+        }
+      }).max('bidRate');
+    } catch (ex) {
+      return res.json({
+        message: "Unable to get rates!",
+        statusCode: 200
+      })
+    }
+
+
+    return res.json({
+      askLTCINR: askLTCINR[0].askRate,
+      bidLTCINR: bidLTCINR[0].bidRate,
+
+      askLTCUSD: askLTCUSD[0].askRate,
+      bidLTCUSD: bidLTCUSD[0].bidRate,
+
+      askLTCEUR: askLTCEUR[0].askRate,
+      bidLTCEUR: bidLTCEUR[0].bidRate,
+
+      askLTCGBP: askLTCGBP[0].askRate,
+      bidLTCGBP: bidLTCGBP[0].bidRate,
+
+      askLTCBRL: askLTCBRL[0].askRate,
+      bidLTCBRL: bidLTCBRL[0].bidRate,
+
+      askLTCPLN: askLTCPLN[0].askRate,
+      bidLTCPLN: bidLTCPLN[0].bidRate,
+
+      askLTCCAD: askLTCCAD[0].askRate,
+      bidLTCCAD: bidLTCCAD[0].bidRate,
+
+      askLTCTRY: askLTCTRY[0].askRate,
+      bidLTCTRY: bidLTCTRY[0].bidRate,
+
+      askLTCRUB: askLTCRUB[0].askRate,
+      bidLTCRUB: bidLTCRUB[0].bidRate,
+
+      askLTCMXN: askLTCMXN[0].askRate,
+      bidLTCMXN: bidLTCMXN[0].bidRate,
+
+      askLTCCZK: askLTCCZK[0].askRate,
+      bidLTCCZK: bidLTCCZK[0].bidRate,
+
+      askLTCILS: askLTCILS[0].askRate,
+      bidLTCILS: bidLTCILS[0].bidRate,
+
+      askLTCNZD: askLTCNZD[0].askRate,
+      bidLTCNZD: bidLTCNZD[0].bidRate,
+
+      askLTCJPY: askLTCJPY[0].askRate,
+      bidLTCJPY: bidLTCJPY[0].bidRate,
+
+      askLTCSEK: askLTCSEK[0].askRate,
+      bidLTCSEK: bidLTCSEK[0].bidRate,
+
+      askLTCAUD: askLTCAUD[0].askRate,
+      bidLTCAUD: bidLTCAUD[0].bidRate,
+
+      statusCode: 200
+    });
+  },
 };

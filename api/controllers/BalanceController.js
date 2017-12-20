@@ -2635,7 +2635,7 @@ module.exports = {
         });
     });
   },
-  getRatesAllBidAskBTC: async function(req, res, next) {
+  getRatesAllBidAsk: async function(req, res, next) {
     console.log("Enter into getRateAllBidAsk::: ");
 
 
@@ -2955,69 +2955,8 @@ module.exports = {
           'like': BTCMARKETID
         }
       }).max('bidRate');
-    } catch (ex) {
-      return res.json({
-        message: "Unable to get rates!",
-        statusCode: 200
-      })
-    }
 
 
-    return res.json({
-      askBTCINR: askBTCINR[0].askRate,
-      bidBTCINR: bidBTCINR[0].bidRate,
-
-      askBTCUSD: askBTCUSD[0].askRate,
-      bidBTCUSD: bidBTCUSD[0].bidRate,
-
-      askBTCEUR: askBTCEUR[0].askRate,
-      bidBTCEUR: bidBTCEUR[0].bidRate,
-
-      askBTCGBP: askBTCGBP[0].askRate,
-      bidBTCGBP: bidBTCGBP[0].bidRate,
-
-      askBTCBRL: askBTCBRL[0].askRate,
-      bidBTCBRL: bidBTCBRL[0].bidRate,
-
-      askBTCPLN: askBTCPLN[0].askRate,
-      bidBTCPLN: bidBTCPLN[0].bidRate,
-
-      askBTCCAD: askBTCCAD[0].askRate,
-      bidBTCCAD: bidBTCCAD[0].bidRate,
-
-      askBTCTRY: askBTCTRY[0].askRate,
-      bidBTCTRY: bidBTCTRY[0].bidRate,
-
-      askBTCRUB: askBTCRUB[0].askRate,
-      bidBTCRUB: bidBTCRUB[0].bidRate,
-
-      askBTCMXN: askBTCMXN[0].askRate,
-      bidBTCMXN: bidBTCMXN[0].bidRate,
-
-      askBTCCZK: askBTCCZK[0].askRate,
-      bidBTCCZK: bidBTCCZK[0].bidRate,
-
-      askBTCILS: askBTCILS[0].askRate,
-      bidBTCILS: bidBTCILS[0].bidRate,
-
-      askBTCNZD: askBTCNZD[0].askRate,
-      bidBTCNZD: bidBTCNZD[0].bidRate,
-
-      askBTCJPY: askBTCJPY[0].askRate,
-      bidBTCJPY: bidBTCJPY[0].bidRate,
-
-      askBTCSEK: askBTCSEK[0].askRate,
-      bidBTCSEK: bidBTCSEK[0].bidRate,
-
-      askBTCAUD: askBTCAUD[0].askRate,
-      bidBTCAUD: bidBTCAUD[0].bidRate,
-
-      statusCode: 200
-    });
-  },
-  getRatesAllBidAskBCH: async function(req, res, next) {
-    console.log("Enter into getRateAllBidAsk::: ");
-    try {
       var askBCHINR = await AskINR.find({
         status: {
           'like': statusOne
@@ -3333,71 +3272,9 @@ module.exports = {
           'like': BCHMARKETID
         }
       }).max('bidRate');
-    } catch (ex) {
-      return res.json({
-        message: "Unable to get rates!",
-        statusCode: 200
-      })
-    }
 
 
-    return res.json({
-      askBCHINR: askBCHINR[0].askRate,
-      bidBCHINR: bidBCHINR[0].bidRate,
 
-      askBCHUSD: askBCHUSD[0].askRate,
-      bidBCHUSD: bidBCHUSD[0].bidRate,
-
-      askBCHEUR: askBCHEUR[0].askRate,
-      bidBCHEUR: bidBCHEUR[0].bidRate,
-
-      askBCHGBP: askBCHGBP[0].askRate,
-      bidBCHGBP: bidBCHGBP[0].bidRate,
-
-      askBCHBRL: askBCHBRL[0].askRate,
-      bidBCHBRL: bidBCHBRL[0].bidRate,
-
-      askBCHPLN: askBCHPLN[0].askRate,
-      bidBCHPLN: bidBCHPLN[0].bidRate,
-
-      askBCHCAD: askBCHCAD[0].askRate,
-      bidBCHCAD: bidBCHCAD[0].bidRate,
-
-      askBCHTRY: askBCHTRY[0].askRate,
-      bidBCHTRY: bidBCHTRY[0].bidRate,
-
-      askBCHRUB: askBCHRUB[0].askRate,
-      bidBCHRUB: bidBCHRUB[0].bidRate,
-
-      askBCHMXN: askBCHMXN[0].askRate,
-      bidBCHMXN: bidBCHMXN[0].bidRate,
-
-      askBCHCZK: askBCHCZK[0].askRate,
-      bidBCHCZK: bidBCHCZK[0].bidRate,
-
-      askBCHILS: askBCHILS[0].askRate,
-      bidBCHILS: bidBCHILS[0].bidRate,
-
-      askBCHNZD: askBCHNZD[0].askRate,
-      bidBCHNZD: bidBCHNZD[0].bidRate,
-
-      askBCHJPY: askBCHJPY[0].askRate,
-      bidBCHJPY: bidBCHJPY[0].bidRate,
-
-      askBCHSEK: askBCHSEK[0].askRate,
-      bidBCHSEK: bidBCHSEK[0].bidRate,
-
-      askBCHAUD: askBCHAUD[0].askRate,
-      bidBCHAUD: bidBCHAUD[0].bidRate,
-
-      statusCode: 200
-    });
-  },
-  getRatesAllBidAskLTC: async function(req, res, next) {
-    console.log("Enter into getRateAllBidAsk::: ");
-
-
-    try {
       var askLTCINR = await AskINR.find({
         status: {
           'like': statusOne
@@ -3695,8 +3572,6 @@ module.exports = {
       }).max('bidRate');
 
 
-
-
       var askLTCAUD = await AskAUD.find({
         status: {
           'like': statusOne
@@ -3713,6 +3588,7 @@ module.exports = {
           'like': LTCMARKETID
         }
       }).max('bidRate');
+
     } catch (ex) {
       return res.json({
         message: "Unable to get rates!",
@@ -3722,6 +3598,104 @@ module.exports = {
 
 
     return res.json({
+      askBTCINR: askBTCINR[0].askRate,
+      bidBTCINR: bidBTCINR[0].bidRate,
+
+      askBTCUSD: askBTCUSD[0].askRate,
+      bidBTCUSD: bidBTCUSD[0].bidRate,
+
+      askBTCEUR: askBTCEUR[0].askRate,
+      bidBTCEUR: bidBTCEUR[0].bidRate,
+
+      askBTCGBP: askBTCGBP[0].askRate,
+      bidBTCGBP: bidBTCGBP[0].bidRate,
+
+      askBTCBRL: askBTCBRL[0].askRate,
+      bidBTCBRL: bidBTCBRL[0].bidRate,
+
+      askBTCPLN: askBTCPLN[0].askRate,
+      bidBTCPLN: bidBTCPLN[0].bidRate,
+
+      askBTCCAD: askBTCCAD[0].askRate,
+      bidBTCCAD: bidBTCCAD[0].bidRate,
+
+      askBTCTRY: askBTCTRY[0].askRate,
+      bidBTCTRY: bidBTCTRY[0].bidRate,
+
+      askBTCRUB: askBTCRUB[0].askRate,
+      bidBTCRUB: bidBTCRUB[0].bidRate,
+
+      askBTCMXN: askBTCMXN[0].askRate,
+      bidBTCMXN: bidBTCMXN[0].bidRate,
+
+      askBTCCZK: askBTCCZK[0].askRate,
+      bidBTCCZK: bidBTCCZK[0].bidRate,
+
+      askBTCILS: askBTCILS[0].askRate,
+      bidBTCILS: bidBTCILS[0].bidRate,
+
+      askBTCNZD: askBTCNZD[0].askRate,
+      bidBTCNZD: bidBTCNZD[0].bidRate,
+
+      askBTCJPY: askBTCJPY[0].askRate,
+      bidBTCJPY: bidBTCJPY[0].bidRate,
+
+      askBTCSEK: askBTCSEK[0].askRate,
+      bidBTCSEK: bidBTCSEK[0].bidRate,
+
+      askBTCAUD: askBTCAUD[0].askRate,
+      bidBTCAUD: bidBTCAUD[0].bidRate,
+
+
+      askBCHINR: askBCHINR[0].askRate,
+      bidBCHINR: bidBCHINR[0].bidRate,
+
+      askBCHUSD: askBCHUSD[0].askRate,
+      bidBCHUSD: bidBCHUSD[0].bidRate,
+
+      askBCHEUR: askBCHEUR[0].askRate,
+      bidBCHEUR: bidBCHEUR[0].bidRate,
+
+      askBCHGBP: askBCHGBP[0].askRate,
+      bidBCHGBP: bidBCHGBP[0].bidRate,
+
+      askBCHBRL: askBCHBRL[0].askRate,
+      bidBCHBRL: bidBCHBRL[0].bidRate,
+
+      askBCHPLN: askBCHPLN[0].askRate,
+      bidBCHPLN: bidBCHPLN[0].bidRate,
+
+      askBCHCAD: askBCHCAD[0].askRate,
+      bidBCHCAD: bidBCHCAD[0].bidRate,
+
+      askBCHTRY: askBCHTRY[0].askRate,
+      bidBCHTRY: bidBCHTRY[0].bidRate,
+
+      askBCHRUB: askBCHRUB[0].askRate,
+      bidBCHRUB: bidBCHRUB[0].bidRate,
+
+      askBCHMXN: askBCHMXN[0].askRate,
+      bidBCHMXN: bidBCHMXN[0].bidRate,
+
+      askBCHCZK: askBCHCZK[0].askRate,
+      bidBCHCZK: bidBCHCZK[0].bidRate,
+
+      askBCHILS: askBCHILS[0].askRate,
+      bidBCHILS: bidBCHILS[0].bidRate,
+
+      askBCHNZD: askBCHNZD[0].askRate,
+      bidBCHNZD: bidBCHNZD[0].bidRate,
+
+      askBCHJPY: askBCHJPY[0].askRate,
+      bidBCHJPY: bidBCHJPY[0].bidRate,
+
+      askBCHSEK: askBCHSEK[0].askRate,
+      bidBCHSEK: bidBCHSEK[0].bidRate,
+
+      askBCHAUD: askBCHAUD[0].askRate,
+      bidBCHAUD: bidBCHAUD[0].bidRate,
+
+
       askLTCINR: askLTCINR[0].askRate,
       bidLTCINR: bidLTCINR[0].bidRate,
 
@@ -3772,5 +3746,5 @@ module.exports = {
 
       statusCode: 200
     });
-  },
+  }
 };

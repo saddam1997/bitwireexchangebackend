@@ -254,7 +254,7 @@ module.exports = {
                                     </tr>
                                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                       <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                        The BitreX Team
+                                        The BitwireX Team
                                       </td>
                                     </tr>
 
@@ -266,7 +266,7 @@ module.exports = {
                               <table width="100%" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                   <td class="aligncenter content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; color: #999; text-align: center; margin: 0; padding: 0 0 20px;" align="center"
-                                    valign="top">Follow <a href="http://twitter.com/bitwirex" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">@Mail_Gun</a> on Twitter.</td>
+                                    valign="top">Follow <a href="http://twitter.com/bitwirex" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">@bitwirex</a> on Twitter.</td>
                                 </tr>
                               </table>
                             </div>
@@ -372,7 +372,7 @@ module.exports = {
   },
   sentOtpToEmailForgotPassword: function(req, res, next) {
 
-    console.log("Enter into sentOtpToEmail");
+    console.log("Enter into sentOtpToEmailForgotPassword");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -509,7 +509,7 @@ module.exports = {
   },
   verifyOtpToEmailForgotPassord: function(req, res, next) {
 
-    console.log("Enter into sentOtpToEmail");
+    console.log("Enter into verifyOtpToEmailForgotPassord");
     var userMailId = req.body.userMailId;
     var otp = req.body.otp;
     if (!userMailId || !otp) {
@@ -559,7 +559,7 @@ module.exports = {
     });
   },
   updateForgotPassordAfterVerify: function(req, res, next) {
-    console.log("Enter into sentOtpToEmail");
+    console.log("Enter into updateForgotPassordAfterVerify");
     var userMailId = req.body.userMailId;
     var newPassword = req.body.newPassword;
     var confirmNewPassword = req.body.confirmNewPassword;
@@ -792,7 +792,7 @@ module.exports = {
     });
   },
   sentOtpToUpdateSpendingPassword: function(req, res, next) {
-    console.log("Enter into sentOtpToEmail");
+    console.log("Enter into sentOtpToUpdateSpendingPassword");
     var userMailId = req.body.userMailId;
     var currentPassword = req.body.currentPassword;
     if (!userMailId || !currentPassword) {
@@ -876,7 +876,7 @@ module.exports = {
     });
   },
   verifyOtpToEmailForgotSpendingPassord: function(req, res, next) {
-    console.log("Enter into sentOtpToEmail");
+    console.log("Enter into verifyOtpToEmailForgotSpendingPassord ");
     var userMailId = req.body.userMailId;
     var otp = req.body.otp;
     if (!userMailId || !otp) {

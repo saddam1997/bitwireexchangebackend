@@ -146,7 +146,7 @@ module.exports = {
           'like': BTCMARKETID
         },
         status: {
-          '!': [statusOne, statusThree]
+          'like': statusTwo
         }
       });
     } catch (e) {
@@ -1070,7 +1070,7 @@ module.exports = {
           'like': BTCMARKETID
         },
         status: {
-          '!': [statusOne, statusThree]
+          'like': statusTwo
         }
       });
     } catch (e) {
@@ -2222,7 +2222,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskINR Found!!",
+              "message": "No BidINR Found!!",
               statusCode: 401
             });
           }
@@ -2324,7 +2324,7 @@ module.exports = {
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No AskINR Found!!",
+            "message": "No bidINR Found!!",
             statusCode: 401
           });
         }
@@ -2372,7 +2372,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No AskINR Found!!",
+              "message": "No BidINR Found!!",
               statusCode: 401
             });
           }
@@ -2454,5 +2454,4 @@ module.exports = {
         }
       });
   },
-
 };

@@ -7,8 +7,6 @@
 var bcrypt = require('bcrypt');
 module.exports = {
   schema: true,
-  autoCreatedAt: false,
-  autoUpdatedAt: false,
   attributes: {
     email: {
       type: 'email',
@@ -16,8 +14,6 @@ module.exports = {
       required: true,
       unique: true
     },
-
-
     BTCbalance: {
       type: 'float',
       defaultsTo: 0
@@ -174,8 +170,15 @@ module.exports = {
       defaultsTo: 0
     },
 
+    isUserDisable: {
+      type: "boolean",
+      defaultsTo: false
+    },
 
-
+    isUserFreezed: {
+      type: "boolean",
+      defaultsTo: false
+    },
 
     isBTCAddress: {
       type: "boolean",
@@ -506,7 +509,10 @@ module.exports = {
       collection: 'askAUD',
       via: 'askownerAUD'
     },
-
+    transations: {
+      collection: 'transation',
+      via: 'transationowner'
+    },
     toJSON: function() {
       var obj = this.toObject();
       delete obj.encryptedPassword;

@@ -144,7 +144,7 @@ module.exports = {
           'like': LTCMARKETID
         },
         status: {
-          '!': [statusOne, statusThree]
+          'like': statusTwo
         }
       });
     } catch (e) {
@@ -1068,7 +1068,7 @@ module.exports = {
           'like': LTCMARKETID
         },
         status: {
-          '!': [statusOne, statusThree]
+          'like': statusTwo
         }
       });
     } catch (e) {
@@ -1673,7 +1673,7 @@ module.exports = {
               } else {
                 //destroy bid
                 console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0 enter into else of totoalBidRemainingINR == 0");
-                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0totoalBidRemainingINR == 0 start User.findOne currentAskDetails.bidownerINR " + currentAskDetails.bidownerINR);
+                console.log(currentAskDetails.id + " else of totoalBidRemainingINR == 0totoalBidRemainingINR == 0 start User.findOne currentAskDetails.bidownerINR " + currentAskDetails.askownerINR);
                 try {
                   var userAllDetailsInDBAsker = await User.findOne({
                     id: currentAskDetails.askownerINR
@@ -2172,7 +2172,7 @@ module.exports = {
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No Ask Found!!",
+            "message": "No AskINR Found!!",
             statusCode: 401
           });
         }
@@ -2220,7 +2220,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No Ask Found!!",
+              "message": "No BidINR Found!!",
               statusCode: 401
             });
           }
@@ -2247,7 +2247,7 @@ module.exports = {
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No Ask Found!!",
+            "message": "No AskINR Found!!",
             statusCode: 401
           });
         }
@@ -2322,7 +2322,7 @@ module.exports = {
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No Ask Found!!",
+            "message": "No bidINR Found!!",
             statusCode: 401
           });
         }
@@ -2370,7 +2370,7 @@ module.exports = {
               });
           } else {
             return res.json({
-              "message": "No Ask Found!!",
+              "message": "No BidINR Found!!",
               statusCode: 401
             });
           }
@@ -2397,7 +2397,7 @@ module.exports = {
         }
         if (!allAskDetailsToExecute) {
           return res.json({
-            "message": "No Ask Found!!",
+            "message": "No AskINR Found!!",
             statusCode: 401
           });
         }
@@ -2452,5 +2452,4 @@ module.exports = {
         }
       });
   },
-
 };

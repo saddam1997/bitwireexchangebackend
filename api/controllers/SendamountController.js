@@ -6,6 +6,30 @@
  */
 var BigNumber = require('bignumber.js');
 
+const TRANSACTION_ACTION_WITHDRAW_ID = sails.config.common.TRANSACTION_ACTION_WITHDRAW_ID;
+const TRANSACTION_ACTION_WITHDRAW_NAME = sails.config.common.TRANSACTION_ACTION_WITHDRAW_NAME;
+
+
+const CURRENCY_NAME_BTC = sails.config.common.BTC;
+const CURRENCY_NAME_BCH = sails.config.common.BCH;
+const CURRENCY_NAME_LTC = sails.config.common.LTC;
+const CURRENCY_NAME_INR = sails.config.common.INR;
+const CURRENCY_NAME_USD = sails.config.common.USD;
+const CURRENCY_NAME_EUR = sails.config.common.EUR;
+const CURRENCY_NAME_GBP = sails.config.common.GBP;
+const CURRENCY_NAME_BRL = sails.config.common.BRL;
+const CURRENCY_NAME_PLN = sails.config.common.PLN;
+const CURRENCY_NAME_CAD = sails.config.common.CAD;
+const CURRENCY_NAME_TRY = sails.config.common.TRY;
+const CURRENCY_NAME_RUB = sails.config.common.RUB;
+const CURRENCY_NAME_MXN = sails.config.common.MXN;
+const CURRENCY_NAME_CZK = sails.config.common.CZK;
+const CURRENCY_NAME_ILS = sails.config.common.ILS;
+const CURRENCY_NAME_NZD = sails.config.common.NZD;
+const CURRENCY_NAME_JPY = sails.config.common.JPY;
+const CURRENCY_NAME_SEK = sails.config.common.SEK;
+const CURRENCY_NAME_AUD = sails.config.common.AUD;
+
 //BTC Wallet Details
 var bitcoinBTC = require('bitcoin');
 var clientBTC = new bitcoinBTC.Client({
@@ -353,28 +377,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userBTCAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverBTCAddress,
+                        currencyName: CURRENCY_NAME_BTC,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfBTC),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -500,28 +544,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userBCHAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverBCHAddress,
+                        currencyName: CURRENCY_NAME_BCH,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfBCH),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -647,28 +711,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userLTCAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverLTCAddress,
+                        currencyName: CURRENCY_NAME_LTC,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfLTC),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -794,28 +878,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userINRAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverINRAddress,
+                        currencyName: CURRENCY_NAME_INR,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfINR),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -941,28 +1045,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userUSDAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverUSDAddress,
+                        currencyName: CURRENCY_NAME_USD,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfUSD),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1088,28 +1212,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userEURAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverEURAddress,
+                        currencyName: CURRENCY_NAME_EUR,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfEUR),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1235,28 +1379,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userGBPAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverGBPAddress,
+                        currencyName: CURRENCY_NAME_GBP,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfGBP),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1382,28 +1546,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userBRLAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverBRLAddress,
+                        currencyName: CURRENCY_NAME_BRL,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfBRL),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1529,28 +1713,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userPLNAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverPLNAddress,
+                        currencyName: CURRENCY_NAME_PLN,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfPLN),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1676,28 +1880,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userCADAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverCADAddress,
+                        currencyName: CURRENCY_NAME_CAD,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfCAD),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1823,28 +2047,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userTRYAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverTRYAddress,
+                        currencyName: CURRENCY_NAME_TRY,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfTRY),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -1970,28 +2214,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userRUBAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverRUBAddress,
+                        currencyName: CURRENCY_NAME_RUB,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfRUB),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2117,28 +2381,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userMXNAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverMXNAddress,
+                        currencyName: CURRENCY_NAME_MXN,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfMXN),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2264,28 +2548,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userCZKAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverCZKAddress,
+                        currencyName: CURRENCY_NAME_CZK,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfCZK),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2411,28 +2715,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userILSAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverILSAddress,
+                        currencyName: CURRENCY_NAME_ILS,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfILS),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2558,28 +2882,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userNZDAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverNZDAddress,
+                        currencyName: CURRENCY_NAME_NZD,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfNZD),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2705,28 +3049,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userJPYAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverJPYAddress,
+                        currencyName: CURRENCY_NAME_JPY,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfJPY),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2852,28 +3216,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userSEKAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverSEKAddress,
+                        currencyName: CURRENCY_NAME_SEK,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfSEK),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }
@@ -2999,28 +3383,48 @@ module.exports = {
                           statusCode: 400
                         });
                       }
-                      User.findOne({
-                          email: userEmailAddress
-                        }).populateAll()
-                        .exec(function(err, user) {
-                          if (err) {
-                            return res.json({
-                              "message": "Error to find user",
-                              statusCode: 401
-                            });
-                          }
-                          if (!user) {
-                            return res.json({
-                              "message": "Invalid email!",
-                              statusCode: 401
-                            });
-                          }
-                          console.log("Return user details after sending amount!!");
-                          res.json({
-                            user: user,
-                            statusCode: 200
+                      var saveTransactionDeails = {
+                        amount: parseFloat(userAUDAmountToSend),
+                        actionName: TRANSACTION_ACTION_WITHDRAW_NAME,
+                        actionId: TRANSACTION_ACTION_WITHDRAW_ID,
+                        address: userReceiverAUDAddress,
+                        currencyName: CURRENCY_NAME_AUD,
+                        txid: TransactionDetails,
+                        networkFee: parseFloat(transactionFeeOfAUD),
+                        transationowner: userDetails.id,
+                      }
+                      console.log("saveTransactionDeails : " + JSON.stringify(saveTransactionDeails));
+                      Transation.create(saveTransactionDeails).exec(function(err, finn) {
+                        if (err) {
+                          console.log(err);
+                          return res.json({
+                            "message": "Error to create Transaction!",
+                            statusCode: 400
                           });
-                        });
+                        }
+                        User.findOne({
+                            email: userEmailAddress
+                          }).populateAll()
+                          .exec(function(err, user) {
+                            if (err) {
+                              return res.json({
+                                "message": "Error to find user",
+                                statusCode: 401
+                              });
+                            }
+                            if (!user) {
+                              return res.json({
+                                "message": "Invalid email!",
+                                statusCode: 401
+                              });
+                            }
+                            console.log("Return user details after sending amount!!");
+                            res.json({
+                              user: user,
+                              statusCode: 200
+                            });
+                          });
+                      });
                     });
                   });
               }

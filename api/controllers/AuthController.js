@@ -53,6 +53,12 @@ module.exports = {
             statusCode: 401
           });
         }
+        if (user.isUserDisable) {
+          return res.json({
+            "message": "This email is disabled. Please contact to admin!!",
+            statusCode: 401
+          });
+        }
         console.log("Compare passs");
         User.comparePassword(password, user, function(err, valid) {
           if (err) {

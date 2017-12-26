@@ -247,4 +247,50 @@ module.exports = {
         }
       });
   },
+  getCurrenciesDetails: function(req, res, next) {
+    console.log("Enter into getCurrenciesDetails");
+    const queryToSumAllCurrency = 'SELECT ' +
+      'SUM(BTCbalance) as BTCbalance,' +
+      'SUM(FreezedBTCbalance) as FreezedBTCbalance  ,' +
+      'SUM(BCHbalance) as BCHbalance  ,' +
+      'SUM(FreezedBCHbalance) asFreezedBCHbalance,' +
+      'SUM(LTCbalance) as LTCbalance,' +
+      'SUM(FreezedLTCbalance) asFreezedLTCbalance,' +
+      'SUM(INRbalance) as INRbalance  ,' +
+      'SUM(FreezedINRbalance) as FreezedINRbalance,' +
+      'SUM(USDbalance) as USDbalance  ,' +
+      'SUM(FreezedUSDbalance) as FreezedUSDbalance  ,' +
+      'SUM(EURbalance) as   EURbalance,' +
+      'SUM(FreezedEURbalance) as FreezedEURbalance  ,' +
+      'SUM(GBPbalance) as   GBPbalance,' +
+      'SUM(FreezedGBPbalance) as   FreezedGBPbalance   ,' +
+      'SUM(BRLbalance) as   BRLbalance   ,' +
+      'SUM(FreezedBRLbalance) as  FreezedBRLbalance    ,' +
+      'SUM(PLNbalance) as   PLNbalance   ,' +
+      'SUM(FreezedPLNbalance) as    FreezedPLNbalance  ,' +
+      'SUM(CADbalance) as CADbalance     ,' +
+      'SUM(FreezedCADbalance) as     FreezedCADbalance ,' +
+      'SUM(TRYbalance) as    TRYbalance  ,' +
+      'SUM(FreezedTRYbalance) as FreezedTRYbalance     ,' +
+      'SUM(RUBbalance) as    RUBbalance  ,' +
+      'SUM(FreezedRUBbalance) as FreezedRUBbalance  ,' +
+      'SUM(MXNbalance) as   MXNbalance   ,' +
+      'SUM(FreezedMXNbalance) as FreezedMXNbalance  ,' +
+      'SUM(CZKbalance) as CZKbalance  ,' +
+      'SUM(FreezedCZKbalance) as  FreezedCZKbalance ' +
+      ' FROM user';
+    User.query(queryToSumAllCurrency, function(err, rawResult) {
+      if (err) {
+        return res.json({
+          "message": "Eror to find users!",
+          statusCode: 400
+        });
+      }
+      return res.json({
+        user: rawResult,
+        statusCode: 200
+      });
+
+    });
+  },
 };

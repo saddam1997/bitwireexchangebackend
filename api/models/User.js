@@ -513,6 +513,10 @@ module.exports = {
       collection: 'transation',
       via: 'transationowner'
     },
+    tickets: {
+      collection: 'ticket',
+      via: 'ticketOwnerId'
+    },
     toJSON: function() {
       var obj = this.toObject();
       delete obj.encryptedPassword;

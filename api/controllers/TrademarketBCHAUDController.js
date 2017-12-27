@@ -63,11 +63,11 @@ module.exports = {
     var userAUDBalanceInDb = new BigNumber(userAsker.AUDbalance);
     var userFreezedAUDBalanceInDb = new BigNumber(userAsker.FreezedAUDbalance);
 
-    userAUDBalanceInDb = parseFloat(userAUDBalanceInDb);
-    userFreezedAUDBalanceInDb = parseFloat(userFreezedAUDBalanceInDb);
+    userAUDBalanceInDb = parseFloat(userAUDBalanceInDb);//need change in above when getting from result
+    userFreezedAUDBalanceInDb = parseFloat(userFreezedAUDBalanceInDb);// need change
     console.log("asdf");
     var userIdInDb = userAsker.id;
-    if (userAskAmountAUD.greaterThanOrEqualTo(userAUDBalanceInDb)) {
+    if (userAskAmountAUD.greaterThanOrEqualTo(userAUDBalanceInDb)) {//can be checked in query
       return res.json({
         "message": "You have insufficient AUD Balance",
         statusCode: 401
@@ -114,8 +114,8 @@ module.exports = {
 
     // x = new BigNumber(0.3)   x.plus(y)
     // x.minus(0.1)
-    userAUDBalanceInDb = new BigNumber(userAUDBalanceInDb);
-    var updateUserAUDBalance = userAUDBalanceInDb.minus(userAskAmountAUD);
+    userAUDBalanceInDb = new BigNumber(userAUDBalanceInDb);//duplicacy
+    var updateUserAUDBalance = userAUDBalanceInDb.minus(userAskAmountAUD);//can be handle in query
     updateUserAUDBalance = parseFloat(updateUserAUDBalance);
     userFreezedAUDBalanceInDb = new BigNumber(userFreezedAUDBalanceInDb);
     var updateFreezedAUDBalance = userFreezedAUDBalanceInDb.plus(userAskAmountAUD);
@@ -163,7 +163,7 @@ module.exports = {
       for (var i = 0; i < allBidsFromdb.length; i++) {
         total_bid = total_bid + allBidsFromdb[i].bidAmountAUD;
       }
-      if (total_bid <= totoalAskRemainingAUD) {
+      if (total_bid <= totoalAskRemainingAUD) {//spelling of total
         console.log("Inside of total_bid <= totoalAskRemainingAUD");
         for (var i = 0; i < allBidsFromdb.length; i++) {
           console.log("Inside of For Loop total_bid <= totoalAskRemainingAUD");

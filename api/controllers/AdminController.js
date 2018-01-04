@@ -253,9 +253,9 @@ module.exports = {
       'SUM(BTCbalance) as BTCbalance,' +
       'SUM(FreezedBTCbalance) as FreezedBTCbalance  ,' +
       'SUM(BCHbalance) as BCHbalance  ,' +
-      'SUM(FreezedBCHbalance) asFreezedBCHbalance,' +
+      'SUM(FreezedBCHbalance) as FreezedBCHbalance,' +
       'SUM(LTCbalance) as LTCbalance,' +
-      'SUM(FreezedLTCbalance) asFreezedLTCbalance,' +
+      'SUM(FreezedLTCbalance) as FreezedLTCbalance,' +
       'SUM(INRbalance) as INRbalance  ,' +
       'SUM(FreezedINRbalance) as FreezedINRbalance,' +
       'SUM(USDbalance) as USDbalance  ,' +

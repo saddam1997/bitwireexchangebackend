@@ -48,7 +48,7 @@ module.exports = {
     else
       Ticket.find({
         ticketOwnerId: req.body.ticketOwnerId
-      })
+      }).populateAll()
       .then((success) => {
         if (success)
           return res.json({
@@ -71,7 +71,7 @@ module.exports = {
       })
   },
   'getAllTickets': (req, res) => {
-    Ticket.find({})
+    Ticket.find().populateAll()
       .then((success) => {
         if (success)
           return res.json({
@@ -102,7 +102,7 @@ module.exports = {
     else
       Ticket.findOne({
         id: req.body.ticketId
-      })
+      }).populateAll()
       .then((success) => {
         if (success)
           return res.json({
